@@ -1,0 +1,397 @@
+[gd_scene format=3 uid="uid://dltloiy52jwm4"]
+
+[ext_resource type="PackedScene" uid="uid://hewt3r4d6eo8" path="res://assets/environment/buildings/Exterior NHM London .glb" id="1_ext"]
+[ext_resource type="Script" uid="uid://csyjnln3bhrlh" path="res://scripts/church_exterior.gd" id="1_scene_script"]
+[ext_resource type="PackedScene" uid="uid://dnixestf2owhy" path="res://assets/environment/buildings/NHM London.glb" id="2_int"]
+[ext_resource type="PackedScene" uid="uid://b8k12p5nan3q4" path="res://scenes/door.tscn" id="3_door"]
+[ext_resource type="PackedScene" uid="uid://c6f3k0p8m5y21" path="res://scenes/player.tscn" id="4_player"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
+sky_top_color = Color(0.35, 0.55, 0.85, 1)
+sky_horizon_color = Color(0.7, 0.75, 0.82, 1)
+ground_bottom_color = Color(0.2, 0.18, 0.16, 1)
+ground_horizon_color = Color(0.7, 0.75, 0.82, 1)
+
+[sub_resource type="Sky" id="Sky_env"]
+sky_material = SubResource("ProceduralSkyMaterial_sky")
+
+[sub_resource type="Environment" id="Environment_main"]
+background_mode = 2
+sky = SubResource("Sky_env")
+ambient_light_source = 3
+ambient_light_color = Color(0.65, 0.7, 0.75, 1)
+ambient_light_energy = 0.8
+tonemap_mode = 2
+ssao_enabled = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vestibule_floor"]
+albedo_color = Color(0.22, 0.2, 0.19, 1)
+roughness = 0.65
+
+[sub_resource type="BoxMesh" id="BoxMesh_vfloor"]
+material = SubResource("StandardMaterial3D_vestibule_floor")
+size = Vector3(4.4, 0.2, 6.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_vfloor"]
+size = Vector3(4.4, 0.2, 6.2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vestibule_wall"]
+albedo_color = Color(0.28, 0.22, 0.18, 1)
+roughness = 0.85
+
+[sub_resource type="BoxMesh" id="BoxMesh_vwall"]
+material = SubResource("StandardMaterial3D_vestibule_wall")
+size = Vector3(0.3, 4.6, 6.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_vwall"]
+size = Vector3(0.3, 4.6, 6.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_vceil"]
+material = SubResource("StandardMaterial3D_vestibule_wall")
+size = Vector3(4.7, 0.3, 6.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_vceil"]
+size = Vector3(4.7, 0.3, 6.2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vestibule_trim"]
+albedo_color = Color(0.18, 0.14, 0.1, 1)
+roughness = 0.7
+
+[sub_resource type="BoxMesh" id="BoxMesh_arch_post"]
+material = SubResource("StandardMaterial3D_vestibule_trim")
+size = Vector3(0.4, 4.6, 0.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_arch_lintel"]
+material = SubResource("StandardMaterial3D_vestibule_trim")
+size = Vector3(4.8, 0.4, 0.4)
+
+[sub_resource type="BoxShape3D" id="BoxShape_enter_trigger"]
+size = Vector3(4, 4, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape_exit_trigger"]
+size = Vector3(6, 4, 2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_plaza_pavement"]
+albedo_color = Color(0.32, 0.3, 0.28, 1)
+roughness = 0.8
+
+[sub_resource type="BoxMesh" id="BoxMesh_plaza"]
+material = SubResource("StandardMaterial3D_plaza_pavement")
+size = Vector3(80, 0.2, 50)
+
+[sub_resource type="BoxShape3D" id="BoxShape_plaza"]
+size = Vector3(80, 0.4, 50)
+
+[sub_resource type="BoxShape3D" id="BoxShape_plaza_ramp"]
+size = Vector3(60, 0.4, 12)
+
+[sub_resource type="BoxShape3D" id="BoxShape_ground"]
+size = Vector3(300, 0.5, 300)
+
+[sub_resource type="BoxShape3D" id="BoxShape_int_ground_floor"]
+size = Vector3(34, 0.8, 64)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_central_ramp"]
+points = PackedVector3Array(-3.8, 2.5, -12.5, 3.8, 2.5, -12.5, -3.8, 3.2, -12.5, 3.8, 3.2, -12.5, -3.8, 6.65, -22.5, 3.8, 6.65, -22.5, -3.8, 2.5, -22.5, 3.8, 2.5, -22.5)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_mid_landing"]
+points = PackedVector3Array(-6, 2.5, -21.5, 6, 2.5, -21.5, -6, 6.65, -21.5, 6, 6.65, -21.5, -6, 6.65, -26, 6, 6.65, -26, -6, 2.5, -26, 6, 2.5, -26)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_left_diag_flight"]
+points = PackedVector3Array(-3, 6.65, -23, -5.5, 6.65, -21, -9.5, 10, -17.5, -12, 10, -15.5, -3, 2.5, -23, -5.5, 2.5, -21, -9.5, 2.5, -17.5, -12, 2.5, -15.5)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_right_diag_flight"]
+points = PackedVector3Array(3, 6.65, -23, 5.5, 6.65, -21, 9.5, 10, -17.5, 12, 10, -15.5, 3, 2.5, -23, 5.5, 2.5, -21, 9.5, 2.5, -17.5, 12, 2.5, -15.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape_balcony_back"]
+size = Vector3(32, 0.8, 5.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape_balcony_side"]
+size = Vector3(9.5, 0.8, 59)
+
+[sub_resource type="BoxShape3D" id="BoxShape_balcony_front"]
+size = Vector3(32, 0.8, 5.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape_railing_side"]
+size = Vector3(0.3, 1.6, 59)
+
+[sub_resource type="BoxShape3D" id="BoxShape_railing_front"]
+size = Vector3(13, 1.6, 0.3)
+
+[sub_resource type="BoxShape3D" id="BoxShape_railing_back"]
+size = Vector3(9, 1.6, 0.3)
+
+[node name="ChurchExterior" type="Node3D" unique_id=722412512]
+script = ExtResource("1_scene_script")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=149973966]
+environment = SubResource("Environment_main")
+
+[node name="SunLight" type="DirectionalLight3D" parent="." unique_id=1414251843]
+transform = Transform3D(0.866025, 0.353553, -0.353553, 0, 0.707107, 0.707107, 0.5, -0.612372, 0.612372, 0, 50, 50)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 1.2
+shadow_enabled = true
+
+[node name="Exterior" type="Node3D" parent="." unique_id=487284725]
+
+[node name="ExteriorMesh" parent="Exterior" unique_id=1899903454 instance=ExtResource("1_ext")]
+transform = Transform3D(80, 0, 0, 0, 80, 0, 0, 0, 80, 0, 0, 0)
+
+[node name="Interior" type="Node3D" parent="." unique_id=390311806]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 2.1, -2)
+
+[node name="InteriorMesh" parent="Interior" unique_id=74198547 instance=ExtResource("2_int")]
+
+[node name="Vestibule" type="Node3D" parent="." unique_id=687259870]
+
+[node name="Floor" type="StaticBody3D" parent="Vestibule" unique_id=330175413]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.1, 30.6)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Vestibule/Floor" unique_id=1151078078]
+mesh = SubResource("BoxMesh_vfloor")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Vestibule/Floor" unique_id=1050317093]
+shape = SubResource("BoxShape3D_vfloor")
+
+[node name="WallLeft" type="StaticBody3D" parent="Vestibule" unique_id=793259780]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, 5.4, 30.6)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Vestibule/WallLeft" unique_id=574057681]
+mesh = SubResource("BoxMesh_vwall")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Vestibule/WallLeft" unique_id=1503817851]
+shape = SubResource("BoxShape3D_vwall")
+
+[node name="WallRight" type="StaticBody3D" parent="Vestibule" unique_id=1528925774]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2, 5.4, 30.6)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Vestibule/WallRight" unique_id=1697483858]
+mesh = SubResource("BoxMesh_vwall")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Vestibule/WallRight" unique_id=476389414]
+shape = SubResource("BoxShape3D_vwall")
+
+[node name="Ceiling" type="StaticBody3D" parent="Vestibule" unique_id=1345641547]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.7, 30.6)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Vestibule/Ceiling" unique_id=319065719]
+mesh = SubResource("BoxMesh_vceil")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Vestibule/Ceiling" unique_id=1617694012]
+shape = SubResource("BoxShape3D_vceil")
+
+[node name="OuterPortalFrame" type="Node3D" parent="Vestibule" unique_id=197330713]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 33.6)
+
+[node name="PostLeft" type="MeshInstance3D" parent="Vestibule/OuterPortalFrame" unique_id=1839294127]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, 5.4, 0)
+mesh = SubResource("BoxMesh_arch_post")
+
+[node name="PostRight" type="MeshInstance3D" parent="Vestibule/OuterPortalFrame" unique_id=2029074523]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2, 5.4, 0)
+mesh = SubResource("BoxMesh_arch_post")
+
+[node name="Lintel" type="MeshInstance3D" parent="Vestibule/OuterPortalFrame" unique_id=1830081398]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.6, 0)
+mesh = SubResource("BoxMesh_arch_lintel")
+
+[node name="InnerPortalFrame" type="Node3D" parent="Vestibule" unique_id=1970274624]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 27.6)
+
+[node name="PostLeft" type="MeshInstance3D" parent="Vestibule/InnerPortalFrame" unique_id=1809562209]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, 5.4, 0)
+mesh = SubResource("BoxMesh_arch_post")
+
+[node name="PostRight" type="MeshInstance3D" parent="Vestibule/InnerPortalFrame" unique_id=59975541]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2, 5.4, 0)
+mesh = SubResource("BoxMesh_arch_post")
+
+[node name="Lintel" type="MeshInstance3D" parent="Vestibule/InnerPortalFrame" unique_id=540840374]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.6, 0)
+mesh = SubResource("BoxMesh_arch_lintel")
+
+[node name="VestibuleLight" type="OmniLight3D" parent="Vestibule" unique_id=1640149856]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6, 30.6)
+light_color = Color(1, 0.88, 0.72, 1)
+light_energy = 2.0
+omni_range = 10.0
+omni_attenuation = 1.2
+
+[node name="ChurchDoor" parent="." unique_id=560320404 instance=ExtResource("3_door")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.2, 33.6)
+
+[node name="InteriorLighting" type="Node3D" parent="." unique_id=686630167]
+
+[node name="HallLight_Entrance" type="OmniLight3D" parent="InteriorLighting" unique_id=195157261]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9, 20)
+light_color = Color(1, 0.94, 0.85, 1)
+light_energy = 2.5
+omni_range = 25.0
+
+[node name="HallLight_Center" type="OmniLight3D" parent="InteriorLighting" unique_id=988115521]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12, 0)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 3.0
+omni_range = 35.0
+
+[node name="HallLight_Stairs" type="OmniLight3D" parent="InteriorLighting" unique_id=1719197953]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10, -20)
+light_color = Color(1, 0.92, 0.82, 1)
+light_energy = 2.5
+omni_range = 25.0
+
+[node name="BalconyLight_Left" type="OmniLight3D" parent="InteriorLighting" unique_id=1397104484]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 13, 0)
+light_color = Color(1, 0.92, 0.85, 1)
+light_energy = 2.0
+omni_range = 20.0
+
+[node name="BalconyLight_Right" type="OmniLight3D" parent="InteriorLighting" unique_id=201606870]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 13, 0)
+light_color = Color(1, 0.92, 0.85, 1)
+light_energy = 2.0
+omni_range = 20.0
+
+[node name="BalconyLight_Back" type="OmniLight3D" parent="InteriorLighting" unique_id=299415861]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 13, -30)
+light_color = Color(1, 0.92, 0.85, 1)
+light_energy = 2.0
+omni_range = 20.0
+
+[node name="BalconyLight_Front" type="OmniLight3D" parent="InteriorLighting" unique_id=470005028]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 13, 24)
+light_color = Color(1, 0.92, 0.85, 1)
+light_energy = 2.0
+omni_range = 20.0
+
+[node name="Triggers" type="Node3D" parent="." unique_id=276803848]
+
+[node name="EnterInteriorTrigger" type="Area3D" parent="Triggers" unique_id=958197766]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.5, 31.5)
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Triggers/EnterInteriorTrigger" unique_id=1638253714]
+shape = SubResource("BoxShape_enter_trigger")
+
+[node name="ExitExteriorTrigger" type="Area3D" parent="Triggers" unique_id=735090997]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.5, 35)
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Triggers/ExitExteriorTrigger" unique_id=1554810310]
+shape = SubResource("BoxShape_exit_trigger")
+
+[node name="Collisions" type="Node3D" parent="." unique_id=1770304460]
+
+[node name="PlazaGround" type="StaticBody3D" parent="Collisions" unique_id=1978902659]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 55)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Collisions/PlazaGround" unique_id=178089729]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+mesh = SubResource("BoxMesh_plaza")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/PlazaGround" unique_id=1733677019]
+shape = SubResource("BoxShape_plaza")
+
+[node name="PlazaApproachRamp" type="StaticBody3D" parent="Collisions" unique_id=318192997]
+transform = Transform3D(1, 0, 0, 0, 0.965926, 0.258819, 0, -0.258819, 0.965926, 0, 1.55, 85)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/PlazaApproachRamp" unique_id=1229487505]
+shape = SubResource("BoxShape_plaza_ramp")
+
+[node name="BaseGround" type="StaticBody3D" parent="Collisions" unique_id=990611539]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/BaseGround" unique_id=247116417]
+shape = SubResource("BoxShape_ground")
+
+[node name="InteriorFloor_Ground" type="StaticBody3D" parent="Collisions" unique_id=2026762925]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.8, -3)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/InteriorFloor_Ground" unique_id=1694606076]
+shape = SubResource("BoxShape_int_ground_floor")
+
+[node name="Staircase_CentralRamp" type="StaticBody3D" parent="Collisions" unique_id=349238570]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/Staircase_CentralRamp" unique_id=635731097]
+shape = SubResource("ConvexPolygonShape3D_central_ramp")
+
+[node name="Staircase_MidLanding" type="StaticBody3D" parent="Collisions" unique_id=444060351]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/Staircase_MidLanding" unique_id=1841207587]
+shape = SubResource("ConvexPolygonShape3D_mid_landing")
+
+[node name="Staircase_LeftDiagonalFlight" type="StaticBody3D" parent="Collisions" unique_id=1621487558]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/Staircase_LeftDiagonalFlight" unique_id=1258470033]
+shape = SubResource("ConvexPolygonShape3D_left_diag_flight")
+
+[node name="Staircase_RightDiagonalFlight" type="StaticBody3D" parent="Collisions" unique_id=1507650580]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/Staircase_RightDiagonalFlight" unique_id=304991088]
+shape = SubResource("ConvexPolygonShape3D_right_diag_flight")
+
+[node name="FirstFloor_BackBalcony" type="StaticBody3D" parent="Collisions" unique_id=1309134178]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9.6, -32)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/FirstFloor_BackBalcony" unique_id=1393411568]
+shape = SubResource("BoxShape_balcony_back")
+
+[node name="FirstFloor_LeftBalcony" type="StaticBody3D" parent="Collisions" unique_id=962365209]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.25, 9.6, -1.75)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/FirstFloor_LeftBalcony" unique_id=260326439]
+shape = SubResource("BoxShape_balcony_side")
+
+[node name="FirstFloor_RightBalcony" type="StaticBody3D" parent="Collisions" unique_id=2013501741]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.25, 9.6, -1.75)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/FirstFloor_RightBalcony" unique_id=47774253]
+shape = SubResource("BoxShape_balcony_side")
+
+[node name="FirstFloor_FrontBalcony" type="StaticBody3D" parent="Collisions" unique_id=835371265]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9.6, 25)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/FirstFloor_FrontBalcony" unique_id=1636473179]
+shape = SubResource("BoxShape_balcony_front")
+
+[node name="SafetyRailing_LeftBalcony" type="StaticBody3D" parent="Collisions" unique_id=623883219]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.5, 10.8, -1.75)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/SafetyRailing_LeftBalcony" unique_id=1548605766]
+shape = SubResource("BoxShape_railing_side")
+
+[node name="SafetyRailing_RightBalcony" type="StaticBody3D" parent="Collisions" unique_id=1832962112]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5, 10.8, -1.75)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/SafetyRailing_RightBalcony" unique_id=1372828542]
+shape = SubResource("BoxShape_railing_side")
+
+[node name="SafetyRailing_FrontBalcony" type="StaticBody3D" parent="Collisions" unique_id=1504350783]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10.8, 22.5)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/SafetyRailing_FrontBalcony" unique_id=716096380]
+shape = SubResource("BoxShape_railing_front")
+
+[node name="SafetyRailing_RearMezzanine" type="StaticBody3D" parent="Collisions" unique_id=118641827]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10.8, -29.5)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collisions/SafetyRailing_RearMezzanine" unique_id=278654417]
+shape = SubResource("BoxShape_railing_back")
+
+[node name="Player" parent="." unique_id=1976512066 instance=ExtResource("4_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, 48)
+
+[node name="TransitionOverlay" type="CanvasLayer" parent="." unique_id=37409061]
+layer = 100
+
+[node name="ColorRect" type="ColorRect" parent="TransitionOverlay" unique_id=1545372753]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)

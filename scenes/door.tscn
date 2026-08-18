@@ -1,0 +1,65 @@
+[gd_scene format=3 uid="uid://b8k12p5nan3q4"]
+
+[ext_resource type="Script" uid="uid://c7x4y1r8m3k29" path="res://scripts/door.gd" id="1_script"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_door_wood"]
+albedo_color = Color(0.24, 0.16, 0.11, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_door_iron"]
+albedo_color = Color(0.12, 0.12, 0.13, 1)
+metallic = 0.8
+roughness = 0.4
+
+[sub_resource type="BoxMesh" id="BoxMesh_door_panel"]
+material = SubResource("StandardMaterial3D_door_wood")
+size = Vector3(1.95, 4.3, 0.12)
+
+[sub_resource type="BoxMesh" id="BoxMesh_door_handle"]
+material = SubResource("StandardMaterial3D_door_iron")
+size = Vector3(0.08, 0.4, 0.15)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_door_col"]
+size = Vector3(3.9, 4.3, 0.3)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_door_area"]
+size = Vector3(6.0, 4.0, 6.0)
+
+[node name="ChurchDoor" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="LeftPivot" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.95, 0, 0)
+
+[node name="DoorPanel" type="MeshInstance3D" parent="LeftPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.975, 2.15, 0)
+mesh = SubResource("BoxMesh_door_panel")
+
+[node name="Handle" type="MeshInstance3D" parent="LeftPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.75, 2.0, 0.1)
+mesh = SubResource("BoxMesh_door_handle")
+
+[node name="RightPivot" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.95, 0, 0)
+
+[node name="DoorPanel" type="MeshInstance3D" parent="RightPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.975, 2.15, 0)
+mesh = SubResource("BoxMesh_door_panel")
+
+[node name="Handle" type="MeshInstance3D" parent="RightPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.75, 2.0, 0.1)
+mesh = SubResource("BoxMesh_door_handle")
+
+[node name="DoorCollision" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.15, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="DoorCollision"]
+shape = SubResource("BoxShape3D_door_col")
+
+[node name="InteractionArea" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractionArea"]
+shape = SubResource("BoxShape3D_door_area")
