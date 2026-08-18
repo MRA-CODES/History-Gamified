@@ -1,0 +1,166 @@
+{
+  "exhibits": [
+    {
+      "id": "waterhouse_terracotta",
+      "title": "Victorian Romanesque Terracotta Facade",
+      "subtitle_or_era": "Victorian Era | Designed by Alfred Waterhouse (Opened 1881)",
+      "category": "Victorian Architecture",
+      "image_path": "res://data/educational/images/waterhouse_terracotta.jpg",
+      "description": "The Waterhouse Building of the Natural History Museum is a masterpiece of Victorian Romanesque-Gothic Revival architecture. Architect Alfred Waterhouse chose manufactured architectural terracotta for the entire exterior and interior surfaces. This decision was revolutionary: terracotta was impervious to the soot, sulfuric coal acid, and dense smogs that plagued 19th-century Industrial Revolution London.",
+      "key_facts": [
+        "Constructed entirely with terracotta blocks supplied by Gibbs and Canning of Tamworth.",
+        "Features intricate relief sculptures of extinct animals on the east wing and living species on the west wing.",
+        "Designed in Romanesque Revival style, often referred to as a 'Cathedral to Nature'.",
+        "Cost approximately £412,000 to construct in 1881 (equivalent to over £50 million today)."
+      ],
+      "source_name": "Wikipedia - Natural History Museum, London",
+      "source_url": "https://en.wikipedia.org/wiki/Natural_History_Museum,_London",
+      "audio_narration_path": "res://audio/narration/waterhouse_terracotta.mp3",
+      "audio_narration_text": "The Waterhouse Building of the Natural History Museum is a masterpiece of Victorian Romanesque-Gothic Revival architecture. Architect Alfred Waterhouse chose manufactured architectural terracotta for the entire exterior and interior surfaces. This decision was revolutionary: terracotta was impervious to the soot, sulfuric coal acid, and dense smogs that plagued 19th-century Industrial Revolution London."
+    },
+    {
+      "id": "hope_blue_whale",
+      "title": "Hope the Blue Whale Skeleton",
+      "subtitle_or_era": "Holocene Epoch | Stranded 1891, Suspended in Hintze Hall 2017",
+      "category": "Marine Biology & Conservation",
+      "image_path": "res://data/educational/images/hope_blue_whale.jpg",
+      "description": "Suspended dynamically in a diving posture from the ceiling of Hintze Hall, 'Hope' is the 25.2-metre (83 ft), 4.5-tonne skeleton of a female blue whale that washed ashore in Wexford Harbour, Ireland, on March 25, 1891. The museum purchased the specimen for £250. Today, Hope serves as a global symbol of environmental conservation, representing humanity's capacity to save species from the brink of extinction.",
+      "key_facts": [
+        "Weighs 4.5 tonnes and measures 25.2 meters in length.",
+        "Suspended using 10 custom high-tensile steel cables engineered to create a diving posture.",
+        "Blue whales are the largest animals ever known to have lived on Earth.",
+        "Named 'Hope' to symbolize humanity's ability to protect biodiversity through scientific understanding."
+      ],
+      "source_name": "Wikipedia - Natural History Museum, London (Hope the Whale)",
+      "source_url": "https://en.wikipedia.org/wiki/Hintze_Hall",
+      "audio_narration_path": "res://audio/narration/hope_blue_whale.mp3",
+      "audio_narration_text": "Suspended dynamically in a diving posture from the ceiling of Hintze Hall, 'Hope' is the 25.2-metre, 4.5-tonne skeleton of a female blue whale that washed ashore in Wexford Harbour, Ireland, on March 25, 1891. The museum purchased the specimen for £250. Today, Hope serves as a global symbol of environmental conservation, representing humanity's capacity to save species from the brink of extinction."
+    },
+    {
+      "id": "charles_darwin_statue",
+      "title": "Marble Statue of Charles Darwin",
+      "subtitle_or_era": "Sculpted 1885 by Sir Joseph Edgar Boehm | Unveiled June 1885",
+      "category": "Historical Figures & Evolution",
+      "image_path": "res://data/educational/images/charles_darwin_statue.jpg",
+      "description": "Carved from pristine white marble by the renowned sculptor Sir Joseph Edgar Boehm, this monumental statue commemorates Charles Darwin (1809–1882), the naturalist who formulated the theory of evolution by natural selection. Commissioned by the Darwin Memorial Fund following his death, the statue presides over Hintze Hall, symbolizing the foundation of modern biological science.",
+      "key_facts": [
+        "Carved from white Carrara marble by Queen Victoria's favorite sculptor, Sir Joseph Boehm.",
+        "Unveiled to the public on June 9, 1885, by Professor Thomas Henry Huxley ('Darwin's Bulldog').",
+        "Stands atop the grand staircase in Hintze Hall gazing across the museum's vast exhibits.",
+        "Reinstalled in the central place of honor in 2008 to mark Darwin's bicentenary."
+      ],
+      "source_name": "Wikipedia - Statue of Charles Darwin, Natural History Museum",
+      "source_url": "https://en.wikipedia.org/wiki/Statue_of_Charles_Darwin,_Natural_History_Museum",
+      "audio_narration_path": "res://audio/narration/charles_darwin_statue.mp3",
+      "audio_narration_text": "Carved from pristine white marble by the renowned sculptor Sir Joseph Edgar Boehm, this monumental statue commemorates Charles Darwin (1809–1882), the naturalist who formulated the theory of evolution by natural selection. Commissioned by the Darwin Memorial Fund following his death, the statue presides over Hintze Hall, symbolizing the foundation of modern biological science."
+    },
+    {
+      "id": "painted_ceiling_panels",
+      "title": "Botanical Ceiling Panels of Hintze Hall",
+      "subtitle_or_era": "1879–1881 | Painted by Charles James Lea & Alfred Waterhouse",
+      "category": "Botanical Art & History",
+      "image_path": "res://data/educational/images/painted_ceiling_panels.jpg",
+      "description": "Soaring above Hintze Hall is a gilded, coffered ceiling containing 162 individual hand-painted botanical panels. Designed by Alfred Waterhouse and executed by artist Charles James Lea, the panels illustrate economic and medicinal plants from across the globe, including tea, tobacco, cotton, and cocoa, highlighting the historical relationship between botany, human civilization, and empire.",
+      "key_facts": [
+        "Comprises 162 individual botanical panels across the barrel-vaulted ceiling.",
+        "Features accurate historical illustrations of plants used for food, medicine, and textiles.",
+        "Restored with historical fidelity to reveal original vibrant Victorian pigments and gold leaf detailing.",
+        "Represents the Victorian era's worldwide cataloging of the plant kingdom."
+      ],
+      "source_name": "Wikipedia - Natural History Museum Hintze Hall Ceiling",
+      "source_url": "https://en.wikipedia.org/wiki/Hintze_Hall",
+      "audio_narration_path": "res://audio/narration/painted_ceiling_panels.mp3",
+      "audio_narration_text": "Soaring above Hintze Hall is a gilded, coffered ceiling containing 162 individual hand-painted botanical panels. Designed by Alfred Waterhouse and executed by artist Charles James Lea, the panels illustrate economic and medicinal plants from across the globe, including tea, tobacco, cotton, and cocoa, highlighting the historical relationship between botany, human civilization, and empire."
+    },
+    {
+      "id": "giant_sequoia_slice",
+      "title": "Giant Sequoia Tree Cross-Section",
+      "subtitle_or_era": "Germinated ~557 AD | Felled 1891 in California, Installed 1893",
+      "category": "First Floor - Dendrochronology & Botany",
+      "image_path": "res://data/educational/images/giant_sequoia_slice.jpg",
+      "description": "Mounted on the upper mezzanine balcony of Hintze Hall is an extraordinary cross-section of a Giant Sequoia (Sequoiadendron giganteum). Measuring over 5 metres (16 ft) in diameter, the tree began growing in the Sierra Nevada mountains of California in approximately 557 AD. Its annual growth rings span over 1,300 years of Earth's history, marked with historical events from the founding of the Roman Empire and the signing of the Magna Carta in 1215 to the Industrial Revolution.",
+      "key_facts": [
+        "Tree began growing in California around 557 AD and was felled in 1891.",
+        "Measures over 5 meters in diameter and weighs over 9 tonnes.",
+        "Growth rings illustrate major milestones in human history across 13 centuries.",
+        "Donated to the British Museum (Natural History) by collator Collis P. Huntington."
+      ],
+      "source_name": "Wikipedia - Sequoiadendron giganteum & Hintze Hall",
+      "source_url": "https://en.wikipedia.org/wiki/Sequoiadendron_giganteum",
+      "audio_narration_path": "res://audio/narration/giant_sequoia_slice.mp3",
+      "audio_narration_text": "Mounted on the upper mezzanine balcony of Hintze Hall is an extraordinary cross-section of a Giant Sequoia. Measuring over 5 metres in diameter, the tree began growing in the Sierra Nevada mountains of California in approximately 557 AD. Its annual growth rings span over 1,300 years of Earth's history, marked with historical events from the founding of the Roman Empire and the signing of the Magna Carta in 1215 to the Industrial Revolution."
+    },
+    {
+      "id": "cranbourne_meteorite",
+      "title": "The Cranbourne Meteorite (Bruce Meteorite)",
+      "subtitle_or_era": "Solar System Origin (~4.56 Billion Years Old) | Discovered 1854",
+      "category": "First Floor - Mineralogy & Meteorites",
+      "image_path": "res://data/educational/images/cranbourne_meteorite.jpg",
+      "description": "The Cranbourne No. 1 Meteorite, also known as the Bruce Meteorite, is a massive 3.5-tonne nickel-iron meteorite discovered near Melbourne, Australia, in 1854. Dating back approximately 4.56 billion years to the formation of the early solar system, it is one of the heaviest and most scientifically significant extraterrestrial iron meteorites in Europe. It exhibits prominent Widmanstätten patterns formed by extremely slow cooling inside an ancient protoplanet core.",
+      "key_facts": [
+        "Weighs approximately 3.5 tonnes (3,550 kg) of solid meteoric iron-nickel alloy.",
+        "Formed over 4.56 billion years ago during the infancy of the solar system.",
+        "Sacred to the Bunurong Indigenous people of southeastern Australia.",
+        "Acquired by the British Museum in 1862 and displayed on the upper Mineral Gallery balcony."
+      ],
+      "source_name": "Wikipedia - Cranbourne meteorite",
+      "source_url": "https://en.wikipedia.org/wiki/Cranbourne_meteorite",
+      "audio_narration_path": "res://audio/narration/cranbourne_meteorite.mp3",
+      "audio_narration_text": "The Cranbourne No. 1 Meteorite, also known as the Bruce Meteorite, is a massive 3.5-tonne nickel-iron meteorite discovered near Melbourne, Australia, in 1854. Dating back approximately 4.56 billion years to the formation of the early solar system, it is one of the heaviest and most scientifically significant extraterrestrial iron meteorites in Europe. It exhibits prominent Widmanstätten patterns formed by extremely slow cooling inside an ancient protoplanet core."
+    },
+    {
+      "id": "mary_anning_fossils",
+      "title": "Mary Anning's Fossil Marine Reptiles",
+      "subtitle_or_era": "Early Jurassic Period (~200–175 Million Years Ago) | Excavated 1811–1823",
+      "category": "First Floor - Paleontology",
+      "image_path": "res://data/educational/images/mary_anning_fossils.jpg",
+      "description": "Embedded in the gallery wall of the first floor is the legendary collection of Jurassic marine reptile fossils excavated by Mary Anning (1799–1847) from the coastal cliffs of Lyme Regis, Dorset. Anning made history by discovering the first correctly identified Ichthyosaurus skeleton in 1811 and the first complete Plesiosaurus in 1823. Her groundbreaking discoveries provided critical early evidence for biological extinction and prehistoric ocean ecosystems.",
+      "key_facts": [
+        "Features complete skeletons of Ichthyosaurus and Plesiosaurus dolichodeirus.",
+        "Excavated along the Blue Lias cliffs of Dorset (now the Jurassic Coast World Heritage site).",
+        "Mary Anning was recognized in 2010 by the Royal Society as one of the ten most influential British women scientists.",
+        "These specimens fundamentally transformed early 19th-century understanding of prehistoric marine life."
+      ],
+      "source_name": "Wikipedia - Mary Anning & Ichthyosaur",
+      "source_url": "https://en.wikipedia.org/wiki/Mary_Anning",
+      "audio_narration_path": "res://audio/narration/mary_anning_fossils.mp3",
+      "audio_narration_text": "Embedded in the gallery wall of the first floor is the legendary collection of Jurassic marine reptile fossils excavated by Mary Anning from the coastal cliffs of Lyme Regis, Dorset. Anning made history by discovering the first correctly identified Ichthyosaurus skeleton in 1811 and the first complete Plesiosaurus in 1823. Her groundbreaking discoveries provided critical early evidence for biological extinction and prehistoric ocean ecosystems."
+    },
+    {
+      "id": "guy_the_gorilla",
+      "title": "Guy the Gorilla Taxidermy Mount",
+      "subtitle_or_era": "1946–1978 | Preserved by Rowland Ward Studios",
+      "category": "First Floor - Zoology & Primates",
+      "image_path": "res://data/educational/images/guy_the_gorilla.jpg",
+      "description": "Displaying on the upper mezzanine balcony is the taxidermy mount of 'Guy the Gorilla', a western lowland gorilla who became one of London's most famous and beloved animals. Arriving at London Zoo on Guy Fawkes Night in 1947 as an orphaned infant, Guy lived in London for 31 years, known for his gentle demeanor. Following his death in 1978, his mount was prepared with anatomical precision by Rowland Ward and transferred to the Natural History Museum.",
+      "key_facts": [
+        "Western lowland gorilla (Gorilla gorilla gorilla) who lived at London Zoo from 1947 to 1978.",
+        "Weighed over 240 kg (530 lb) and was celebrated for his gentle nature with birds and small animals.",
+        "Masterfully preserved using modern taxidermy sculpture by Rowland Ward Studios.",
+        "Serves as a flagship ambassador for great ape conservation and rainforest habitat preservation."
+      ],
+      "source_name": "Wikipedia - Guy the Gorilla",
+      "source_url": "https://en.wikipedia.org/wiki/Guy_the_Gorilla",
+      "audio_narration_path": "res://audio/narration/guy_the_gorilla.mp3",
+      "audio_narration_text": "Displaying on the upper mezzanine balcony is the taxidermy mount of Guy the Gorilla, a western lowland gorilla who became one of London's most famous and beloved animals. Arriving at London Zoo on Guy Fawkes Night in 1947 as an orphaned infant, Guy lived in London for 31 years, known for his gentle demeanor. Following his death in 1978, his mount was prepared with anatomical precision by Rowland Ward and transferred to the Natural History Museum."
+    },
+    {
+      "id": "richard_owen_statue",
+      "title": "Statue of Sir Richard Owen",
+      "subtitle_or_era": "Sculpted 1896 by Thomas Brock | Founding Director",
+      "category": "First Floor - Museum History",
+      "image_path": "res://data/educational/images/richard_owen_statue.jpg",
+      "description": "Standing on the upper balcony gallery overlooking Hintze Hall is the bronze statue of Sir Richard Owen (1804–1892), the comparative anatomist who coined the taxonomic term 'Dinosauria' ('terrible lizards') in 1842. Owen was the driving force behind separating the natural history collections from the British Museum in Bloomsbury and establishing this dedicated 'Cathedral to Nature' in South Kensington.",
+      "key_facts": [
+        "Coined the scientific term 'Dinosauria' in 1842 to describe Megalosaurus, Iguanodon, and Hylaeosaurus.",
+        "Championed the construction of the Waterhouse Building to house Britain's expanding scientific collections.",
+        "Served as the first Superintendent of the British Museum (Natural History) from 1856 to 1883.",
+        "Statue sculpted in bronze by Sir Thomas Brock RA, commissioned by friends and scientific admirers."
+      ],
+      "source_name": "Wikipedia - Richard Owen & Natural History Museum",
+      "source_url": "https://en.wikipedia.org/wiki/Richard_Owen",
+      "audio_narration_path": "res://audio/narration/richard_owen_statue.mp3",
+      "audio_narration_text": "Standing on the upper balcony gallery overlooking Hintze Hall is the bronze statue of Sir Richard Owen, the comparative anatomist who coined the taxonomic term Dinosauria in 1842. Owen was the driving force behind separating the natural history collections from the British Museum in Bloomsbury and establishing this dedicated Cathedral to Nature in South Kensington."
+    }
+  ]
+}

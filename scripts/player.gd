@@ -35,11 +35,14 @@ var camera_rot_y: float = 0.0
 
 # Gravity from ProjectSettings with fallback
 var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity", 9.8)
+var is_movement_enabled: bool = true
 
 # -----------------------------------------------------------------------------
 # Lifecycle
 # -----------------------------------------------------------------------------
 func _ready() -> void:
+	add_to_group("player")
+	
 	# Capture mouse by default for smooth camera control
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	
@@ -57,7 +60,18 @@ func _ready() -> void:
 	# Check and normalize visual model scale
 	_normalize_visual_scale()
 
+func set_movement_enabled(enabled: bool) -> void:
+	is_movement_enabled = enabled
+	if not enabled:
+		velocity.x = 0.0
+		velocity.z = 0.0
+		if anim_player and current_anim != "idle":
+			_play_anim("idle")
+
 func _input(event: InputEvent) -> void:
+	if not is_movement_enabled:
+		return
+		
 	# Mouse look handling
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		camera_rot_y -= event.relative.x * MOUSE_SENSITIVITY
@@ -92,13 +106,13 @@ func _physics_process(delta: float) -> void:
 			velocity.y = 0.0
 			
 		# Jump handling
-		var jump_pressed = Input.is_action_just_pressed("jump") or Input.is_key_pressed(KEY_SPACE)
+		var jump_pressed = (Input.is_action_just_pressed("jump") or Input.is_key_pressed(KEY_SPACE)) if is_movement_enabled else false
 		if jump_pressed:
 			velocity.y = JUMP_VELOCITY
 
 	# 2. Gather Movement Input
-	var raw_input = _get_movement_input()
-	var is_sprinting = Input.is_action_pressed("sprint") or Input.is_key_pressed(KEY_SHIFT)
+	var raw_input = _get_movement_input() if is_movement_enabled else Vector2.ZERO
+	var is_sprinting = (Input.is_action_pressed("sprint") or Input.is_key_pressed(KEY_SHIFT)) if is_movement_enabled else false
 	var target_speed = RUN_SPEED if is_sprinting else WALK_SPEED
 
 	# 3. Calculate Camera-Relative Movement Direction

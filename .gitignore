@@ -53,3 +53,5 @@ $RECYCLE.BIN/
 *.swo
 *~assets/environment/buildings/NHM London.glb
 video/
+*.glb
+assets/environment/buildings/NHM London.glb

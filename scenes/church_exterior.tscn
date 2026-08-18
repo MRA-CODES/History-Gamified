@@ -5,6 +5,8 @@
 [ext_resource type="PackedScene" uid="uid://dnixestf2owhy" path="res://assets/environment/buildings/NHM London.glb" id="2_int"]
 [ext_resource type="PackedScene" uid="uid://b8k12p5nan3q4" path="res://scenes/door.tscn" id="3_door"]
 [ext_resource type="PackedScene" uid="uid://c6f3k0p8m5y21" path="res://scenes/player.tscn" id="4_player"]
+[ext_resource type="PackedScene" uid="uid://b5k8kal3n2m1o" path="res://scenes/exhibits/museum_exhibits.tscn" id="5_exhibits"]
+[ext_resource type="PackedScene" path="res://ui/monument_popup.tscn" id="6_popup"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 sky_top_color = Color(0.35, 0.55, 0.85, 1)
@@ -395,3 +397,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 color = Color(0, 0, 0, 1)
+
+[node name="MuseumExhibits" parent="." unique_id=647191689 instance=ExtResource("5_exhibits")]
+
+[node name="MonumentPopupUI" parent="." unique_id=859796327 instance=ExtResource("6_popup")]

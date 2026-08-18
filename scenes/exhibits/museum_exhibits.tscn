@@ -1,0 +1,41 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/exhibits/monument_interactable.tscn" id="1_monument"]
+
+[node name="MuseumExhibits" type="Node3D"]
+
+[node name="ExteriorTerracotta" parent="." instance=ExtResource("1_monument")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 37)
+exhibit_id = "waterhouse_terracotta"
+
+[node name="HopeTheBlueWhale" parent="." instance=ExtResource("1_monument")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+exhibit_id = "hope_blue_whale"
+
+[node name="CharlesDarwinStatue" parent="." instance=ExtResource("1_monument")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.2, -23.5)
+exhibit_id = "charles_darwin_statue"
+
+[node name="PaintedCeilingPanels" parent="." instance=ExtResource("1_monument")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, 3, 10)
+exhibit_id = "painted_ceiling_panels"
+
+[node name="FirstFloor_GiantSequoia" parent="." instance=ExtResource("1_monument")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9.8, -30)
+exhibit_id = "giant_sequoia_slice"
+
+[node name="FirstFloor_RichardOwenStatue" parent="." instance=ExtResource("1_monument")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 9.8, -26)
+exhibit_id = "richard_owen_statue"
+
+[node name="FirstFloor_CranbourneMeteorite" parent="." instance=ExtResource("1_monument")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.5, 9.8, -2)
+exhibit_id = "cranbourne_meteorite"
+
+[node name="FirstFloor_MaryAnningFossils" parent="." instance=ExtResource("1_monument")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.5, 9.8, -2)
+exhibit_id = "mary_anning_fossils"
+
+[node name="FirstFloor_GuyTheGorilla" parent="." instance=ExtResource("1_monument")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9.8, 21)
+exhibit_id = "guy_the_gorilla"

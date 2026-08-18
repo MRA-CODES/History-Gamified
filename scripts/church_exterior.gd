@@ -53,6 +53,24 @@ func _ready() -> void:
 		enter_trigger.body_entered.connect(_on_enter_interior_entered)
 	if exit_trigger:
 		exit_trigger.body_entered.connect(_on_exit_exterior_entered)
+		
+	# 5. Initialize educational monument system
+	_setup_educational_system()
+
+func _setup_educational_system() -> void:
+	if not has_node("MonumentPopupUI"):
+		var popup_scene = load("res://ui/monument_popup.tscn")
+		if popup_scene:
+			var popup_inst = popup_scene.instantiate()
+			popup_inst.name = "MonumentPopupUI"
+			add_child(popup_inst)
+			
+	if not has_node("MuseumExhibits"):
+		var exhibits_scene = load("res://scenes/exhibits/museum_exhibits.tscn")
+		if exhibits_scene:
+			var exhibits_inst = exhibits_scene.instantiate()
+			exhibits_inst.name = "MuseumExhibits"
+			add_child(exhibits_inst)
 
 func _process(_delta: float) -> void:
 	# Continuous position-based fallback to guarantee correct environment state
