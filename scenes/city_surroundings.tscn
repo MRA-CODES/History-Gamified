@@ -1,0 +1,642 @@
+[gd_scene format=3]
+
+[sub_resource type="StandardMaterial3D" id="Mat_RoadAsphalt"]
+albedo_color = Color(0.18, 0.19, 0.21, 1)
+roughness = 0.85
+
+[sub_resource type="StandardMaterial3D" id="Mat_RoadMarkingWhite"]
+albedo_color = Color(0.92, 0.93, 0.95, 1)
+roughness = 0.6
+
+[sub_resource type="StandardMaterial3D" id="Mat_SidewalkPaving"]
+albedo_color = Color(0.55, 0.54, 0.52, 1)
+roughness = 0.75
+
+[sub_resource type="StandardMaterial3D" id="Mat_SidewalkCurb"]
+albedo_color = Color(0.42, 0.41, 0.40, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="Mat_LawnGrass"]
+albedo_color = Color(0.24, 0.45, 0.18, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="Mat_Hedge"]
+albedo_color = Color(0.18, 0.38, 0.14, 1)
+roughness = 0.85
+
+[sub_resource type="StandardMaterial3D" id="Mat_TreeTrunk"]
+albedo_color = Color(0.28, 0.20, 0.15, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="Mat_TreeLeaves"]
+albedo_color = Color(0.22, 0.48, 0.19, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="Mat_TreeLeavesAutumn"]
+albedo_color = Color(0.65, 0.42, 0.15, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="Mat_VictorianBrickRed"]
+albedo_color = Color(0.58, 0.28, 0.22, 1)
+roughness = 0.85
+
+[sub_resource type="StandardMaterial3D" id="Mat_VictorianBrickTan"]
+albedo_color = Color(0.72, 0.62, 0.50, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="Mat_StoneTrim"]
+albedo_color = Color(0.80, 0.78, 0.74, 1)
+roughness = 0.7
+
+[sub_resource type="StandardMaterial3D" id="Mat_SlateRoof"]
+albedo_color = Color(0.22, 0.25, 0.28, 1)
+roughness = 0.65
+
+[sub_resource type="StandardMaterial3D" id="Mat_WindowGlass"]
+albedo_color = Color(0.12, 0.18, 0.25, 0.9)
+metallic = 0.8
+roughness = 0.15
+
+[sub_resource type="StandardMaterial3D" id="Mat_WindowLit"]
+albedo_color = Color(0.95, 0.85, 0.65, 1)
+emission_enabled = true
+emission = Color(0.95, 0.85, 0.65, 1)
+emission_energy_multiplier = 1.2
+
+[sub_resource type="StandardMaterial3D" id="Mat_CastIron"]
+albedo_color = Color(0.12, 0.12, 0.14, 1)
+metallic = 0.7
+roughness = 0.4
+
+[sub_resource type="StandardMaterial3D" id="Mat_LampLight"]
+albedo_color = Color(1.0, 0.92, 0.75, 1)
+emission_enabled = true
+emission = Color(1.0, 0.92, 0.75, 1)
+emission_energy_multiplier = 3.0
+
+[sub_resource type="StandardMaterial3D" id="Mat_BenchWood"]
+albedo_color = Color(0.40, 0.25, 0.15, 1)
+roughness = 0.7
+
+[sub_resource type="StandardMaterial3D" id="Mat_SkylineBuilding"]
+albedo_color = Color(0.48, 0.52, 0.58, 1)
+roughness = 0.9
+
+[sub_resource type="BoxMesh" id="Mesh_MainRoad"]
+material = SubResource("Mat_RoadAsphalt")
+size = Vector3(400, 0.1, 24)
+
+[sub_resource type="BoxMesh" id="Mesh_SideRoad"]
+material = SubResource("Mat_RoadAsphalt")
+size = Vector3(16, 0.1, 150)
+
+[sub_resource type="BoxMesh" id="Mesh_SidewalkMain"]
+material = SubResource("Mat_SidewalkPaving")
+size = Vector3(400, 0.35, 6)
+
+[sub_resource type="BoxMesh" id="Mesh_SidewalkSide"]
+material = SubResource("Mat_SidewalkPaving")
+size = Vector3(4, 0.35, 150)
+
+[sub_resource type="BoxMesh" id="Mesh_LawnStrip"]
+material = SubResource("Mat_LawnGrass")
+size = Vector3(400, 0.3, 5)
+
+[sub_resource type="BoxMesh" id="Mesh_CrosswalkBar"]
+material = SubResource("Mat_RoadMarkingWhite")
+size = Vector3(0.8, 0.12, 6)
+
+[sub_resource type="CylinderMesh" id="Mesh_Trunk"]
+material = SubResource("Mat_TreeTrunk")
+top_radius = 0.35
+bottom_radius = 0.5
+height = 5.0
+
+[sub_resource type="SphereMesh" id="Mesh_CanopyBottom"]
+material = SubResource("Mat_TreeLeaves")
+radius = 2.8
+height = 4.5
+
+[sub_resource type="SphereMesh" id="Mesh_CanopyAutumn"]
+material = SubResource("Mat_TreeLeavesAutumn")
+radius = 2.6
+height = 4.2
+
+[sub_resource type="CylinderMesh" id="Mesh_LampPost"]
+material = SubResource("Mat_CastIron")
+top_radius = 0.12
+bottom_radius = 0.2
+height = 4.8
+
+[sub_resource type="BoxMesh" id="Mesh_LampHead"]
+material = SubResource("Mat_CastIron")
+size = Vector3(0.6, 0.8, 0.6)
+
+[sub_resource type="SphereMesh" id="Mesh_LampBulb"]
+material = SubResource("Mat_LampLight")
+radius = 0.22
+height = 0.44
+
+[sub_resource type="BoxMesh" id="Mesh_FencePillar"]
+material = SubResource("Mat_StoneTrim")
+size = Vector3(0.7, 2.2, 0.7)
+
+[sub_resource type="BoxMesh" id="Mesh_FenceRail"]
+material = SubResource("Mat_CastIron")
+size = Vector3(6.0, 0.08, 0.08)
+
+[sub_resource type="BoxMesh" id="Mesh_Townhouse_Red"]
+material = SubResource("Mat_VictorianBrickRed")
+size = Vector3(18, 24, 16)
+
+[sub_resource type="BoxMesh" id="Mesh_Townhouse_Tan"]
+material = SubResource("Mat_VictorianBrickTan")
+size = Vector3(18, 26, 16)
+
+[sub_resource type="BoxMesh" id="Mesh_Townhouse_Trim"]
+material = SubResource("Mat_StoneTrim")
+size = Vector3(18.4, 0.8, 16.4)
+
+[sub_resource type="BoxMesh" id="Mesh_MansardRoof"]
+material = SubResource("Mat_SlateRoof")
+size = Vector3(17.5, 6, 15)
+
+[sub_resource type="BoxMesh" id="Mesh_WindowLit"]
+material = SubResource("Mat_WindowLit")
+size = Vector3(1.4, 2.2, 0.2)
+
+[sub_resource type="BoxMesh" id="Mesh_WindowDark"]
+material = SubResource("Mat_WindowGlass")
+size = Vector3(1.4, 2.2, 0.2)
+
+[sub_resource type="BoxMesh" id="Mesh_SkylineBlock"]
+material = SubResource("Mat_SkylineBuilding")
+size = Vector3(45, 65, 35)
+
+[sub_resource type="CylinderMesh" id="Mesh_Spire"]
+material = SubResource("Mat_SlateRoof")
+top_radius = 0.2
+bottom_radius = 4.0
+height = 30.0
+
+[sub_resource type="SphereMesh" id="Mesh_Dome"]
+material = SubResource("Mat_StoneTrim")
+radius = 12.0
+height = 14.0
+
+[sub_resource type="BoxMesh" id="Mesh_BenchPlank"]
+material = SubResource("Mat_BenchWood")
+size = Vector3(2.4, 0.1, 0.5)
+
+[sub_resource type="BoxMesh" id="Mesh_Hedge"]
+material = SubResource("Mat_Hedge")
+size = Vector3(8.0, 1.4, 1.2)
+
+[node name="CitySurroundings" type="Node3D"]
+
+[node name="Roads" type="Node3D" parent="."]
+
+[node name="MainAvenue" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.8, 102)
+mesh = SubResource("Mesh_MainRoad")
+
+[node name="Sidewalk_PlazaSide" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.95, 88)
+mesh = SubResource("Mesh_SidewalkMain")
+
+[node name="Lawn_PlazaSide" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.92, 83)
+mesh = SubResource("Mesh_LawnStrip")
+
+[node name="Sidewalk_OppositeSide" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.95, 116)
+mesh = SubResource("Mesh_SidewalkMain")
+
+[node name="WestAvenue" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -58, 2.8, 40)
+mesh = SubResource("Mesh_SideRoad")
+
+[node name="WestSidewalk" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -48, 2.95, 40)
+mesh = SubResource("Mesh_SidewalkSide")
+
+[node name="EastAvenue" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 58, 2.8, 40)
+mesh = SubResource("Mesh_SideRoad")
+
+[node name="EastSidewalk" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 48, 2.95, 40)
+mesh = SubResource("Mesh_SidewalkSide")
+
+[node name="Crosswalk_Center" type="Node3D" parent="Roads"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.86, 102)
+
+[node name="Bar_0" type="MeshInstance3D" parent="Roads/Crosswalk_Center"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 0)
+mesh = SubResource("Mesh_CrosswalkBar")
+
+[node name="Bar_1" type="MeshInstance3D" parent="Roads/Crosswalk_Center"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 0)
+mesh = SubResource("Mesh_CrosswalkBar")
+
+[node name="Bar_2" type="MeshInstance3D" parent="Roads/Crosswalk_Center"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = SubResource("Mesh_CrosswalkBar")
+
+[node name="Bar_3" type="MeshInstance3D" parent="Roads/Crosswalk_Center"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0)
+mesh = SubResource("Mesh_CrosswalkBar")
+
+[node name="Bar_4" type="MeshInstance3D" parent="Roads/Crosswalk_Center"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 0)
+mesh = SubResource("Mesh_CrosswalkBar")
+
+[node name="NearbyBuildings" type="Node3D" parent="."]
+
+[node name="Terrace_S1" type="Node3D" parent="NearbyBuildings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -55, 3.0, 130)
+
+[node name="Body" type="MeshInstance3D" parent="NearbyBuildings/Terrace_S1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12, 0)
+mesh = SubResource("Mesh_Townhouse_Red")
+
+[node name="Roof" type="MeshInstance3D" parent="NearbyBuildings/Terrace_S1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 27, 0)
+mesh = SubResource("Mesh_MansardRoof")
+
+[node name="Trim" type="MeshInstance3D" parent="NearbyBuildings/Terrace_S1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 24, 0)
+mesh = SubResource("Mesh_Townhouse_Trim")
+
+[node name="Terrace_S2" type="Node3D" parent="NearbyBuildings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -35, 3.0, 130)
+
+[node name="Body" type="MeshInstance3D" parent="NearbyBuildings/Terrace_S2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 13, 0)
+mesh = SubResource("Mesh_Townhouse_Tan")
+
+[node name="Roof" type="MeshInstance3D" parent="NearbyBuildings/Terrace_S2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 29, 0)
+mesh = SubResource("Mesh_MansardRoof")
+
+[node name="Trim" type="MeshInstance3D" parent="NearbyBuildings/Terrace_S2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 26, 0)
+mesh = SubResource("Mesh_Townhouse_Trim")
+
+[node name="Terrace_S3" type="Node3D" parent="NearbyBuildings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 3.0, 130)
+
+[node name="Body" type="MeshInstance3D" parent="NearbyBuildings/Terrace_S3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12, 0)
+mesh = SubResource("Mesh_Townhouse_Red")
+
+[node name="Roof" type="MeshInstance3D" parent="NearbyBuildings/Terrace_S3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 27, 0)
+mesh = SubResource("Mesh_MansardRoof")
+
+[node name="Terrace_S4" type="Node3D" parent="NearbyBuildings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 3.0, 130)
+
+[node name="Body" type="MeshInstance3D" parent="NearbyBuildings/Terrace_S4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 13, 0)
+mesh = SubResource("Mesh_Townhouse_Tan")
+
+[node name="Roof" type="MeshInstance3D" parent="NearbyBuildings/Terrace_S4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 29, 0)
+mesh = SubResource("Mesh_MansardRoof")
+
+[node name="Terrace_S5" type="Node3D" parent="NearbyBuildings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 35, 3.0, 130)
+
+[node name="Body" type="MeshInstance3D" parent="NearbyBuildings/Terrace_S5"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12, 0)
+mesh = SubResource("Mesh_Townhouse_Red")
+
+[node name="Roof" type="MeshInstance3D" parent="NearbyBuildings/Terrace_S5"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 27, 0)
+mesh = SubResource("Mesh_MansardRoof")
+
+[node name="Terrace_S6" type="Node3D" parent="NearbyBuildings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 55, 3.0, 130)
+
+[node name="Body" type="MeshInstance3D" parent="NearbyBuildings/Terrace_S6"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 13, 0)
+mesh = SubResource("Mesh_Townhouse_Tan")
+
+[node name="Roof" type="MeshInstance3D" parent="NearbyBuildings/Terrace_S6"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 29, 0)
+mesh = SubResource("Mesh_MansardRoof")
+
+[node name="Terrace_W1" type="Node3D" parent="NearbyBuildings"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -75, 3.0, 65)
+
+[node name="Body" type="MeshInstance3D" parent="NearbyBuildings/Terrace_W1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12, 0)
+mesh = SubResource("Mesh_Townhouse_Red")
+
+[node name="Roof" type="MeshInstance3D" parent="NearbyBuildings/Terrace_W1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 27, 0)
+mesh = SubResource("Mesh_MansardRoof")
+
+[node name="Terrace_W2" type="Node3D" parent="NearbyBuildings"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -75, 3.0, 45)
+
+[node name="Body" type="MeshInstance3D" parent="NearbyBuildings/Terrace_W2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 13, 0)
+mesh = SubResource("Mesh_Townhouse_Tan")
+
+[node name="Roof" type="MeshInstance3D" parent="NearbyBuildings/Terrace_W2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 29, 0)
+mesh = SubResource("Mesh_MansardRoof")
+
+[node name="Terrace_W3" type="Node3D" parent="NearbyBuildings"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -75, 3.0, 25)
+
+[node name="Body" type="MeshInstance3D" parent="NearbyBuildings/Terrace_W3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12, 0)
+mesh = SubResource("Mesh_Townhouse_Red")
+
+[node name="Roof" type="MeshInstance3D" parent="NearbyBuildings/Terrace_W3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 27, 0)
+mesh = SubResource("Mesh_MansardRoof")
+
+[node name="Terrace_E1" type="Node3D" parent="NearbyBuildings"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 75, 3.0, 65)
+
+[node name="Body" type="MeshInstance3D" parent="NearbyBuildings/Terrace_E1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 13, 0)
+mesh = SubResource("Mesh_Townhouse_Tan")
+
+[node name="Roof" type="MeshInstance3D" parent="NearbyBuildings/Terrace_E1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 29, 0)
+mesh = SubResource("Mesh_MansardRoof")
+
+[node name="Terrace_E2" type="Node3D" parent="NearbyBuildings"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 75, 3.0, 45)
+
+[node name="Body" type="MeshInstance3D" parent="NearbyBuildings/Terrace_E2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12, 0)
+mesh = SubResource("Mesh_Townhouse_Red")
+
+[node name="Roof" type="MeshInstance3D" parent="NearbyBuildings/Terrace_E2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 27, 0)
+mesh = SubResource("Mesh_MansardRoof")
+
+[node name="Terrace_E3" type="Node3D" parent="NearbyBuildings"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 75, 3.0, 25)
+
+[node name="Body" type="MeshInstance3D" parent="NearbyBuildings/Terrace_E3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 13, 0)
+mesh = SubResource("Mesh_Townhouse_Tan")
+
+[node name="Roof" type="MeshInstance3D" parent="NearbyBuildings/Terrace_E3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 29, 0)
+mesh = SubResource("Mesh_MansardRoof")
+
+[node name="DistantSkyline" type="Node3D" parent="."]
+
+[node name="Block_South1" type="MeshInstance3D" parent="DistantSkyline"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -80, 30, 180)
+mesh = SubResource("Mesh_SkylineBlock")
+
+[node name="Block_South2" type="MeshInstance3D" parent="DistantSkyline"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 35, 190)
+mesh = SubResource("Mesh_SkylineBlock")
+
+[node name="Block_South3" type="MeshInstance3D" parent="DistantSkyline"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 80, 30, 180)
+mesh = SubResource("Mesh_SkylineBlock")
+
+[node name="Dome_South" type="MeshInstance3D" parent="DistantSkyline"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 68, 195)
+mesh = SubResource("Mesh_Dome")
+
+[node name="Spire_South" type="MeshInstance3D" parent="DistantSkyline"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45, 65, 195)
+mesh = SubResource("Mesh_Spire")
+
+[node name="Block_West1" type="MeshInstance3D" parent="DistantSkyline"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -150, 30, 40)
+mesh = SubResource("Mesh_SkylineBlock")
+
+[node name="Spire_West" type="MeshInstance3D" parent="DistantSkyline"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -140, 60, 60)
+mesh = SubResource("Mesh_Spire")
+
+[node name="Block_East1" type="MeshInstance3D" parent="DistantSkyline"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 150, 30, 40)
+mesh = SubResource("Mesh_SkylineBlock")
+
+[node name="Spire_East" type="MeshInstance3D" parent="DistantSkyline"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 140, 60, 60)
+mesh = SubResource("Mesh_Spire")
+
+[node name="Block_North1" type="MeshInstance3D" parent="DistantSkyline"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -80, 25, -120)
+mesh = SubResource("Mesh_SkylineBlock")
+
+[node name="Block_North2" type="MeshInstance3D" parent="DistantSkyline"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 80, 25, -120)
+mesh = SubResource("Mesh_SkylineBlock")
+
+[node name="Vegetation" type="Node3D" parent="."]
+
+[node name="Tree_S1" type="Node3D" parent="Vegetation"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 3.0, 116)
+
+[node name="Trunk" type="MeshInstance3D" parent="Vegetation/Tree_S1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+mesh = SubResource("Mesh_Trunk")
+
+[node name="Canopy" type="MeshInstance3D" parent="Vegetation/Tree_S1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.0, 0)
+mesh = SubResource("Mesh_CanopyBottom")
+
+[node name="Tree_S2" type="Node3D" parent="Vegetation"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 3.0, 116)
+
+[node name="Trunk" type="MeshInstance3D" parent="Vegetation/Tree_S2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+mesh = SubResource("Mesh_Trunk")
+
+[node name="Canopy" type="MeshInstance3D" parent="Vegetation/Tree_S2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.0, 0)
+mesh = SubResource("Mesh_CanopyAutumn")
+
+[node name="Tree_S3" type="Node3D" parent="Vegetation"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 3.0, 116)
+
+[node name="Trunk" type="MeshInstance3D" parent="Vegetation/Tree_S3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+mesh = SubResource("Mesh_Trunk")
+
+[node name="Canopy" type="MeshInstance3D" parent="Vegetation/Tree_S3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.0, 0)
+mesh = SubResource("Mesh_CanopyBottom")
+
+[node name="Tree_S4" type="Node3D" parent="Vegetation"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40, 3.0, 116)
+
+[node name="Trunk" type="MeshInstance3D" parent="Vegetation/Tree_S4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+mesh = SubResource("Mesh_Trunk")
+
+[node name="Canopy" type="MeshInstance3D" parent="Vegetation/Tree_S4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.0, 0)
+mesh = SubResource("Mesh_CanopyAutumn")
+
+[node name="Tree_N1" type="Node3D" parent="Vegetation"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 3.0, 84)
+
+[node name="Trunk" type="MeshInstance3D" parent="Vegetation/Tree_N1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+mesh = SubResource("Mesh_Trunk")
+
+[node name="Canopy" type="MeshInstance3D" parent="Vegetation/Tree_N1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.0, 0)
+mesh = SubResource("Mesh_CanopyBottom")
+
+[node name="Tree_N2" type="Node3D" parent="Vegetation"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 3.0, 84)
+
+[node name="Trunk" type="MeshInstance3D" parent="Vegetation/Tree_N2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+mesh = SubResource("Mesh_Trunk")
+
+[node name="Canopy" type="MeshInstance3D" parent="Vegetation/Tree_N2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.0, 0)
+mesh = SubResource("Mesh_CanopyBottom")
+
+[node name="Hedge_Left" type="MeshInstance3D" parent="Vegetation"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 3.7, 84)
+mesh = SubResource("Mesh_Hedge")
+
+[node name="Hedge_Right" type="MeshInstance3D" parent="Vegetation"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 3.7, 84)
+mesh = SubResource("Mesh_Hedge")
+
+[node name="StreetLamps" type="Node3D" parent="."]
+
+[node name="Lamp_P1" type="Node3D" parent="StreetLamps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 3.0, 84)
+
+[node name="Post" type="MeshInstance3D" parent="StreetLamps/Lamp_P1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4, 0)
+mesh = SubResource("Mesh_LampPost")
+
+[node name="Head" type="MeshInstance3D" parent="StreetLamps/Lamp_P1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.8, 0)
+mesh = SubResource("Mesh_LampHead")
+
+[node name="Bulb" type="MeshInstance3D" parent="StreetLamps/Lamp_P1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.8, 0)
+mesh = SubResource("Mesh_LampBulb")
+
+[node name="Light" type="OmniLight3D" parent="StreetLamps/Lamp_P1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.8, 0)
+light_color = Color(1, 0.92, 0.75, 1)
+light_energy = 1.8
+omni_range = 14.0
+
+[node name="Lamp_P2" type="Node3D" parent="StreetLamps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 3.0, 84)
+
+[node name="Post" type="MeshInstance3D" parent="StreetLamps/Lamp_P2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4, 0)
+mesh = SubResource("Mesh_LampPost")
+
+[node name="Head" type="MeshInstance3D" parent="StreetLamps/Lamp_P2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.8, 0)
+mesh = SubResource("Mesh_LampHead")
+
+[node name="Bulb" type="MeshInstance3D" parent="StreetLamps/Lamp_P2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.8, 0)
+mesh = SubResource("Mesh_LampBulb")
+
+[node name="Light" type="OmniLight3D" parent="StreetLamps/Lamp_P2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.8, 0)
+light_color = Color(1, 0.92, 0.75, 1)
+light_energy = 1.8
+omni_range = 14.0
+
+[node name="Lamp_S1" type="Node3D" parent="StreetLamps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 3.0, 116)
+
+[node name="Post" type="MeshInstance3D" parent="StreetLamps/Lamp_S1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4, 0)
+mesh = SubResource("Mesh_LampPost")
+
+[node name="Head" type="MeshInstance3D" parent="StreetLamps/Lamp_S1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.8, 0)
+mesh = SubResource("Mesh_LampHead")
+
+[node name="Bulb" type="MeshInstance3D" parent="StreetLamps/Lamp_S1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.8, 0)
+mesh = SubResource("Mesh_LampBulb")
+
+[node name="Lamp_S2" type="Node3D" parent="StreetLamps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 3.0, 116)
+
+[node name="Post" type="MeshInstance3D" parent="StreetLamps/Lamp_S2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4, 0)
+mesh = SubResource("Mesh_LampPost")
+
+[node name="Head" type="MeshInstance3D" parent="StreetLamps/Lamp_S2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.8, 0)
+mesh = SubResource("Mesh_LampHead")
+
+[node name="Bulb" type="MeshInstance3D" parent="StreetLamps/Lamp_S2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.8, 0)
+mesh = SubResource("Mesh_LampBulb")
+
+[node name="PerimeterFences" type="Node3D" parent="."]
+
+[node name="Pillar_W1" type="MeshInstance3D" parent="PerimeterFences"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -38, 4.1, 84)
+mesh = SubResource("Mesh_FencePillar")
+
+[node name="Rail_W1" type="MeshInstance3D" parent="PerimeterFences"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -34, 4.2, 84)
+mesh = SubResource("Mesh_FenceRail")
+
+[node name="Pillar_W2" type="MeshInstance3D" parent="PerimeterFences"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 4.1, 84)
+mesh = SubResource("Mesh_FencePillar")
+
+[node name="Rail_W2" type="MeshInstance3D" parent="PerimeterFences"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 4.2, 84)
+mesh = SubResource("Mesh_FenceRail")
+
+[node name="Pillar_W3" type="MeshInstance3D" parent="PerimeterFences"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 4.1, 84)
+mesh = SubResource("Mesh_FencePillar")
+
+[node name="Pillar_E1" type="MeshInstance3D" parent="PerimeterFences"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 4.1, 84)
+mesh = SubResource("Mesh_FencePillar")
+
+[node name="Rail_E1" type="MeshInstance3D" parent="PerimeterFences"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 4.2, 84)
+mesh = SubResource("Mesh_FenceRail")
+
+[node name="Pillar_E2" type="MeshInstance3D" parent="PerimeterFences"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 4.1, 84)
+mesh = SubResource("Mesh_FencePillar")
+
+[node name="Rail_E2" type="MeshInstance3D" parent="PerimeterFences"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 34, 4.2, 84)
+mesh = SubResource("Mesh_FenceRail")
+
+[node name="Pillar_E3" type="MeshInstance3D" parent="PerimeterFences"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 38, 4.1, 84)
+mesh = SubResource("Mesh_FencePillar")
+
+[node name="Props" type="Node3D" parent="."]
+
+[node name="Bench_Left" type="MeshInstance3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 3.5, 78)
+mesh = SubResource("Mesh_BenchPlank")
+
+[node name="Bench_Right" type="MeshInstance3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 3.5, 78)
+mesh = SubResource("Mesh_BenchPlank")

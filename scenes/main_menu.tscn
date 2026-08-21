@@ -1,0 +1,755 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/main_menu.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/textures/ui/map_victorian_museum.jpg" id="2_img_victorian"]
+[ext_resource type="Texture2D" path="res://assets/textures/ui/map_ancient_rome.jpg" id="3_img_rome"]
+[ext_resource type="Texture2D" path="res://assets/textures/ui/map_feudal_japan.jpg" id="4_img_japan"]
+[ext_resource type="Texture2D" path="res://assets/textures/ui/map_ancient_egypt.jpg" id="5_img_egypt"]
+[ext_resource type="Texture2D" path="res://assets/textures/ui/map_medieval_fortress.jpg" id="6_img_medieval"]
+[ext_resource type="Texture2D" path="res://assets/textures/ui/map_renaissance_florence.jpg" id="7_img_florence"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_Background"]
+bg_color = Color(0.04, 0.06, 0.1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_CardActive"]
+bg_color = Color(0.07, 0.1, 0.16, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.85, 0.7, 0.28, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+shadow_color = Color(0.85, 0.7, 0.25, 0.3)
+shadow_size = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_CardLocked"]
+bg_color = Color(0.05, 0.07, 0.11, 0.85)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.35, 0.38, 0.45, 0.4)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_BadgeActive"]
+bg_color = Color(0.78, 0.62, 0.18, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_BadgeLocked"]
+bg_color = Color(0.2, 0.22, 0.28, 0.9)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_ButtonNormal"]
+bg_color = Color(0.08, 0.12, 0.18, 0.9)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.75, 0.6, 0.25, 0.7)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_ButtonHover"]
+bg_color = Color(0.14, 0.2, 0.3, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.85, 0.35, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+shadow_color = Color(0.9, 0.75, 0.3, 0.4)
+shadow_size = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_ModalPanel"]
+bg_color = Color(0.06, 0.08, 0.13, 0.98)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.85, 0.7, 0.28, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(0, 0, 0, 0.8)
+shadow_size = 20
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_Toast"]
+bg_color = Color(0.12, 0.08, 0.04, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.95, 0.75, 0.2, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+shadow_color = Color(0.95, 0.75, 0.2, 0.3)
+shadow_size = 12
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="Background" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBox_Background")
+
+[node name="HeaderContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 35.0
+offset_bottom = 145.0
+grow_horizontal = 2
+theme_override_constants/separation = 4
+alignment = 1
+
+[node name="GoldLineTop" type="ColorRect" parent="HeaderContainer"]
+custom_minimum_size = Vector2(400, 2)
+layout_mode = 2
+size_flags_horizontal = 4
+color = Color(0.85, 0.7, 0.25, 0.6)
+
+[node name="TitleLabel" type="Label" parent="HeaderContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.88, 0.45, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 3
+theme_override_font_sizes/font_size = 42
+text = "EXPLORE HISTORY"
+horizontal_alignment = 1
+
+[node name="SubtitleLabel" type="Label" parent="HeaderContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.76, 0.5, 1)
+theme_override_font_sizes/font_size = 16
+text = "✦  V I R T U A L   M U S E U M   &   A D V E N T U R E  ✦"
+horizontal_alignment = 1
+
+[node name="GoldLineBottom" type="ColorRect" parent="HeaderContainer"]
+custom_minimum_size = Vector2(550, 2)
+layout_mode = 2
+size_flags_horizontal = 4
+color = Color(0.85, 0.7, 0.25, 0.6)
+
+[node name="MainContainer" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 80.0
+offset_top = 160.0
+offset_right = -80.0
+offset_bottom = -90.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="GridContainer" type="GridContainer" parent="MainContainer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/h_separation = 30
+theme_override_constants/v_separation = 25
+columns = 3
+
+[node name="Card_Victorian" type="Panel" parent="MainContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBox_CardActive")
+
+[node name="Content" type="VBoxContainer" parent="MainContainer/GridContainer/Card_Victorian"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = -12.0
+offset_bottom = -12.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 8
+
+[node name="PreviewImage" type="TextureRect" parent="MainContainer/GridContainer/Card_Victorian/Content"]
+layout_mode = 2
+size_flags_vertical = 3
+texture = ExtResource("2_img_victorian")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="HeaderRow" type="HBoxContainer" parent="MainContainer/GridContainer/Card_Victorian/Content"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="MainContainer/GridContainer/Card_Victorian/Content/HeaderRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 0.9, 0.5, 1)
+theme_override_font_sizes/font_size = 18
+text = "01. Victorian Museum"
+
+[node name="StatusBadge" type="Label" parent="MainContainer/GridContainer/Card_Victorian/Content/HeaderRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.1, 0.08, 0.02, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("StyleBox_BadgeActive")
+text = " PLAYABLE "
+
+[node name="DescriptionLabel" type="Label" parent="MainContainer/GridContainer/Card_Victorian/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.82, 0.85, 1)
+theme_override_font_sizes/font_size = 13
+text = "Explore London's grand Natural History Museum and iconic Hintze Hall."
+autowrap_mode = 2
+
+[node name="CardButton" type="Button" parent="MainContainer/GridContainer/Card_Victorian"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+flat = true
+
+[node name="Card_Locked_2" type="Panel" parent="MainContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBox_CardLocked")
+
+[node name="Content" type="VBoxContainer" parent="MainContainer/GridContainer/Card_Locked_2"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = -12.0
+offset_bottom = -12.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 8
+
+[node name="PreviewImage" type="TextureRect" parent="MainContainer/GridContainer/Card_Locked_2/Content"]
+modulate = Color(0.55, 0.55, 0.6, 0.7)
+layout_mode = 2
+size_flags_vertical = 3
+texture = ExtResource("3_img_rome")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="HeaderRow" type="HBoxContainer" parent="MainContainer/GridContainer/Card_Locked_2/Content"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="MainContainer/GridContainer/Card_Locked_2/Content/HeaderRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.7, 0.72, 0.75, 1)
+theme_override_font_sizes/font_size = 18
+text = "02. Ancient Rome"
+
+[node name="StatusBadge" type="Label" parent="MainContainer/GridContainer/Card_Locked_2/Content/HeaderRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("StyleBox_BadgeLocked")
+text = " 🔒 LOCKED "
+
+[node name="DescriptionLabel" type="Label" parent="MainContainer/GridContainer/Card_Locked_2/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.55, 0.58, 0.62, 1)
+theme_override_font_sizes/font_size = 13
+text = "Wander the Roman Colosseum, Forum, and temples at sunset."
+autowrap_mode = 2
+
+[node name="CardButton" type="Button" parent="MainContainer/GridContainer/Card_Locked_2"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+flat = true
+
+[node name="Card_Locked_3" type="Panel" parent="MainContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBox_CardLocked")
+
+[node name="Content" type="VBoxContainer" parent="MainContainer/GridContainer/Card_Locked_3"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = -12.0
+offset_bottom = -12.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 8
+
+[node name="PreviewImage" type="TextureRect" parent="MainContainer/GridContainer/Card_Locked_3/Content"]
+modulate = Color(0.55, 0.55, 0.6, 0.7)
+layout_mode = 2
+size_flags_vertical = 3
+texture = ExtResource("4_img_japan")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="HeaderRow" type="HBoxContainer" parent="MainContainer/GridContainer/Card_Locked_3/Content"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="MainContainer/GridContainer/Card_Locked_3/Content/HeaderRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.7, 0.72, 0.75, 1)
+theme_override_font_sizes/font_size = 18
+text = "03. Feudal Japan"
+
+[node name="StatusBadge" type="Label" parent="MainContainer/GridContainer/Card_Locked_3/Content/HeaderRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("StyleBox_BadgeLocked")
+text = " 🔒 LOCKED "
+
+[node name="DescriptionLabel" type="Label" parent="MainContainer/GridContainer/Card_Locked_3/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.55, 0.58, 0.62, 1)
+theme_override_font_sizes/font_size = 13
+text = "Discover Himeji Castle, samurai fortresses, and cherry blossom shrines."
+autowrap_mode = 2
+
+[node name="CardButton" type="Button" parent="MainContainer/GridContainer/Card_Locked_3"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+flat = true
+
+[node name="Card_Locked_4" type="Panel" parent="MainContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBox_CardLocked")
+
+[node name="Content" type="VBoxContainer" parent="MainContainer/GridContainer/Card_Locked_4"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = -12.0
+offset_bottom = -12.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 8
+
+[node name="PreviewImage" type="TextureRect" parent="MainContainer/GridContainer/Card_Locked_4/Content"]
+modulate = Color(0.55, 0.55, 0.6, 0.7)
+layout_mode = 2
+size_flags_vertical = 3
+texture = ExtResource("5_img_egypt")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="HeaderRow" type="HBoxContainer" parent="MainContainer/GridContainer/Card_Locked_4/Content"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="MainContainer/GridContainer/Card_Locked_4/Content/HeaderRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.7, 0.72, 0.75, 1)
+theme_override_font_sizes/font_size = 18
+text = "04. Ancient Egypt"
+
+[node name="StatusBadge" type="Label" parent="MainContainer/GridContainer/Card_Locked_4/Content/HeaderRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("StyleBox_BadgeLocked")
+text = " 🔒 LOCKED "
+
+[node name="DescriptionLabel" type="Label" parent="MainContainer/GridContainer/Card_Locked_4/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.55, 0.58, 0.62, 1)
+theme_override_font_sizes/font_size = 13
+text = "Uncover secrets of the Giza Pyramids, Great Sphinx, and Nile valley."
+autowrap_mode = 2
+
+[node name="CardButton" type="Button" parent="MainContainer/GridContainer/Card_Locked_4"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+flat = true
+
+[node name="Card_Locked_5" type="Panel" parent="MainContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBox_CardLocked")
+
+[node name="Content" type="VBoxContainer" parent="MainContainer/GridContainer/Card_Locked_5"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = -12.0
+offset_bottom = -12.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 8
+
+[node name="PreviewImage" type="TextureRect" parent="MainContainer/GridContainer/Card_Locked_5/Content"]
+modulate = Color(0.55, 0.55, 0.6, 0.7)
+layout_mode = 2
+size_flags_vertical = 3
+texture = ExtResource("6_img_medieval")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="HeaderRow" type="HBoxContainer" parent="MainContainer/GridContainer/Card_Locked_5/Content"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="MainContainer/GridContainer/Card_Locked_5/Content/HeaderRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.7, 0.72, 0.75, 1)
+theme_override_font_sizes/font_size = 18
+text = "05. Medieval Fortress"
+
+[node name="StatusBadge" type="Label" parent="MainContainer/GridContainer/Card_Locked_5/Content/HeaderRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("StyleBox_BadgeLocked")
+text = " 🔒 LOCKED "
+
+[node name="DescriptionLabel" type="Label" parent="MainContainer/GridContainer/Card_Locked_5/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.55, 0.58, 0.62, 1)
+theme_override_font_sizes/font_size = 13
+text = "Walk the battlements, towers, and great halls of Oakhaven Castle."
+autowrap_mode = 2
+
+[node name="CardButton" type="Button" parent="MainContainer/GridContainer/Card_Locked_5"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+flat = true
+
+[node name="Card_Locked_6" type="Panel" parent="MainContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBox_CardLocked")
+
+[node name="Content" type="VBoxContainer" parent="MainContainer/GridContainer/Card_Locked_6"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = -12.0
+offset_bottom = -12.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 8
+
+[node name="PreviewImage" type="TextureRect" parent="MainContainer/GridContainer/Card_Locked_6/Content"]
+modulate = Color(0.55, 0.55, 0.6, 0.7)
+layout_mode = 2
+size_flags_vertical = 3
+texture = ExtResource("7_img_florence")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="HeaderRow" type="HBoxContainer" parent="MainContainer/GridContainer/Card_Locked_6/Content"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="MainContainer/GridContainer/Card_Locked_6/Content/HeaderRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.7, 0.72, 0.75, 1)
+theme_override_font_sizes/font_size = 18
+text = "06. Renaissance Florence"
+
+[node name="StatusBadge" type="Label" parent="MainContainer/GridContainer/Card_Locked_6/Content/HeaderRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("StyleBox_BadgeLocked")
+text = " 🔒 LOCKED "
+
+[node name="DescriptionLabel" type="Label" parent="MainContainer/GridContainer/Card_Locked_6/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.55, 0.58, 0.62, 1)
+theme_override_font_sizes/font_size = 13
+text = "Experience 15th-century Italian art, the Duomo, and Arno river bridges."
+autowrap_mode = 2
+
+[node name="CardButton" type="Button" parent="MainContainer/GridContainer/Card_Locked_6"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+flat = true
+
+[node name="TopLeftBar" type="HBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 40.0
+offset_top = 40.0
+offset_right = 200.0
+offset_bottom = 80.0
+
+[node name="SettingsButton" type="Button" parent="TopLeftBar"]
+custom_minimum_size = Vector2(140, 40)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.85, 0.5, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBox_ButtonNormal")
+theme_override_styles/hover = SubResource("StyleBox_ButtonHover")
+text = "⚙ SETTINGS"
+
+[node name="BottomBar" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 80.0
+offset_top = -65.0
+offset_right = -80.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="AboutButton" type="Button" parent="BottomBar"]
+custom_minimum_size = Vector2(160, 42)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.85, 0.5, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBox_ButtonNormal")
+theme_override_styles/hover = SubResource("StyleBox_ButtonHover")
+text = "ℹ ABOUT"
+
+[node name="ExitButton" type="Button" parent="BottomBar"]
+custom_minimum_size = Vector2(160, 42)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.85, 0.5, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBox_ButtonNormal")
+theme_override_styles/hover = SubResource("StyleBox_ButtonHover")
+text = "✕ EXIT GAME"
+
+[node name="SettingsModal" type="Panel" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -250.0
+offset_top = -180.0
+offset_right = 250.0
+offset_bottom = 180.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBox_ModalPanel")
+
+[node name="VBox" type="VBoxContainer" parent="SettingsModal"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 25.0
+offset_top = 25.0
+offset_right = -25.0
+offset_bottom = -25.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 16
+
+[node name="Title" type="Label" parent="SettingsModal/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.88, 0.45, 1)
+theme_override_font_sizes/font_size = 22
+text = "GAME SETTINGS"
+horizontal_alignment = 1
+
+[node name="FullscreenCheck" type="CheckBox" parent="SettingsModal/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.9, 0.95, 1)
+theme_override_font_sizes/font_size = 15
+text = " Fullscreen Mode"
+
+[node name="ControlsInfo" type="Label" parent="SettingsModal/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.78, 0.85, 1)
+theme_override_font_sizes/font_size = 13
+text = "CONTROLS:
+• WASD / Arrow Keys: Move Character
+• Mouse: Rotate Camera
+• Space: Jump
+• Shift: Sprint
+• Enter: Enter / Exit Museum Doors"
+
+[node name="CloseSettingsButton" type="Button" parent="SettingsModal/VBox"]
+custom_minimum_size = Vector2(120, 36)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(1, 0.88, 0.5, 1)
+theme_override_styles/normal = SubResource("StyleBox_ButtonNormal")
+theme_override_styles/hover = SubResource("StyleBox_ButtonHover")
+text = "CLOSE"
+
+[node name="AboutModal" type="Panel" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -280.0
+offset_top = -180.0
+offset_right = 280.0
+offset_bottom = 180.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBox_ModalPanel")
+
+[node name="VBox" type="VBoxContainer" parent="AboutModal"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 25.0
+offset_top = 25.0
+offset_right = -25.0
+offset_bottom = -25.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 14
+
+[node name="Title" type="Label" parent="AboutModal/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.88, 0.45, 1)
+theme_override_font_sizes/font_size = 22
+text = "ABOUT EXPLORE HISTORY"
+horizontal_alignment = 1
+
+[node name="Body" type="Label" parent="AboutModal/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.88, 0.92, 1)
+theme_override_font_sizes/font_size = 14
+text = "Explore History is an interactive virtual museum and historical adventure experience built in Godot Engine.
+
+Step into architectural wonders across history with photogrammetry environments and third-person exploration.
+
+Map 01 features London's iconic Victorian Natural History Museum and Hintze Hall."
+autowrap_mode = 2
+
+[node name="CloseAboutButton" type="Button" parent="AboutModal/VBox"]
+custom_minimum_size = Vector2(120, 36)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(1, 0.88, 0.5, 1)
+theme_override_styles/normal = SubResource("StyleBox_ButtonNormal")
+theme_override_styles/hover = SubResource("StyleBox_ButtonHover")
+text = "CLOSE"
+
+[node name="LockedToast" type="Label" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -300.0
+offset_top = -140.0
+offset_right = 300.0
+offset_bottom = -95.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(1, 0.92, 0.65, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBox_Toast")
+text = "This era is locked and coming soon in a future update!"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="FadeOverlay" type="CanvasLayer" parent="."]
+layer = 100
+
+[node name="ColorRect" type="ColorRect" parent="FadeOverlay"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+
+[connection signal="pressed" from="TopLeftBar/SettingsButton" to="." method="_on_settings_pressed"]
+[connection signal="pressed" from="BottomBar/AboutButton" to="." method="_on_about_pressed"]
+[connection signal="pressed" from="BottomBar/ExitButton" to="." method="_on_exit_pressed"]
+[connection signal="toggled" from="SettingsModal/VBox/FullscreenCheck" to="." method="_on_fullscreen_toggled"]
+[connection signal="pressed" from="SettingsModal/VBox/CloseSettingsButton" to="." method="_on_close_settings_pressed"]
+[connection signal="pressed" from="AboutModal/VBox/CloseAboutButton" to="." method="_on_close_about_pressed"]

@@ -51,7 +51,10 @@ $RECYCLE.BIN/
 *.bak
 *.swp
 *.swo
-*~assets/environment/buildings/NHM London.glb
 video/
-*.glb
 assets/environment/buildings/NHM London.glb
+
+History Gamified (Prototype).exe
+History Gamified (Prototype).pck
+assets/environment/buildings/NHM London.glb
+video/

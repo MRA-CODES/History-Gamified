@@ -1,58 +1,41 @@
 extends Node3D
 
-# -----------------------------------------------------------------------------
-# Node References
-# -----------------------------------------------------------------------------
 @onready var exterior: Node3D = $Exterior
 @onready var interior: Node3D = $Interior
+@onready var city_env: Node3D = $CityEnvironment
 @onready var player: Node3D = $Player
 @onready var transition_rect: ColorRect = $TransitionOverlay/ColorRect
+@onready var prompt_label: Label = $TransitionOverlay/PromptLabel
 @onready var enter_trigger: Area3D = $Triggers/EnterInteriorTrigger
 @onready var exit_trigger: Area3D = $Triggers/ExitExteriorTrigger
 
-# List of internal scan meshes in the exterior GLB (pillars, internal arches, colonnades, cavity caps)
-const EXTERIOR_INTERNAL_MESHES: Array[String] = [
-	"Object_2",   # Internal cavity cap
-	"Object_17",  # Internal upper floor cavity
-	"Object_23",  # Internal nave ceiling rib arches
-	"Object_24",  # Internal backdrop card
-	"Object_25",  # Internal colonnade / pillar arches
-	"Object_26",  # Internal aisle vaulting
-	"Object_27",  # Internal side chapel walls
-	"Object_33"   # Internal wall fragment
-]
-
 var is_inside: bool = false
 var is_transitioning: bool = false
-var transition_tween: Tween = null
+var can_enter: bool = false
+var can_exit: bool = false
 
-# -----------------------------------------------------------------------------
-# Lifecycle
-# -----------------------------------------------------------------------------
 func _ready() -> void:
-	# 1. Clean the exterior model: remove all internal pillars, colonnades, and internal walls
-	_filter_exterior_internal_geometry()
+	# 1. Automatically generate exact 1:1 Trimesh collisions for all interior meshes
+	_generate_interior_trimesh_collisions()
 	
-	# 2. Setup transition overlay
+	# 2. Setup transition overlay & prompt
 	if transition_rect:
 		transition_rect.modulate.a = 0.0
 		transition_rect.visible = true
+	if prompt_label:
+		prompt_label.visible = false
 		
-	# 3. Determine initial zone based on player starting position
-	if player and player.global_position.z < 33.0:
-		is_inside = true
-		exterior.visible = false
-		interior.visible = true
-	else:
-		is_inside = false
-		exterior.visible = true
-		interior.visible = false
+	# 3. Always ensure city_env is visible outside
+	if city_env:
+		city_env.visible = true
 		
 	# 4. Connect triggers
 	if enter_trigger:
-		enter_trigger.body_entered.connect(_on_enter_interior_entered)
+		enter_trigger.body_entered.connect(_on_enter_trigger_entered)
+		enter_trigger.body_exited.connect(_on_enter_trigger_exited)
 	if exit_trigger:
-		exit_trigger.body_entered.connect(_on_exit_exterior_entered)
+		exit_trigger.body_entered.connect(_on_exit_trigger_entered)
+		exit_trigger.body_exited.connect(_on_exit_trigger_exited)
 		
 	# 5. Initialize educational monument system
 	_setup_educational_system()
@@ -72,80 +55,127 @@ func _setup_educational_system() -> void:
 			exhibits_inst.name = "MuseumExhibits"
 			add_child(exhibits_inst)
 
-func _process(_delta: float) -> void:
-	# Continuous position-based fallback to guarantee correct environment state
-	if not player or is_transitioning:
+func _input(event: InputEvent) -> void:
+	if is_transitioning:
 		return
 		
-	var pz = player.global_position.z
-	if not is_inside and pz < 31.0:
-		# Player is inside vestibule/hall but state was outside -> transition to inside
-		_set_zone(true, false)
-	elif is_inside and pz > 34.5:
-		# Player is out on plaza but state was inside -> transition to outside
-		_set_zone(false, false)
+	var enter_pressed = event.is_action_pressed("ui_accept") or (event is InputEventKey and event.pressed and (event.keycode == KEY_ENTER or event.keycode == KEY_KP_ENTER))
+	if enter_pressed:
+		if can_enter and not is_inside:
+			_teleport_to_interior()
+		elif can_exit and is_inside:
+			_teleport_to_exterior()
 
-# -----------------------------------------------------------------------------
-# Zone Triggers
-# -----------------------------------------------------------------------------
-func _on_enter_interior_entered(body: Node3D) -> void:
+func _on_enter_trigger_entered(body: Node3D) -> void:
 	if body == player and not is_inside:
-		_set_zone(true, true)
+		can_enter = true
+		_show_prompt("[ ENTER ] Enter Hintze Hall")
 
-func _on_exit_exterior_entered(body: Node3D) -> void:
+func _on_enter_trigger_exited(body: Node3D) -> void:
+	if body == player:
+		can_enter = false
+		if not can_exit:
+			_hide_prompt()
+
+func _on_exit_trigger_entered(body: Node3D) -> void:
 	if body == player and is_inside:
-		_set_zone(false, true)
+		can_exit = true
+		_show_prompt("[ ENTER ] Exit to Plaza")
 
-# -----------------------------------------------------------------------------
-# Environment Transition Handler
-# -----------------------------------------------------------------------------
-func _set_zone(enter_interior: bool, use_fade: bool) -> void:
-	if is_inside == enter_interior and not is_transitioning:
-		return
-		
-	is_inside = enter_interior
-	
-	if not use_fade or not transition_rect:
-		_apply_visibility(enter_interior)
-		return
-		
+func _on_exit_trigger_exited(body: Node3D) -> void:
+	if body == player:
+		can_exit = false
+		if not can_enter:
+			_hide_prompt()
+
+func _show_prompt(msg: String) -> void:
+	if prompt_label:
+		prompt_label.text = msg
+		prompt_label.visible = true
+
+func _hide_prompt() -> void:
+	if prompt_label:
+		prompt_label.visible = false
+
+func _teleport_to_interior() -> void:
 	is_transitioning = true
-	if transition_tween and transition_tween.is_valid():
-		transition_tween.kill()
-		
-	transition_tween = create_tween()
-	# Fast cinematic fade out
-	transition_tween.tween_property(transition_rect, "modulate:a", 1.0, 0.2).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-	# Switch environment visibility at peak of fade
-	transition_tween.tween_callback(func(): _apply_visibility(enter_interior))
-	# Cinematic fade in
-	transition_tween.tween_property(transition_rect, "modulate:a", 0.0, 0.25).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
-	transition_tween.tween_callback(func(): is_transitioning = false)
-
-func _apply_visibility(to_inside: bool) -> void:
-	if to_inside:
-		# INSIDE: Completely hide the exterior building. No external pillars, walls, or blockades exist.
+	can_enter = false
+	_hide_prompt()
+	
+	var tween = create_tween()
+	tween.tween_property(transition_rect, "modulate:a", 1.0, 0.25).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	tween.tween_callback(func():
+		is_inside = true
 		exterior.visible = false
 		interior.visible = true
-	else:
-		# OUTSIDE: Show the exterior church facade and hide the interior.
+		if city_env:
+			city_env.visible = false
+		if player:
+			player.global_position = Vector3(0.0, 3.2, 16.0)
+			player.velocity = Vector3.ZERO
+			if "camera_rot_y" in player:
+				player.camera_rot_y = 0.0
+				player.camera_rot_x = -0.15
+			if player.has_node("Visuals"):
+				player.get_node("Visuals").rotation.y = 0.0
+			if player.has_node("CameraPivot"):
+				player.get_node("CameraPivot").rotation.y = 0.0
+				var spring = player.get_node("CameraPivot/SpringArm3D")
+				if spring:
+					spring.rotation.x = -0.15
+	)
+	tween.tween_property(transition_rect, "modulate:a", 0.0, 0.3).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	tween.tween_callback(func(): is_transitioning = false)
+
+func _teleport_to_exterior() -> void:
+	is_transitioning = true
+	can_exit = false
+	_hide_prompt()
+	
+	var tween = create_tween()
+	tween.tween_property(transition_rect, "modulate:a", 1.0, 0.25).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	tween.tween_callback(func():
+		is_inside = false
 		exterior.visible = true
 		interior.visible = false
+		if city_env:
+			city_env.visible = true
+		if player:
+			player.global_position = Vector3(0.0, 3.5, 44.0)
+			player.velocity = Vector3.ZERO
+			if "camera_rot_y" in player:
+				player.camera_rot_y = 0.0
+				player.camera_rot_x = -0.15
+			if player.has_node("Visuals"):
+				player.get_node("Visuals").rotation.y = 0.0
+			if player.has_node("CameraPivot"):
+				player.get_node("CameraPivot").rotation.y = 0.0
+				var spring = player.get_node("CameraPivot/SpringArm3D")
+				if spring:
+					spring.rotation.x = -0.15
+	)
+	tween.tween_property(transition_rect, "modulate:a", 0.0, 0.3).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	tween.tween_callback(func(): is_transitioning = false)
 
-# -----------------------------------------------------------------------------
-# Exterior Geometry Cleaning
-# -----------------------------------------------------------------------------
-func _filter_exterior_internal_geometry() -> void:
-	if not exterior:
+func _generate_interior_trimesh_collisions() -> void:
+	if not interior:
 		return
-	for target in EXTERIOR_INTERNAL_MESHES:
-		_traverse_and_hide_node(exterior, target)
+	_traverse_and_add_trimesh(interior)
 
-func _traverse_and_hide_node(node: Node, target_name: String) -> void:
-	if node.name == target_name or node.name.begins_with(target_name + "_") or node.name.begins_with(target_name + "@"):
-		if "visible" in node:
-			node.visible = false
-		if node is GeometryInstance3D:
-			node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+func _traverse_and_add_trimesh(node: Node) -> void:
+	if node is MeshInstance3D and node.mesh:
+		var has_static_body = false
+		for child in node.get_children():
+			if child is StaticBody3D:
+				has_static_body = true
+				break
+		if not has_static_body:
+			var trimesh_shape = node.mesh.create_trimesh_shape()
+			if trimesh_shape:
+				var static_body = StaticBody3D.new()
+				var col_shape = CollisionShape3D.new()
+				col_shape.shape = trimesh_shape
+				static_body.add_child(col_shape)
+				node.add_child(static_body)
 	for child in node.get_children():
-		_traverse_and_hide_node(child, target_name)
+		_traverse_and_add_trimesh(child)

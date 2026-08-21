@@ -11,6 +11,7 @@ const ACCELERATION: float = 16.0
 const DECELERATION: float = 20.0
 const ROTATION_SPEED: float = 12.0
 const MOUSE_SENSITIVITY: float = 0.0025
+const MAX_STEP_HEIGHT: float = 0.35
 
 # -----------------------------------------------------------------------------
 # Animation Preloads
@@ -36,6 +37,8 @@ var camera_rot_y: float = 0.0
 # Gravity from ProjectSettings with fallback
 var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity", 9.8)
 var is_movement_enabled: bool = true
+var stair_climbing_timer: float = 0.0
+var prev_y_pos: float = 0.0
 
 # -----------------------------------------------------------------------------
 # Lifecycle
@@ -46,13 +49,15 @@ func _ready() -> void:
 	# Capture mouse by default for smooth camera control
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	
-	# Configure robust floor snapping, slopes, and collision sliding
-	floor_snap_length = 0.4
-	floor_max_angle = deg_to_rad(48.0)
+	# Configure floor snapping and slope handling
+	floor_snap_length = 0.5
+	floor_max_angle = deg_to_rad(55.0)
 	floor_constant_speed = true
 	floor_stop_on_slope = true
 	floor_block_on_wall = true
 	wall_min_slide_angle = deg_to_rad(15.0)
+	
+	prev_y_pos = global_position.y
 	
 	# Setup animation player and animations
 	_setup_animations()
@@ -97,11 +102,14 @@ func _input(event: InputEvent) -> void:
 # Physics & Movement Loop
 # -----------------------------------------------------------------------------
 func _physics_process(delta: float) -> void:
+	if stair_climbing_timer > 0.0:
+		stair_climbing_timer -= delta
+
 	# 1. Apply Gravity & Ground Check
 	if not is_on_floor():
 		velocity.y -= gravity * delta
 	else:
-		# Reset downward vertical accumulation when grounded to avoid slope glitching
+		# Reset downward vertical accumulation when grounded
 		if velocity.y < 0.0:
 			velocity.y = 0.0
 			
@@ -143,11 +151,53 @@ func _physics_process(delta: float) -> void:
 	velocity.x = h_vel.x
 	velocity.z = h_vel.z
 
-	# 5. Move Character using Godot 4 CharacterBody3D physics
+	# 5. Stair Step-Up Check (Climb Steps Without Obstruction)
+	if is_on_floor() and move_dir.length_squared() > 0.001:
+		_snap_up_stairs_check(delta, move_dir)
+
+	# 6. Move Character using Godot 4 CharacterBody3D physics
 	move_and_slide()
 
-	# 6. Update Animations
+	# Detect elevation gain while walking to confirm stairs climbing
+	var y_gain = global_position.y - prev_y_pos
+	if is_on_floor() and y_gain > 0.02 and h_vel.length() > 0.15:
+		stair_climbing_timer = 0.4
+	prev_y_pos = global_position.y
+
+	# 7. Update Animations
 	_update_animation(h_vel.length(), is_sprinting)
+
+# -----------------------------------------------------------------------------
+# Smooth Stair Step-Up Handler
+# -----------------------------------------------------------------------------
+func _snap_up_stairs_check(delta: float, move_dir: Vector3) -> void:
+	# Test if there is a step directly ahead that blocks normal ground travel
+	var step_dist = max(0.12, (velocity.length() * delta) + 0.05)
+	var forward_motion = move_dir * step_dist
+	
+	# If we can move forward freely, no step-up needed
+	if not test_move(global_transform, forward_motion):
+		return
+		
+	# There is a step/wall. Test if raising the body by MAX_STEP_HEIGHT clears it
+	var up_vec = Vector3(0.0, MAX_STEP_HEIGHT, 0.0)
+	var up_trans = global_transform.translated(up_vec)
+	
+	# If we can move forward at the elevated height:
+	if not test_move(up_trans, forward_motion):
+		# Cast down from the forward elevated position to find the step landing
+		var forward_trans = up_trans.translated(forward_motion)
+		var down_motion = Vector3(0.0, -MAX_STEP_HEIGHT * 1.5, 0.0)
+		var col = KinematicCollision3D.new()
+		
+		if test_move(forward_trans, down_motion, col):
+			var norm = col.get_normal()
+			# If the top surface is walkable (angle <= floor_max_angle):
+			if norm.angle_to(Vector3.UP) <= floor_max_angle:
+				var step_gain = MAX_STEP_HEIGHT + col.get_travel().y
+				if step_gain > 0.01 and step_gain <= MAX_STEP_HEIGHT:
+					global_position.y += step_gain
+					stair_climbing_timer = 0.4
 
 # -----------------------------------------------------------------------------
 # Input Helper
@@ -231,15 +281,12 @@ func _update_animation(h_speed: float, is_sprinting: bool) -> void:
 	
 	if not is_on_floor():
 		target_anim = "jump"
+	elif stair_climbing_timer > 0.0 and anim_player.has_animation("walk_stairs"):
+		target_anim = "walk_stairs"
 	elif h_speed > 4.5 or (h_speed > 0.2 and is_sprinting):
 		target_anim = "run"
 	elif h_speed > 0.15:
-		# Check if moving up stairs/slope
-		var is_on_slope = is_on_floor() and get_floor_normal().dot(Vector3.UP) < 0.95
-		if is_on_slope and anim_player.has_animation("walk_stairs"):
-			target_anim = "walk_stairs"
-		else:
-			target_anim = "walk"
+		target_anim = "walk"
 	else:
 		target_anim = "idle"
 		
