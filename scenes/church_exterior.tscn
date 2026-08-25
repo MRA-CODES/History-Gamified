@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://dltloiy52jwm4"]
 
-[ext_resource type="PackedScene" uid="uid://hewt3r4d6eo8" path="res://assets/environment/buildings/Exterior NHM London .glb" id="1_ext"]
+[ext_resource type="PackedScene" uid="uid://hewt3r4d6eo8" path="res://assets/environment/buildings/Map 1-NHM Museum/Exterior NHM London .glb" id="1_ext"]
 [ext_resource type="Script" uid="uid://csyjnln3bhrlh" path="res://scripts/church_exterior.gd" id="1_scene_script"]
-[ext_resource type="PackedScene" uid="uid://dnixestf2owhy" path="res://assets/environment/buildings/NHM London.glb" id="2_int"]
+[ext_resource type="PackedScene" uid="uid://dnixestf2owhy" path="res://assets/environment/buildings/Map 1-NHM Museum/NHM London.glb" id="2_int"]
 [ext_resource type="PackedScene" uid="uid://c6f3k0p8m5y21" path="res://scenes/player.tscn" id="4_player"]
 [ext_resource type="PackedScene" path="res://scenes/exhibits/museum_exhibits.tscn" id="5_exhibits"]
 [ext_resource type="PackedScene" path="res://ui/monument_popup.tscn" id="6_popup"]
@@ -68,6 +68,7 @@ light_energy = 1.2
 shadow_enabled = true
 
 [node name="CityEnvironment" parent="." unique_id=1530120139 instance=ExtResource("7_city")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0013770461, -0.23701477, 0.19812775)
 
 [node name="Exterior" type="Node3D" parent="." unique_id=106407830]
 

@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/main_menu.gd" id="1_script"]
 [ext_resource type="Texture2D" path="res://assets/textures/ui/map_victorian_museum.jpg" id="2_img_victorian"]
-[ext_resource type="Texture2D" path="res://assets/textures/ui/map_ancient_rome.jpg" id="3_img_rome"]
+[ext_resource type="Texture2D" path="res://assets/textures/ui/map_stonehenge.jpg" id="3_img_stonehenge"]
 [ext_resource type="Texture2D" path="res://assets/textures/ui/map_feudal_japan.jpg" id="4_img_japan"]
 [ext_resource type="Texture2D" path="res://assets/textures/ui/map_ancient_egypt.jpg" id="5_img_egypt"]
 [ext_resource type="Texture2D" path="res://assets/textures/ui/map_medieval_fortress.jpg" id="6_img_medieval"]
@@ -244,13 +244,13 @@ grow_horizontal = 2
 grow_vertical = 2
 flat = true
 
-[node name="Card_Locked_2" type="Panel" parent="MainContainer/GridContainer"]
+[node name="Card_Stonehenge" type="Panel" parent="MainContainer/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleBox_CardLocked")
+theme_override_styles/panel = SubResource("StyleBox_CardActive")
 
-[node name="Content" type="VBoxContainer" parent="MainContainer/GridContainer/Card_Locked_2"]
+[node name="Content" type="VBoxContainer" parent="MainContainer/GridContainer/Card_Stonehenge"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -263,39 +263,38 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 8
 
-[node name="PreviewImage" type="TextureRect" parent="MainContainer/GridContainer/Card_Locked_2/Content"]
-modulate = Color(0.55, 0.55, 0.6, 0.7)
+[node name="PreviewImage" type="TextureRect" parent="MainContainer/GridContainer/Card_Stonehenge/Content"]
 layout_mode = 2
 size_flags_vertical = 3
-texture = ExtResource("3_img_rome")
+texture = ExtResource("3_img_stonehenge")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="HeaderRow" type="HBoxContainer" parent="MainContainer/GridContainer/Card_Locked_2/Content"]
+[node name="HeaderRow" type="HBoxContainer" parent="MainContainer/GridContainer/Card_Stonehenge/Content"]
 layout_mode = 2
 
-[node name="TitleLabel" type="Label" parent="MainContainer/GridContainer/Card_Locked_2/Content/HeaderRow"]
+[node name="TitleLabel" type="Label" parent="MainContainer/GridContainer/Card_Stonehenge/Content/HeaderRow"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.7, 0.72, 0.75, 1)
+theme_override_colors/font_color = Color(1, 0.88, 0.45, 1)
 theme_override_font_sizes/font_size = 18
-text = "02. Ancient Rome"
+text = "02. Bronze Age - Stonehenge"
 
-[node name="StatusBadge" type="Label" parent="MainContainer/GridContainer/Card_Locked_2/Content/HeaderRow"]
+[node name="StatusBadge" type="Label" parent="MainContainer/GridContainer/Card_Stonehenge/Content/HeaderRow"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+theme_override_colors/font_color = Color(0.12, 0.08, 0.02, 1)
 theme_override_font_sizes/font_size = 12
-theme_override_styles/normal = SubResource("StyleBox_BadgeLocked")
-text = " 🔒 LOCKED "
+theme_override_styles/normal = SubResource("StyleBox_BadgeActive")
+text = " ✦ PLAYABLE ✦ "
 
-[node name="DescriptionLabel" type="Label" parent="MainContainer/GridContainer/Card_Locked_2/Content"]
+[node name="DescriptionLabel" type="Label" parent="MainContainer/GridContainer/Card_Stonehenge/Content"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.55, 0.58, 0.62, 1)
+theme_override_colors/font_color = Color(0.85, 0.88, 0.92, 1)
 theme_override_font_sizes/font_size = 13
-text = "Wander the Roman Colosseum, Forum, and temples at sunset."
+text = "Explore the prehistoric megalithic stone circle on Salisbury Plain."
 autowrap_mode = 2
 
-[node name="CardButton" type="Button" parent="MainContainer/GridContainer/Card_Locked_2"]
+[node name="CardButton" type="Button" parent="MainContainer/GridContainer/Card_Stonehenge"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -303,6 +302,17 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 flat = true
+
+[node name="BorderGlow" type="Panel" parent="MainContainer/GridContainer/Card_Stonehenge"]
+modulate = Color(1, 1, 1, 0.5)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBox_CardActive")
 
 [node name="Card_Locked_3" type="Panel" parent="MainContainer/GridContainer"]
 layout_mode = 2

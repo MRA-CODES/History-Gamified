@@ -1,5 +1,5 @@
 [gd_scene format=3 uid="uid://bdahxestmvjaa"]
 
-[ext_resource type="PackedScene" uid="uid://hewt3r4d6eo8" path="res://assets/environment/buildings/Exterior NHM London .glb" id="1_r57si"]
+[ext_resource type="PackedScene" uid="uid://hewt3r4d6eo8" path="res://assets/environment/buildings/Map 1-NHM Museum/Exterior NHM London .glb" id="1_r57si"]
 
 [node name="Sketchfab_Scene" unique_id=2085300498 instance=ExtResource("1_r57si")]

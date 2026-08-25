@@ -5,6 +5,7 @@ extends Control
 # -----------------------------------------------------------------------------
 @onready var fade_rect: ColorRect = $FadeOverlay/ColorRect
 @onready var card_victorian: Control = $MainContainer/GridContainer/Card_Victorian
+@onready var card_stonehenge: Control = $MainContainer/GridContainer/Card_Stonehenge
 @onready var settings_modal: Control = $SettingsModal
 @onready var about_modal: Control = $AboutModal
 @onready var locked_toast: Label = $LockedToast
@@ -32,7 +33,7 @@ func _ready() -> void:
 		locked_toast.visible = false
 		locked_toast.modulate.a = 0.0
 		
-	# 3. Connect Victorian Card
+	# 3. Connect Card 1: Victorian Museum
 	if card_victorian:
 		var btn = card_victorian.get_node_or_null("CardButton")
 		if btn:
@@ -40,10 +41,18 @@ func _ready() -> void:
 			btn.mouse_entered.connect(func(): _on_card_hover(card_victorian, true))
 			btn.mouse_exited.connect(func(): _on_card_hover(card_victorian, false))
 
-	# 4. Connect Locked Cards (Cards 2 through 6)
+	# 4. Connect Card 2: Stonehenge
+	if card_stonehenge:
+		var btn = card_stonehenge.get_node_or_null("CardButton")
+		if btn:
+			btn.pressed.connect(_on_stonehenge_card_pressed)
+			btn.mouse_entered.connect(func(): _on_card_hover(card_stonehenge, true))
+			btn.mouse_exited.connect(func(): _on_card_hover(card_stonehenge, false))
+
+	# 5. Connect Locked Cards (Cards 3 through 6)
 	var grid = $MainContainer/GridContainer
 	if grid:
-		for i in range(2, 7):
+		for i in range(3, 7):
 			var card_node = grid.get_node_or_null("Card_Locked_" + str(i))
 			if card_node:
 				var btn = card_node.get_node_or_null("CardButton")
@@ -79,6 +88,21 @@ func _on_victorian_card_pressed() -> void:
 		)
 	else:
 		get_tree().change_scene_to_file("res://scenes/church_exterior.tscn")
+
+func _on_stonehenge_card_pressed() -> void:
+	if is_transitioning:
+		return
+	is_transitioning = true
+	
+	# Smooth fade to black and load Stonehenge scene
+	if fade_rect:
+		var tween = create_tween()
+		tween.tween_property(fade_rect, "modulate:a", 1.0, 0.4).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		tween.tween_callback(func():
+			get_tree().change_scene_to_file("res://scenes/stonehenge_map.tscn")
+		)
+	else:
+		get_tree().change_scene_to_file("res://scenes/stonehenge_map.tscn")
 
 func _on_locked_card_pressed(title_node: Label) -> void:
 	var map_name = title_node.text if title_node else "This Era"
