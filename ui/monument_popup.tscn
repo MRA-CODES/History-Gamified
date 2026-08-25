@@ -162,9 +162,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -360.0
-offset_top = -320.0
+offset_top = -340.0
 offset_right = 360.0
-offset_bottom = 320.0
+offset_bottom = 340.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_modal_card")
@@ -220,14 +220,14 @@ text = "Late Jurassic Period (~154–150 Million Years Ago) | Unveiled 1905"
 
 [node name="ImageFrame" type="PanelContainer" parent="ModalPanel/MarginContainer/VBoxContainer"]
 clip_contents = true
-custom_minimum_size = Vector2(0, 170)
+custom_minimum_size = Vector2(0, 210)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_image_frame")
 
 [node name="ArtifactImage" type="TextureRect" parent="ModalPanel/MarginContainer/VBoxContainer/ImageFrame"]
 layout_mode = 2
 expand_mode = 1
-stretch_mode = 6
+stretch_mode = 5
 
 [node name="AudioBar" type="PanelContainer" parent="ModalPanel/MarginContainer/VBoxContainer"]
 layout_mode = 2

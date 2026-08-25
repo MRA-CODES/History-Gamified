@@ -74,6 +74,17 @@ func set_movement_enabled(enabled: bool) -> void:
 			_play_anim("idle")
 
 func _input(event: InputEvent) -> void:
+	# Debug coordinate printing (Press P, C, or F3)
+	if event is InputEventKey and event.pressed and not event.is_echo():
+		if event.keycode == KEY_P or event.keycode == KEY_C or event.keycode == KEY_F3:
+			var pos = global_position
+			var coord_str = "Vector3(%.2f, %.2f, %.2f)" % [pos.x, pos.y, pos.z]
+			print("==================================================")
+			print("📍 Character Position: %s" % coord_str)
+			print("   Raw: Vector3(%f, %f, %f)" % [pos.x, pos.y, pos.z])
+			print("==================================================")
+			DisplayServer.clipboard_set(coord_str)
+			
 	if not is_movement_enabled:
 		return
 		

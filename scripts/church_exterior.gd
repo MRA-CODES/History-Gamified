@@ -54,6 +54,18 @@ func _setup_educational_system() -> void:
 			var exhibits_inst = exhibits_scene.instantiate()
 			exhibits_inst.name = "MuseumExhibits"
 			add_child(exhibits_inst)
+			
+	if not has_node("MinimapUI"):
+		var minimap_scene = load("res://scenes/minimap/minimap.tscn")
+		if minimap_scene:
+			var minimap_inst = minimap_scene.instantiate()
+			minimap_inst.name = "MinimapUI"
+			add_child(minimap_inst)
+			
+	var map_mgr = get_node_or_null("MinimapUI/MapManager")
+	if map_mgr:
+		map_mgr.set_player(player)
+		map_mgr.set_inside_state(is_inside)
 
 func _input(event: InputEvent) -> void:
 	if is_transitioning:
@@ -123,6 +135,9 @@ func _teleport_to_interior() -> void:
 				var spring = player.get_node("CameraPivot/SpringArm3D")
 				if spring:
 					spring.rotation.x = -0.15
+		var map_mgr = get_node_or_null("MinimapUI/MapManager")
+		if map_mgr:
+			map_mgr.set_inside_state(true)
 	)
 	tween.tween_property(transition_rect, "modulate:a", 0.0, 0.3).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
 	tween.tween_callback(func(): is_transitioning = false)
@@ -153,6 +168,9 @@ func _teleport_to_exterior() -> void:
 				var spring = player.get_node("CameraPivot/SpringArm3D")
 				if spring:
 					spring.rotation.x = -0.15
+		var map_mgr = get_node_or_null("MinimapUI/MapManager")
+		if map_mgr:
+			map_mgr.set_inside_state(false)
 	)
 	tween.tween_property(transition_rect, "modulate:a", 0.0, 0.3).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
 	tween.tween_callback(func(): is_transitioning = false)

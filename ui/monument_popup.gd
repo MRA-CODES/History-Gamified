@@ -204,6 +204,8 @@ func _populate_modal_data() -> void:
 	subtitle_label.text = current_data.get("subtitle_or_era", "")
 	
 	# Image loading
+	artifact_image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	artifact_image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	var img_path = current_data.get("image_path", "")
 	if not img_path.is_empty() and ResourceLoader.exists(img_path):
 		artifact_image.texture = load(img_path)

@@ -17,25 +17,45 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.2, -23.5)
 exhibit_id = "charles_darwin_statue"
 
 [node name="PaintedCeilingPanels" parent="." instance=ExtResource("1_monument")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, 3, 10)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.2, 10)
 exhibit_id = "painted_ceiling_panels"
 
-[node name="FirstFloor_GiantSequoia" parent="." instance=ExtResource("1_monument")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9.8, -30)
+[node name="GroundFloor_MammothModel" parent="." instance=ExtResource("1_monument")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.72, 3.3, 12.81)
+exhibit_id = "ground_mammoth_model"
+
+[node name="GroundFloor_DinosaurModel" parent="." instance=ExtResource("1_monument")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.65, 3.34, 6.72)
+exhibit_id = "ground_dinosaur_model"
+
+[node name="GroundFloor_GiraffeModel" parent="." instance=ExtResource("1_monument")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.78, 3.31, 12.81)
+exhibit_id = "ground_giraffe_model"
+
+[node name="FirstFloor_TreeBark" parent="." instance=ExtResource("1_monument")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 16.7, 22.8)
 exhibit_id = "giant_sequoia_slice"
 
 [node name="FirstFloor_RichardOwenStatue" parent="." instance=ExtResource("1_monument")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 9.8, -26)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10.22, 22.4)
 exhibit_id = "richard_owen_statue"
 
+[node name="FirstFloor_HummingbirdCabinet" parent="." instance=ExtResource("1_monument")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 10.3, -7.5)
+exhibit_id = "victorian_hummingbird_cabinet"
+
+[node name="FirstFloor_DodoSkeleton" parent="." instance=ExtResource("1_monument")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.29, 9.73, -28.26)
+exhibit_id = "dodo_skeleton"
+
 [node name="FirstFloor_CranbourneMeteorite" parent="." instance=ExtResource("1_monument")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.5, 9.8, -2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.8, 10.4, -11.5)
 exhibit_id = "cranbourne_meteorite"
 
-[node name="FirstFloor_MaryAnningFossils" parent="." instance=ExtResource("1_monument")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.5, 9.8, -2)
-exhibit_id = "mary_anning_fossils"
+[node name="SecondFloor_CathedralArchitecture" parent="." instance=ExtResource("1_monument")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 14.3, 16.5)
+exhibit_id = "hintze_hall_cathedral_architecture"
 
-[node name="FirstFloor_GuyTheGorilla" parent="." instance=ExtResource("1_monument")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9.8, 21)
-exhibit_id = "guy_the_gorilla"
+[node name="SecondFloor_BlaschkaGlass" parent="." instance=ExtResource("1_monument")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 17.0, -11.5)
+exhibit_id = "blaschka_glass_models"
