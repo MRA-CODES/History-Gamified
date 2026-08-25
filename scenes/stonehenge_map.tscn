@@ -4,84 +4,83 @@
 [ext_resource type="PackedScene" path="res://assets/environment/buildings/Map 2-StoneHenge/StoneHenge Big.glb" id="2_model"]
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="3_player"]
 
-[sub_resource type="ProceduralSkyMaterial" id="SkyMat_Sunset"]
-sky_top_color = Color(0.28, 0.35, 0.65, 1)
-sky_horizon_color = Color(0.92, 0.58, 0.32, 1)
-ground_bottom_color = Color(0.18, 0.28, 0.15, 1)
-ground_horizon_color = Color(0.78, 0.52, 0.30, 1)
+[sub_resource type="ProceduralSkyMaterial" id="SkyMat_Daytime"]
+sky_top_color = Color(0.32, 0.58, 0.92, 1)
+sky_horizon_color = Color(0.72, 0.84, 0.96, 1)
+ground_bottom_color = Color(0.24, 0.38, 0.16, 1)
+ground_horizon_color = Color(0.55, 0.72, 0.45, 1)
 sun_angle_max = 30.0
 
-[sub_resource type="Sky" id="Sky_Sunset"]
-sky_material = SubResource("SkyMat_Sunset")
+[sub_resource type="Sky" id="Sky_Daytime"]
+sky_material = SubResource("SkyMat_Daytime")
 
 [sub_resource type="Environment" id="Env_Stonehenge"]
 background_mode = 2
-sky = SubResource("Sky_Sunset")
+sky = SubResource("Sky_Daytime")
 ambient_light_source = 3
-ambient_light_color = Color(0.75, 0.65, 0.55, 1)
-ambient_light_energy = 0.9
+ambient_light_color = Color(0.85, 0.92, 1.0, 1)
+ambient_light_energy = 0.95
 tonemap_mode = 2
+tonemap_exposure = 1.05
 ssao_enabled = true
 glow_enabled = true
-glow_intensity = 0.2
+glow_intensity = 0.1
 fog_enabled = true
-fog_light_color = Color(0.82, 0.62, 0.45, 1)
-fog_density = 0.003
+fog_light_color = Color(0.75, 0.86, 0.95, 1)
+fog_density = 0.001
 
-[sub_resource type="StandardMaterial3D" id="Mat_GrassGround"]
-albedo_color = Color(0.26, 0.42, 0.18, 1)
+[sub_resource type="StandardMaterial3D" id="Mat_MeadowGrass"]
+albedo_color = Color(0.42, 0.62, 0.25, 1)
 roughness = 0.9
 
-[sub_resource type="BoxMesh" id="Mesh_Ground"]
-material = SubResource("Mat_GrassGround")
-size = Vector3(500, 1, 500)
+[sub_resource type="BoxShape3D" id="Shape_SafetyFloor"]
+size = Vector3(800, 1, 800)
 
-[sub_resource type="BoxShape3D" id="Shape_Ground"]
-size = Vector3(500, 1, 500)
-
-[sub_resource type="StandardMaterial3D" id="Mat_EarthPath"]
-albedo_color = Color(0.48, 0.42, 0.32, 1)
-roughness = 0.95
-
-[sub_resource type="CylinderMesh" id="Mesh_PathRing"]
-material = SubResource("Mat_EarthPath")
-top_radius = 45.0
-bottom_radius = 45.0
-height = 0.05
-
-[sub_resource type="StyleBoxFlat" id="StyleBox_HUD"]
-bg_color = Color(0.06, 0.08, 0.12, 0.85)
+[sub_resource type="StyleBoxFlat" id="StyleBox_PausePanel"]
+bg_color = Color(0.07, 0.09, 0.14, 0.96)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.85, 0.7, 0.28, 0.8)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
-shadow_color = Color(0, 0, 0, 0.6)
-shadow_size = 8
+border_color = Color(0.85, 0.7, 0.28, 0.9)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0, 0, 0, 0.8)
+shadow_size = 24
 
 [sub_resource type="StyleBoxFlat" id="StyleBox_BtnNormal"]
-bg_color = Color(0.15, 0.18, 0.25, 0.9)
+bg_color = Color(0.13, 0.16, 0.22, 0.95)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.85, 0.7, 0.28, 0.8)
+border_color = Color(0.85, 0.7, 0.28, 0.7)
 corner_radius_top_left = 6
 corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
 [sub_resource type="StyleBoxFlat" id="StyleBox_BtnHover"]
-bg_color = Color(0.25, 0.28, 0.38, 1)
+bg_color = Color(0.24, 0.28, 0.38, 1)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(1, 0.85, 0.4, 1)
+border_color = Color(1, 0.88, 0.45, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_HintBanner"]
+bg_color = Color(0.06, 0.08, 0.12, 0.7)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.85, 0.7, 0.28, 0.5)
 corner_radius_top_left = 6
 corner_radius_top_right = 6
 corner_radius_bottom_right = 6
@@ -94,106 +93,152 @@ script = ExtResource("1_script")
 environment = SubResource("Env_Stonehenge")
 
 [node name="SunLight" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.866025, 0.25, -0.433013, 0, 0.866025, 0.5, 0.5, -0.433013, 0.75, 0, 40, 0)
-light_color = Color(1, 0.88, 0.7, 1)
-light_energy = 1.4
+transform = Transform3D(0.866025, 0.25, -0.433013, 0, 0.866025, 0.5, 0.5, -0.433013, 0.75, 0, 50, 0)
+light_color = Color(1, 0.98, 0.92, 1)
+light_energy = 1.25
 shadow_enabled = true
 
-[node name="SalisburyGround" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+[node name="SafetyCollisionFloor" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.2, 0)
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="SalisburyGround"]
-mesh = SubResource("Mesh_Ground")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SafetyCollisionFloor"]
+shape = SubResource("Shape_SafetyFloor")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="SalisburyGround"]
-shape = SubResource("Shape_Ground")
-
-[node name="EarthRing" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, 0)
-mesh = SubResource("Mesh_PathRing")
+[node name="SurroundingPlainsRing" type="MeshInstance3D" parent="."]
+material_override = SubResource("Mat_MeadowGrass")
 
 [node name="StonehengeModel" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 23.5, 0)
+transform = Transform3D(1.65, 0, 0, 0, 1.65, 0, 0, 0, 1.65, 0, 39.6, 0)
 
 [node name="MeshInstance" parent="StonehengeModel" instance=ExtResource("2_model")]
 
 [node name="Player" parent="." instance=ExtResource("3_player")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 38)
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 0, 1.2, 24.0)
 
 [node name="UI" type="CanvasLayer" parent="."]
 layer = 50
 
-[node name="TopHUD" type="PanelContainer" parent="UI"]
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -280.0
-offset_top = 20.0
-offset_right = 280.0
-offset_bottom = 80.0
-grow_horizontal = 2
-theme_override_styles/panel = SubResource("StyleBox_HUD")
-
-[node name="Margin" type="MarginContainer" parent="UI/TopHUD"]
-layout_mode = 2
-theme_override_constants/margin_left = 18
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 18
-theme_override_constants/margin_bottom = 8
-
-[node name="HBox" type="HBoxContainer" parent="UI/TopHUD/Margin"]
-layout_mode = 2
-theme_override_constants/separation = 15
-
-[node name="VBox" type="VBoxContainer" parent="UI/TopHUD/Margin/HBox"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 2
-
-[node name="Title" type="Label" parent="UI/TopHUD/Margin/HBox/VBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.88, 0.45, 1)
-theme_override_font_sizes/font_size = 17
-text = "STONEHENGE — SALISBURY PLAIN"
-
-[node name="Subtitle" type="Label" parent="UI/TopHUD/Margin/HBox/VBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.8, 0.85, 0.9, 0.8)
-theme_override_font_sizes/font_size = 12
-text = "Wiltshire, England • c. 3000 – 2000 BCE"
-
-[node name="BtnMenu" type="Button" parent="UI/TopHUD/Margin/HBox"]
-custom_minimum_size = Vector2(130, 34)
-layout_mode = 2
-size_flags_vertical = 4
-theme_override_colors/font_color = Color(1, 0.9, 0.7, 1)
-theme_override_font_sizes/font_size = 13
-theme_override_styles/normal = SubResource("StyleBox_BtnNormal")
-theme_override_styles/hover = SubResource("StyleBox_BtnHover")
-text = "⟵ Main Menu"
-
-[node name="InfoBanner" type="PanelContainer" parent="UI"]
+[node name="BottomHint" type="PanelContainer" parent="UI"]
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -320.0
-offset_top = -80.0
-offset_right = 320.0
-offset_bottom = -25.0
+offset_left = -260.0
+offset_top = -50.0
+offset_right = 260.0
+offset_bottom = -15.0
 grow_horizontal = 2
 grow_vertical = 0
-theme_override_styles/panel = SubResource("StyleBox_HUD")
+theme_override_styles/panel = SubResource("StyleBox_HintBanner")
 
-[node name="Label" type="Label" parent="UI/InfoBanner"]
+[node name="Label" type="Label" parent="UI/BottomHint"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.9, 0.92, 0.95, 1)
-theme_override_font_sizes/font_size = 13
-text = "✦ Explore the ancient megalithic stone circle aligned to the summer solstice sunrise. ✦
-[ W/A/S/D ] Walk  •  [ Shift ] Sprint  •  [ Space ] Jump  •  [ Esc ] Toggle Cursor"
+theme_override_colors/font_color = Color(0.85, 0.88, 0.92, 0.8)
+theme_override_font_sizes/font_size = 12
+text = "[ W/A/S/D ] Walk  •  [ Shift ] Sprint  •  [ Space ] Jump  •  [ Esc ] Pause Menu"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="PauseMenu" type="Control" parent="UI"]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="DimOverlay" type="ColorRect" parent="UI/PauseMenu"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.6)
+
+[node name="CenterContainer" type="CenterContainer" parent="UI/PauseMenu"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="UI/PauseMenu/CenterContainer"]
+custom_minimum_size = Vector2(440, 420)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_PausePanel")
+
+[node name="Margin" type="MarginContainer" parent="UI/PauseMenu/CenterContainer/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 30
+theme_override_constants/margin_top = 25
+theme_override_constants/margin_right = 30
+theme_override_constants/margin_bottom = 25
+
+[node name="VBox" type="VBoxContainer" parent="UI/PauseMenu/CenterContainer/Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="Title" type="Label" parent="UI/PauseMenu/CenterContainer/Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.88, 0.45, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 24
+text = "STONEHENGE"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="UI/PauseMenu/CenterContainer/Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.82, 0.88, 0.9)
+theme_override_font_sizes/font_size = 13
+text = "Salisbury Plain, England • c. 3000 – 2000 BCE"
+horizontal_alignment = 1
+
+[node name="Divider" type="ColorRect" parent="UI/PauseMenu/CenterContainer/Panel/Margin/VBox"]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+color = Color(0.85, 0.7, 0.28, 0.5)
+
+[node name="BtnResume" type="Button" parent="UI/PauseMenu/CenterContainer/Panel/Margin/VBox"]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.7, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBox_BtnNormal")
+theme_override_styles/hover = SubResource("StyleBox_BtnHover")
+text = "▶  Resume Exploration"
+
+[node name="BtnRestart" type="Button" parent="UI/PauseMenu/CenterContainer/Panel/Margin/VBox"]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.9, 0.95, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBox_BtnNormal")
+theme_override_styles/hover = SubResource("StyleBox_BtnHover")
+text = "↺  Reset Spawn Position"
+
+[node name="BtnMainMenu" type="Button" parent="UI/PauseMenu/CenterContainer/Panel/Margin/VBox"]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.9, 0.95, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBox_BtnNormal")
+theme_override_styles/hover = SubResource("StyleBox_BtnHover")
+text = "⟵  Return to Main Menu"
+
+[node name="BtnQuit" type="Button" parent="UI/PauseMenu/CenterContainer/Panel/Margin/VBox"]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.65, 0.65, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBox_BtnNormal")
+theme_override_styles/hover = SubResource("StyleBox_BtnHover")
+text = "✕  Exit to Desktop"
 
 [node name="FadeOverlay" type="ColorRect" parent="UI"]
 anchors_preset = 15

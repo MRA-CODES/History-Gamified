@@ -65,21 +65,16 @@ func _ready() -> void:
 func _on_card_hover(card: Control, is_hovered: bool) -> void:
 	if not card:
 		return
+	card.pivot_offset = card.size / 2.0
 	var tween = create_tween().set_parallel(true).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-	var target_scale = Vector2(1.03, 1.03) if is_hovered else Vector2(1.0, 1.0)
-	tween.tween_property(card, "scale", target_scale, 0.2)
-	
-	var border = card.get_node_or_null("BorderGlow")
-	if border:
-		var target_alpha = 1.0 if is_hovered else 0.5
-		tween.tween_property(border, "modulate:a", target_alpha, 0.2)
+	var target_scale = Vector2(1.025, 1.025) if is_hovered else Vector2(1.0, 1.0)
+	tween.tween_property(card, "scale", target_scale, 0.18)
 
 func _on_victorian_card_pressed() -> void:
 	if is_transitioning:
 		return
 	is_transitioning = true
 	
-	# Smooth fade to black and load Victorian Museum scene
 	if fade_rect:
 		var tween = create_tween()
 		tween.tween_property(fade_rect, "modulate:a", 1.0, 0.4).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
@@ -94,7 +89,6 @@ func _on_stonehenge_card_pressed() -> void:
 		return
 	is_transitioning = true
 	
-	# Smooth fade to black and load Stonehenge scene
 	if fade_rect:
 		var tween = create_tween()
 		tween.tween_property(fade_rect, "modulate:a", 1.0, 0.4).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
