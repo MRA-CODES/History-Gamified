@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" path="res://scenes/exhibits/museum_exhibits.tscn" id="5_exhibits"]
 [ext_resource type="PackedScene" path="res://ui/monument_popup.tscn" id="6_popup"]
 [ext_resource type="PackedScene" path="res://scenes/city_surroundings.tscn" id="7_city"]
+[ext_resource type="PackedScene" uid="uid://bv83qm6klo21p" path="res://scenes/minimap/minimap.tscn" id="8_minimap"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 sky_top_color = Color(0.35, 0.55, 0.85, 1)
@@ -135,6 +136,31 @@ light_color = Color(1, 0.92, 0.85, 1)
 light_energy = 2.0
 omni_range = 20.0
 
+[node name="UpperGalleryLight_Left" type="OmniLight3D" parent="InteriorLighting" unique_id=317250950]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 19, 0)
+visible = false
+light_color = Color(1, 0.95, 0.88, 1)
+light_energy = 2.2
+omni_range = 22.0
+
+[node name="UpperGalleryLight_Right" type="OmniLight3D" parent="InteriorLighting" unique_id=181401249]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 19, 0)
+light_color = Color(1, 0.95, 0.88, 1)
+light_energy = 2.2
+omni_range = 22.0
+
+[node name="UpperGalleryLight_Back" type="OmniLight3D" parent="InteriorLighting" unique_id=806185142]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 19, -25)
+light_color = Color(1, 0.95, 0.88, 1)
+light_energy = 2.2
+omni_range = 22.0
+
+[node name="UpperGalleryLight_Front" type="OmniLight3D" parent="InteriorLighting" unique_id=525958073]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 19, 22)
+light_color = Color(1, 0.95, 0.88, 1)
+light_energy = 2.2
+omni_range = 22.0
+
 [node name="Triggers" type="Node3D" parent="." unique_id=1465607877]
 
 [node name="EnterInteriorTrigger" type="Area3D" parent="Triggers" unique_id=1672922265]
@@ -212,3 +238,5 @@ vertical_alignment = 1
 [node name="MuseumExhibits" parent="." unique_id=647191689 instance=ExtResource("5_exhibits")]
 
 [node name="MonumentPopupUI" parent="." unique_id=859796327 instance=ExtResource("6_popup")]
+
+[node name="MinimapUI" parent="." unique_id=987123456 instance=ExtResource("8_minimap")]
