@@ -1,0 +1,117 @@
+[gd_scene format=3 uid="uid://bv6j4k8l1m2n3"]
+
+[ext_resource type="Script" uid="uid://c5m6n7p8q9r1" path="res://scripts/mobile/mobile_controls.gd" id="1_controller"]
+[ext_resource type="Script" uid="uid://d6m7n8p9q1r2" path="res://scripts/mobile/virtual_joystick.gd" id="2_joystick"]
+[ext_resource type="Script" uid="uid://e7m8n9p1q2r3" path="res://scripts/mobile/touch_camera_zone.gd" id="3_camerazone"]
+[ext_resource type="Script" uid="uid://f8m9n1p2q3r4" path="res://scripts/mobile/touch_button.gd" id="4_button"]
+
+[node name="MobileControls" type="CanvasLayer"]
+layer = 40
+script = ExtResource("1_controller")
+
+[node name="TouchCameraZone" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+script = ExtResource("3_camerazone")
+
+[node name="JoystickContainer" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 32.0
+offset_top = -240.0
+offset_right = 240.0
+offset_bottom = -32.0
+grow_vertical = 0
+mouse_filter = 1
+
+[node name="VirtualJoystick" type="Control" parent="JoystickContainer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+script = ExtResource("2_joystick")
+max_radius = 80.0
+
+[node name="ButtonsContainer" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -300.0
+offset_top = -260.0
+offset_right = -24.0
+offset_bottom = -24.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 1
+
+[node name="BtnJump" type="Control" parent="ButtonsContainer"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -84.0
+offset_top = -84.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 0
+script = ExtResource("4_button")
+action_name = "jump"
+button_label = "JUMP"
+base_color = Color(0.1, 0.14, 0.22, 0.6)
+pressed_color = Color(0.9, 0.9, 0.95, 0.9)
+
+[node name="BtnSprint" type="Control" parent="ButtonsContainer"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -78.0
+offset_top = -175.0
+offset_right = -6.0
+offset_bottom = -103.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 0
+script = ExtResource("4_button")
+action_name = "sprint"
+button_label = "RUN"
+is_toggle_button = true
+base_color = Color(0.1, 0.14, 0.22, 0.6)
+active_color = Color(0.9, 0.65, 0.15, 0.85)
+
+[node name="BtnInteract" type="Control" parent="ButtonsContainer"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -175.0
+offset_top = -80.0
+offset_right = -103.0
+offset_bottom = -8.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 0
+script = ExtResource("4_button")
+action_name = "interact"
+button_label = "E"
+base_color = Color(0.1, 0.14, 0.22, 0.6)
+pressed_color = Color(0.3, 0.75, 0.95, 0.9)

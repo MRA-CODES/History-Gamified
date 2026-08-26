@@ -1,5 +1,7 @@
 extends Node3D
 
+const StonehengeRimData = preload("res://scripts/stonehenge_rim_data.gd")
+
 # -----------------------------------------------------------------------------
 # Node References
 # -----------------------------------------------------------------------------
@@ -24,11 +26,11 @@ var noise: FastNoiseLite = null
 # Lifecycle
 # -----------------------------------------------------------------------------
 func _ready() -> void:
-	# 0. Disable stair climbing animations for open landscape terrain
+	# 0. Configure player locomotion
 	if player:
 		player.allow_stair_animation = false
 		
-	# 1. Initialize terrain noise
+	# 1. Initialize rolling landscape noise
 	noise = FastNoiseLite.new()
 	noise.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH
 	noise.seed = 4289
@@ -36,13 +38,13 @@ func _ready() -> void:
 	noise.fractal_octaves = 3
 	noise.fractal_gain = 0.35
 	
-	# 2. Generate surrounding terrain strictly outside the Stonehenge model
-	_generate_3d_grassland_terrain()
+	# 2. Generate conforming terrain starting exactly at the Stonehenge GLB boundary
+	_generate_conforming_terrain()
 	
-	# 3. Add realistic 3D waving grass billboards ONLY on the outer surrounding terrain
+	# 3. Add 3D waving grass billboards outside the monument perimeter
 	_populate_surrounding_3d_grass()
 	
-	# 4. Generate 1:1 solid Trimesh collisions for all original Stonehenge stones & terrain
+	# 4. Generate 1:1 solid Trimesh collisions for Stonehenge stones and terrain
 	_generate_trimesh_collisions(stonehenge_model)
 	
 	# 5. Fade in on scene start
@@ -52,11 +54,9 @@ func _ready() -> void:
 		var tween = create_tween()
 		tween.tween_property(fade_rect, "modulate:a", 0.0, 0.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 		
-	# 6. Setup Pause Menu initial state
+	# 6. Setup Pause Menu
 	if pause_menu:
 		pause_menu.visible = false
-		
-	# 7. Connect Pause Menu buttons
 	if btn_resume:
 		btn_resume.pressed.connect(_toggle_pause_menu)
 	if btn_restart:
@@ -66,44 +66,43 @@ func _ready() -> void:
 	if btn_quit:
 		btn_quit.pressed.connect(_on_quit_pressed)
 		
-	# 8. Capture mouse for free first-person look
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 func _unhandled_input(event: InputEvent) -> void:
 	if is_transitioning:
 		return
-		
-	# Toggle Pause Menu when pressing Escape
 	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
 		_toggle_pause_menu()
 		get_viewport().set_input_as_handled()
 
 # -----------------------------------------------------------------------------
-# Terrain Height Function (Strictly External to Stonehenge)
+# Elevation Conformity Function
 # -----------------------------------------------------------------------------
-func _get_outer_terrain_height(radius: float, angle: float) -> float:
-	var rim_r = 31.0
-	if radius <= rim_r:
-		return -0.25 # Cleanly below model rim
-		
-	var dist_out = radius - rim_r
+func _get_conforming_height(radius: float, angle: float) -> float:
+	var boundary_info = StonehengeRimData.get_boundary_at_angle(angle)
+	var bound_r = boundary_info.x
+	var bound_y = boundary_info.y
+	
+	# Transition zone from boundary outward (45 meters)
+	var dist_out = max(0.0, radius - bound_r)
 	var blend_t = clampf(dist_out / 45.0, 0.0, 1.0)
-	var smooth_t = blend_t * blend_t * (3.0 - 2.0 * blend_t)
+	var smooth_t = blend_t * blend_t * (3.0 - 2.0 * blend_t) # Smooth Hermite curve
 	
 	var px = cos(angle) * radius
 	var pz = sin(angle) * radius
-	var hill_height = (noise.get_noise_2d(px, pz) * 6.5 - 0.25)
+	var landscape_h = noise.get_noise_2d(px, pz) * 6.5 - 0.2
 	
-	return lerp(-0.25, hill_height, smooth_t)
+	# Start at exact boundary elevation and blend smoothly outward
+	return lerp(bound_y - 0.02, landscape_h, smooth_t)
 
 # -----------------------------------------------------------------------------
-# 3D Procedural Salisbury Grassland Terrain Generator
+# 3D Conforming Procedural Terrain Generator
 # -----------------------------------------------------------------------------
-func _generate_3d_grassland_terrain() -> void:
+func _generate_conforming_terrain() -> void:
 	if not plains_ring:
 		return
 		
-	# 1. Setup PBR Grass Material with exact photogrammetry textures
+	# 1. Setup PBR Grass Material matching photogrammetry turf
 	var mat = StandardMaterial3D.new()
 	mat.albedo_color = Color(1.0, 1.0, 1.0, 1.0)
 	
@@ -126,54 +125,67 @@ func _generate_3d_grassland_terrain() -> void:
 	mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
 	plains_ring.material_override = mat
 	
-	# 2. Procedural Mesh Generation (Starts at 31.0m, leaving 0-31m 100% open for Stonehenge)
+	# 2. Build Conforming Mesh from Boundary Outward
 	var st = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	
-	var inner_r = 31.0 # Strictly at the model outer perimeter
 	var outer_r = 750.0
-	var ring_steps = 36
-	var radial_steps = 96
+	var ring_steps = 40
+	var radial_steps = 128
 	
 	for ring in range(ring_steps):
 		var t1 = float(ring) / float(ring_steps)
 		var t2 = float(ring + 1) / float(ring_steps)
 		
-		var r1 = lerp(inner_r, outer_r, pow(t1, 1.35))
-		var r2 = lerp(inner_r, outer_r, pow(t2, 1.35))
+		# Exponential radial distribution: dense rings near boundary, sparser at horizon
+		var factor1 = pow(t1, 1.35)
+		var factor2 = pow(t2, 1.35)
 		
 		for rad in range(radial_steps):
 			var a1 = (float(rad) / radial_steps) * TAU
 			var a2 = (float(rad + 1) / radial_steps) * TAU
 			
-			var x1_1 = cos(a1) * r1
-			var z1_1 = sin(a1) * r1
-			var y1_1 = _get_outer_terrain_height(r1, a1)
+			# Sample exact GLB boundary at angles a1 and a2
+			var bound1 = StonehengeRimData.get_boundary_at_angle(a1)
+			var bound2 = StonehengeRimData.get_boundary_at_angle(a2)
 			
-			var x1_2 = cos(a2) * r1
-			var z1_2 = sin(a2) * r1
-			var y1_2 = _get_outer_terrain_height(r1, a2)
+			# Ring 0 starts with a tight 30cm underlap directly at the GLB perimeter
+			var r_start1 = bound1.x - 0.3
+			var r_start2 = bound2.x - 0.3
 			
-			var x2_1 = cos(a1) * r2
-			var z2_1 = sin(a1) * r2
-			var y2_1 = _get_outer_terrain_height(r2, a1)
+			var r1_1 = lerp(r_start1, outer_r, factor1)
+			var r1_2 = lerp(r_start2, outer_r, factor1)
 			
-			var x2_2 = cos(a2) * r2
-			var z2_2 = sin(a2) * r2
-			var y2_2 = _get_outer_terrain_height(r2, a2)
+			var r2_1 = lerp(r_start1, outer_r, factor2)
+			var r2_2 = lerp(r_start2, outer_r, factor2)
+			
+			var x1_1 = cos(a1) * r1_1
+			var z1_1 = sin(a1) * r1_1
+			var y1_1 = _get_conforming_height(r1_1, a1)
+			
+			var x1_2 = cos(a2) * r1_2
+			var z1_2 = sin(a2) * r1_2
+			var y1_2 = _get_conforming_height(r1_2, a2)
+			
+			var x2_1 = cos(a1) * r2_1
+			var z2_1 = sin(a1) * r2_1
+			var y2_1 = _get_conforming_height(r2_1, a1)
+			
+			var x2_2 = cos(a2) * r2_2
+			var z2_2 = sin(a2) * r2_2
+			var y2_2 = _get_conforming_height(r2_2, a2)
 			
 			var p1 = Vector3(x1_1, y1_1, z1_1)
 			var p2 = Vector3(x1_2, y1_2, z1_2)
 			var p3 = Vector3(x2_1, y2_1, z2_1)
 			var p4 = Vector3(x2_2, y2_2, z2_2)
 			
-			# Tiled UVs mapping every 10.0 meters
 			var uv1 = Vector2(x1_1, z1_1) / 10.0
 			var uv2 = Vector2(x1_2, z1_2) / 10.0
 			var uv3 = Vector2(x2_1, z2_1) / 10.0
 			var uv4 = Vector2(x2_2, z2_2) / 10.0
 			
-			# Triangle 1
+			# Quad Triangle 1
 			st.set_uv(uv1)
 			st.add_vertex(p1)
 			st.set_uv(uv3)
@@ -181,7 +193,7 @@ func _generate_3d_grassland_terrain() -> void:
 			st.set_uv(uv4)
 			st.add_vertex(p4)
 			
-			# Triangle 2
+			# Quad Triangle 2
 			st.set_uv(uv1)
 			st.add_vertex(p1)
 			st.set_uv(uv4)
@@ -194,7 +206,7 @@ func _generate_3d_grassland_terrain() -> void:
 	var terrain_mesh = st.commit()
 	plains_ring.mesh = terrain_mesh
 	
-	# Solid collision for outer terrain
+	# Solid collision matching conforming terrain
 	var trimesh = terrain_mesh.create_trimesh_shape()
 	if trimesh:
 		var sb = StaticBody3D.new()
@@ -204,7 +216,7 @@ func _generate_3d_grassland_terrain() -> void:
 		plains_ring.add_child(sb)
 
 # -----------------------------------------------------------------------------
-# 3D Waving Grass Blades (Strictly outside Stonehenge)
+# 3D Waving Grass Blades
 # -----------------------------------------------------------------------------
 func _populate_surrounding_3d_grass() -> void:
 	var foliage_node = get_node_or_null("Foliage")
@@ -215,7 +227,6 @@ func _populate_surrounding_3d_grass() -> void:
 	foliage_node.name = "Foliage"
 	add_child(foliage_node)
 	
-	# Setup grass billboard material with alpha scissor
 	var grass_mat = StandardMaterial3D.new()
 	var blade_path = "res://assets/environment/buildings/Map 2-StoneHenge/grass_blade_diffuse.png"
 	var img_blade = Image.load_from_file(ProjectSettings.globalize_path(blade_path))
@@ -229,7 +240,6 @@ func _populate_surrounding_3d_grass() -> void:
 	grass_mat.roughness = 0.95
 	grass_mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
 	
-	# Create cross-quad grass tuft geometry (3 intersecting vertical quads)
 	var st = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	
@@ -246,7 +256,6 @@ func _populate_surrounding_3d_grass() -> void:
 		var v3 = Vector3(dx, h, dz)
 		var v4 = Vector3(-dx, h, -dz)
 		
-		# Front Face
 		st.set_normal(Vector3.UP)
 		st.set_uv(Vector2(0, 1))
 		st.add_vertex(v1)
@@ -282,10 +291,12 @@ func _populate_surrounding_3d_grass() -> void:
 	
 	for i in range(tuft_count):
 		var ang = rng.randf_range(0, TAU)
-		var dist = rng.randf_range(36.0, 140.0)
+		var bound_r = StonehengeRimData.get_boundary_at_angle(ang).x
+		var dist = rng.randf_range(bound_r + 4.0, bound_r + 90.0)
+		
 		var gx = cos(ang) * dist
 		var gz = sin(ang) * dist
-		var gy = _get_outer_terrain_height(dist, ang)
+		var gy = _get_conforming_height(dist, ang)
 		
 		var s = rng.randf_range(0.8, 1.35)
 		var rot_y = rng.randf_range(0, TAU)
@@ -303,18 +314,14 @@ func _populate_surrounding_3d_grass() -> void:
 # -----------------------------------------------------------------------------
 func _toggle_pause_menu() -> void:
 	is_paused = not is_paused
-	
 	if pause_menu:
 		pause_menu.visible = is_paused
-		
 	if is_paused:
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-		if bottom_hint:
-			bottom_hint.visible = false
+		if bottom_hint: bottom_hint.visible = false
 	else:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-		if bottom_hint:
-			bottom_hint.visible = true
+		if bottom_hint: bottom_hint.visible = true
 
 func _on_restart_pressed() -> void:
 	_toggle_pause_menu()
@@ -326,9 +333,7 @@ func _on_main_menu_pressed() -> void:
 	if is_transitioning:
 		return
 	is_transitioning = true
-	
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-	
 	if fade_rect:
 		var tween = create_tween()
 		tween.tween_property(fade_rect, "modulate:a", 1.0, 0.35).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)

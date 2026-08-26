@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://df7w8y1r2k4m5" path="res://scripts/player.gd" id="1_script"]
 [ext_resource type="PackedScene" uid="uid://gupkafefkhol" path="res://assets/characters/Happy Idle.fbx" id="2_model"]
+[ext_resource type="PackedScene" uid="uid://bv6j4k8l1m2n3" path="res://scenes/mobile/mobile_controls.tscn" id="3_mobile"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_player"]
 radius = 0.35
@@ -35,3 +36,6 @@ margin = 0.2
 [node name="Camera3D" type="Camera3D" parent="CameraPivot/SpringArm3D"]
 current = true
 fov = 75.0
+
+[node name="MobileControls" parent="." instance=ExtResource("3_mobile")]
+

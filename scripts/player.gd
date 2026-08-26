@@ -110,6 +110,16 @@ func _input(event: InputEvent) -> void:
 		if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
 			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
+func rotate_camera_relative(relative_motion: Vector2, sensitivity_scale: float = 1.0) -> void:
+	if not is_movement_enabled or not camera_pivot or not spring_arm:
+		return
+	camera_rot_y -= relative_motion.x * sensitivity_scale
+	camera_rot_x -= relative_motion.y * sensitivity_scale
+	camera_rot_x = clampf(camera_rot_x, deg_to_rad(-75.0), deg_to_rad(60.0))
+	
+	camera_pivot.rotation.y = camera_rot_y
+	spring_arm.rotation.x = camera_rot_x
+
 # -----------------------------------------------------------------------------
 # Physics & Movement Loop
 # -----------------------------------------------------------------------------
