@@ -1,0 +1,344 @@
+[gd_scene format=3 uid="uid://bryf1vj2y7x5g"]
+
+[ext_resource type="Script" uid="uid://bc6ukyt2q3yqp" path="res://scripts/agra_world.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://bhvov7mqrad0o" path="res://assets/environment/buildings/Map 4 - Taj Mahal_Buildings/TajMahal (lowpoly).glb" id="2_taj_model"]
+[ext_resource type="Terrain3DAssets" uid="uid://delkgyd8odypk" path="res://assets/terrain/MAp 4- TAJ MAHAL_Terrain/taj_mahal_terrain_assets.tres" id="3_taj_assets"]
+[ext_resource type="PackedScene" uid="uid://c6f3k0p8m5y21" path="res://scenes/player.tscn" id="4_player"]
+
+[sub_resource type="ProceduralSkyMaterial" id="SkyMat_Agra"]
+sky_top_color = Color(0.24, 0.48, 0.85, 1)
+sky_horizon_color = Color(0.96, 0.82, 0.68, 1)
+ground_bottom_color = Color(0.22, 0.18, 0.14, 1)
+ground_horizon_color = Color(0.85, 0.74, 0.6, 1)
+sun_angle_max = 30.0
+
+[sub_resource type="Sky" id="Sky_Agra"]
+sky_material = SubResource("SkyMat_Agra")
+
+[sub_resource type="Environment" id="Env_Agra"]
+background_mode = 2
+sky = SubResource("Sky_Agra")
+ambient_light_source = 3
+ambient_light_color = Color(0.98, 0.92, 0.84, 1)
+ambient_light_sky_contribution = 0.75
+ambient_light_energy = 0.85
+tonemap_mode = 3
+tonemap_exposure = 1.08
+tonemap_white = 1.0
+ssao_enabled = true
+ssao_radius = 2.5
+ssao_intensity = 2.2
+ssao_power = 1.5
+ssao_detail = 0.5
+ssao_horizon = 0.06
+ssao_sharpness = 0.98
+ssao_light_affect = 0.6
+ssao_ao_channel_affect = 0.5
+ssil_enabled = true
+ssil_radius = 5.0
+ssil_intensity = 1.2
+ssil_sharpness = 0.9
+ssil_normal_rejection = 1.0
+sdfgi_enabled = true
+sdfgi_use_occlusion = true
+sdfgi_read_sky_light = true
+sdfgi_cascades = 6
+sdfgi_min_cell_size = 0.4
+sdfgi_cascade0_distance = 12.8
+sdfgi_max_distance = 819.2
+sdfgi_y_scale = 1
+sdfgi_energy = 1.15
+glow_enabled = true
+glow_normalized = true
+glow_intensity = 0.35
+glow_bloom = 0.12
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.003
+volumetric_fog_albedo = Color(0.92, 0.94, 0.98, 1)
+volumetric_fog_emission = Color(0.12, 0.15, 0.2, 1)
+volumetric_fog_emission_energy = 0.3
+volumetric_fog_anisotropy = 0.35
+volumetric_fog_length = 350.0
+volumetric_fog_detail_spread = 2.0
+volumetric_fog_sky_affect = 0.15
+fog_enabled = true
+fog_light_color = Color(0.92, 0.94, 0.98, 1)
+fog_density = 0.001
+fog_height = 32.0
+fog_height_density = -0.06
+
+[sub_resource type="Gradient" id="Gradient_3bmby"]
+offsets = PackedFloat32Array(0.2, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_4o1to"]
+noise_type = 2
+frequency = 0.03
+cellular_jitter = 3.0
+cellular_return_type = 0
+domain_warp_enabled = true
+domain_warp_type = 1
+domain_warp_amplitude = 50.0
+domain_warp_fractal_type = 2
+domain_warp_fractal_lacunarity = 1.5
+domain_warp_fractal_gain = 1.0
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_dl3w5"]
+noise = SubResource("FastNoiseLite_4o1to")
+color_ramp = SubResource("Gradient_3bmby")
+seamless = true
+
+[sub_resource type="Terrain3DMaterial" id="Terrain3DMaterial_uprpe"]
+_shader_parameters = {
+&"bias_distance": null,
+&"blend_sharpness": null,
+&"depth_blur": null,
+&"enable_macro_variation": null,
+&"enable_projection": null,
+&"flat_terrain_normals": null,
+&"macro_variation1": null,
+&"macro_variation2": null,
+&"macro_variation_slope": null,
+&"mipmap_bias": null,
+&"noise1_angle": null,
+&"noise1_offset": null,
+&"noise1_scale": null,
+&"noise2_scale": null,
+&"noise_texture": SubResource("NoiseTexture2D_dl3w5"),
+&"projection_threshold": null
+}
+world_background = 0
+show_checkered = false
+auto_shader = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_PausePanel"]
+bg_color = Color(0.08, 0.09, 0.14, 0.96)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.85, 0.7, 0.28, 0.9)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0, 0, 0, 0.8)
+shadow_size = 24
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_BtnNormal"]
+bg_color = Color(0.13, 0.16, 0.22, 0.95)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.85, 0.7, 0.28, 0.7)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_BtnHover"]
+bg_color = Color(0.22, 0.26, 0.36, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.85, 0.4, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[node name="AgraWorld" type="Node3D" unique_id=1964223806]
+script = ExtResource("1_script")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=903498598]
+environment = SubResource("Env_Agra")
+
+[node name="SunLight" type="DirectionalLight3D" parent="." unique_id=112781786]
+transform = Transform3D(0.819152, -0.40558, 0.40558, 0, 0.707107, 0.707107, -0.573576, -0.579228, 0.579228, -125.844, 120, -131.457)
+light_color = Color(1, 0.92, 0.78, 1)
+light_energy = 1.45
+light_volumetric_fog_energy = 1.6
+light_angular_distance = 0.65
+shadow_enabled = true
+shadow_bias = 0.02
+shadow_normal_bias = 1.5
+shadow_blur = 1.2
+directional_shadow_mode = 2
+directional_shadow_split_1 = 0.08
+directional_shadow_split_2 = 0.2
+directional_shadow_split_3 = 0.5
+directional_shadow_blend_splits = true
+directional_shadow_max_distance = 500.0
+directional_shadow_pancake_size = 35.0
+
+[node name="OverviewCamera" type="Camera3D" parent="." unique_id=1575501922]
+transform = Transform3D(1, 0, 0, 0, 0.996272, 0.08627, 0, -0.08627, 0.996272, -125.844, 52, 30)
+current = false
+fov = 65.0
+far = 2000.0
+
+[node name="Player" parent="." unique_id=339182947 instance=ExtResource("4_player")]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -125.844, 34, 40)
+
+[node name="Terrain3D" type="Terrain3D" parent="." unique_id=411636145]
+data_directory = "res://data/terrain/map4"
+material = SubResource("Terrain3DMaterial_uprpe")
+assets = ExtResource("3_taj_assets")
+show_checkered = false
+top_level = true
+metadata/_edit_lock_ = true
+
+[node name="TajMahalContainer" type="Node3D" parent="." unique_id=127842074]
+
+[node name="TajMahalModel" parent="TajMahalContainer" unique_id=414871221 instance=ExtResource("2_taj_model")]
+transform = Transform3D(0.196, 0, 0, 0, 0.196, 0, 0, 0, 0.196, -125.844, 32.84, -131.457)
+
+[node name="UI" type="CanvasLayer" parent="." unique_id=912746398]
+
+[node name="BottomInfo" type="Control" parent="UI" unique_id=811808778]
+layout_mode = 3
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -340.0
+offset_top = -65.0
+offset_right = 340.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+
+[node name="Panel" type="PanelContainer" parent="UI/BottomInfo" unique_id=1452550777]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBox_PausePanel")
+
+[node name="Margin" type="MarginContainer" parent="UI/BottomInfo/Panel" unique_id=1219823768]
+layout_mode = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_right = 15
+
+[node name="Label" type="Label" parent="UI/BottomInfo/Panel/Margin" unique_id=1125405756]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.7, 1)
+theme_override_font_sizes/font_size = 13
+text = "Taj Mahal • [WASD] Move • [Shift] Sprint • [Space] Jump • [V] FreeCam / Player • [Esc] Menu"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PauseMenu" type="Control" parent="UI" unique_id=1846904381]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BackgroundDim" type="ColorRect" parent="UI/PauseMenu" unique_id=1347633777]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.65)
+
+[node name="CenterContainer" type="CenterContainer" parent="UI/PauseMenu" unique_id=733736503]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="UI/PauseMenu/CenterContainer" unique_id=710943799]
+custom_minimum_size = Vector2(380, 320)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_PausePanel")
+
+[node name="Margin" type="MarginContainer" parent="UI/PauseMenu/CenterContainer/Panel" unique_id=388467145]
+layout_mode = 2
+theme_override_constants/margin_left = 30
+theme_override_constants/margin_top = 25
+theme_override_constants/margin_right = 30
+theme_override_constants/margin_bottom = 25
+
+[node name="VBox" type="VBoxContainer" parent="UI/PauseMenu/CenterContainer/Panel/Margin" unique_id=252433276]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="Title" type="Label" parent="UI/PauseMenu/CenterContainer/Panel/Margin/VBox" unique_id=1843290247]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.88, 0.45, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 24
+text = "TAJ MAHAL"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="UI/PauseMenu/CenterContainer/Panel/Margin/VBox" unique_id=339674862]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.82, 0.88, 0.9)
+theme_override_font_sizes/font_size = 13
+text = "Agra, India • Built 1632 – 1653 CE"
+horizontal_alignment = 1
+
+[node name="Divider" type="ColorRect" parent="UI/PauseMenu/CenterContainer/Panel/Margin/VBox" unique_id=1154024212]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+color = Color(0.85, 0.7, 0.28, 0.5)
+
+[node name="BtnResume" type="Button" parent="UI/PauseMenu/CenterContainer/Panel/Margin/VBox" unique_id=2045826335]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.7, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBox_BtnNormal")
+theme_override_styles/hover = SubResource("StyleBox_BtnHover")
+text = "▶  Resume Exploration"
+
+[node name="BtnRestart" type="Button" parent="UI/PauseMenu/CenterContainer/Panel/Margin/VBox" unique_id=145787878]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.9, 0.95, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBox_BtnNormal")
+theme_override_styles/hover = SubResource("StyleBox_BtnHover")
+text = "↺  Restart View"
+
+[node name="BtnMainMenu" type="Button" parent="UI/PauseMenu/CenterContainer/Panel/Margin/VBox" unique_id=241815964]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.9, 0.95, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBox_BtnNormal")
+theme_override_styles/hover = SubResource("StyleBox_BtnHover")
+text = "⟵  Return to Main Menu"
+
+[node name="BtnQuit" type="Button" parent="UI/PauseMenu/CenterContainer/Panel/Margin/VBox" unique_id=1234060372]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.65, 0.65, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBox_BtnNormal")
+theme_override_styles/hover = SubResource("StyleBox_BtnHover")
+text = "✕  Exit to Desktop"
+
+[node name="FadeOverlay" type="ColorRect" parent="UI" unique_id=1278632179]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)

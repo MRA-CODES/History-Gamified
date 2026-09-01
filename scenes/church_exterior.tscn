@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dltloiy52jwm4"]
 
-[ext_resource type="PackedScene" uid="uid://hewt3r4d6eo8" path="res://assets/environment/buildings/Map 1-NHM Museum/Exterior NHM London .glb" id="1_ext"]
+[ext_resource type="PackedScene" uid="uid://hewt3r4d6eo8" path="res://assets/environment/buildings/Map 1-NHM Museum/Exterior NHM London.glb" id="1_ext"]
 [ext_resource type="Script" uid="uid://csyjnln3bhrlh" path="res://scripts/church_exterior.gd" id="1_scene_script"]
 [ext_resource type="PackedScene" uid="uid://dnixestf2owhy" path="res://assets/environment/buildings/Map 1-NHM Museum/NHM London.glb" id="2_int"]
 [ext_resource type="PackedScene" uid="uid://c6f3k0p8m5y21" path="res://scenes/player.tscn" id="4_player"]

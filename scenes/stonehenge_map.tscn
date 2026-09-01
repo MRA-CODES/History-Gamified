@@ -1,15 +1,14 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://bc21c2od7yfff"]
 
-[ext_resource type="Script" path="res://scripts/stonehenge_map.gd" id="1_script"]
-[ext_resource type="PackedScene" path="res://assets/environment/buildings/Map 2-StoneHenge/StoneHenge Big.glb" id="2_model"]
-[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="3_player"]
+[ext_resource type="Script" uid="uid://bsskjl5vka7dk" path="res://scripts/stonehenge_map.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://q8o8a1ff8ymu" path="res://assets/environment/buildings/Map 2-StoneHenge/StoneHenge Big.glb" id="2_model"]
+[ext_resource type="PackedScene" uid="uid://c6f3k0p8m5y21" path="res://scenes/player.tscn" id="3_player"]
 
 [sub_resource type="ProceduralSkyMaterial" id="SkyMat_Daytime"]
 sky_top_color = Color(0.32, 0.58, 0.92, 1)
 sky_horizon_color = Color(0.72, 0.84, 0.96, 1)
 ground_bottom_color = Color(0.24, 0.38, 0.16, 1)
 ground_horizon_color = Color(0.55, 0.72, 0.45, 1)
-sun_angle_max = 30.0
 
 [sub_resource type="Sky" id="Sky_Daytime"]
 sky_material = SubResource("SkyMat_Daytime")
@@ -18,7 +17,7 @@ sky_material = SubResource("SkyMat_Daytime")
 background_mode = 2
 sky = SubResource("Sky_Daytime")
 ambient_light_source = 3
-ambient_light_color = Color(0.85, 0.92, 1.0, 1)
+ambient_light_color = Color(0.85, 0.92, 1, 1)
 ambient_light_energy = 0.95
 tonemap_mode = 2
 tonemap_exposure = 1.05
@@ -29,12 +28,24 @@ fog_enabled = true
 fog_light_color = Color(0.75, 0.86, 0.95, 1)
 fog_density = 0.001
 
+[sub_resource type="BoxShape3D" id="Shape_SafetyFloor"]
+size = Vector3(800, 1, 800)
+
 [sub_resource type="StandardMaterial3D" id="Mat_MeadowGrass"]
 albedo_color = Color(0.42, 0.62, 0.25, 1)
 roughness = 0.9
 
-[sub_resource type="BoxShape3D" id="Shape_SafetyFloor"]
-size = Vector3(800, 1, 800)
+[sub_resource type="StyleBoxFlat" id="StyleBox_HintBanner"]
+bg_color = Color(0.06, 0.08, 0.12, 0.7)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.85, 0.7, 0.28, 0.5)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
 
 [sub_resource type="StyleBoxFlat" id="StyleBox_PausePanel"]
 bg_color = Color(0.07, 0.09, 0.14, 0.96)
@@ -74,51 +85,39 @@ corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
-[sub_resource type="StyleBoxFlat" id="StyleBox_HintBanner"]
-bg_color = Color(0.06, 0.08, 0.12, 0.7)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.85, 0.7, 0.28, 0.5)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
-
-[node name="StonehengeMap" type="Node3D"]
+[node name="StonehengeMap" type="Node3D" unique_id=1579448468]
 script = ExtResource("1_script")
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1466663428]
 environment = SubResource("Env_Stonehenge")
 
-[node name="SunLight" type="DirectionalLight3D" parent="."]
+[node name="SunLight" type="DirectionalLight3D" parent="." unique_id=1451473545]
 transform = Transform3D(0.866025, 0.25, -0.433013, 0, 0.866025, 0.5, 0.5, -0.433013, 0.75, 0, 50, 0)
 light_color = Color(1, 0.98, 0.92, 1)
 light_energy = 1.25
 shadow_enabled = true
 
-[node name="SafetyCollisionFloor" type="StaticBody3D" parent="."]
+[node name="SafetyCollisionFloor" type="StaticBody3D" parent="." unique_id=467393076]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.2, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="SafetyCollisionFloor"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SafetyCollisionFloor" unique_id=288237264]
 shape = SubResource("Shape_SafetyFloor")
 
-[node name="SurroundingPlainsRing" type="MeshInstance3D" parent="."]
+[node name="SurroundingPlainsRing" type="MeshInstance3D" parent="." unique_id=1021078333]
 material_override = SubResource("Mat_MeadowGrass")
 
-[node name="StonehengeModel" type="Node3D" parent="."]
+[node name="StonehengeModel" type="Node3D" parent="." unique_id=453702168]
 transform = Transform3D(1.65, 0, 0, 0, 1.65, 0, 0, 0, 1.65, 0, 39.6, 0)
 
-[node name="MeshInstance" parent="StonehengeModel" instance=ExtResource("2_model")]
+[node name="MeshInstance" parent="StonehengeModel" unique_id=947192820 instance=ExtResource("2_model")]
 
-[node name="Player" parent="." instance=ExtResource("3_player")]
-transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 0, 1.2, 24.0)
+[node name="Player" parent="." unique_id=1586050146 instance=ExtResource("3_player")]
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 0, 1.2, 24)
 
-[node name="UI" type="CanvasLayer" parent="."]
+[node name="UI" type="CanvasLayer" parent="." unique_id=230928524]
 layer = 50
 
-[node name="BottomHint" type="PanelContainer" parent="UI"]
+[node name="BottomHint" type="PanelContainer" parent="UI" unique_id=1144404305]
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
@@ -132,7 +131,7 @@ grow_horizontal = 2
 grow_vertical = 0
 theme_override_styles/panel = SubResource("StyleBox_HintBanner")
 
-[node name="Label" type="Label" parent="UI/BottomHint"]
+[node name="Label" type="Label" parent="UI/BottomHint" unique_id=46287976]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.85, 0.88, 0.92, 0.8)
 theme_override_font_sizes/font_size = 12
@@ -140,7 +139,7 @@ text = "[ W/A/S/D ] Walk  •  [ Shift ] Sprint  •  [ Space ] Jump  •  [ Esc
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="PauseMenu" type="Control" parent="UI"]
+[node name="PauseMenu" type="Control" parent="UI" unique_id=1934385748]
 visible = false
 layout_mode = 3
 anchors_preset = 15
@@ -149,7 +148,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="DimOverlay" type="ColorRect" parent="UI/PauseMenu"]
+[node name="DimOverlay" type="ColorRect" parent="UI/PauseMenu" unique_id=1025279430]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -158,7 +157,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.6)
 
-[node name="CenterContainer" type="CenterContainer" parent="UI/PauseMenu"]
+[node name="CenterContainer" type="CenterContainer" parent="UI/PauseMenu" unique_id=558093980]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -166,24 +165,24 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Panel" type="PanelContainer" parent="UI/PauseMenu/CenterContainer"]
+[node name="Panel" type="PanelContainer" parent="UI/PauseMenu/CenterContainer" unique_id=1113265056]
 custom_minimum_size = Vector2(440, 420)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBox_PausePanel")
 
-[node name="Margin" type="MarginContainer" parent="UI/PauseMenu/CenterContainer/Panel"]
+[node name="Margin" type="MarginContainer" parent="UI/PauseMenu/CenterContainer/Panel" unique_id=140258795]
 layout_mode = 2
 theme_override_constants/margin_left = 30
 theme_override_constants/margin_top = 25
 theme_override_constants/margin_right = 30
 theme_override_constants/margin_bottom = 25
 
-[node name="VBox" type="VBoxContainer" parent="UI/PauseMenu/CenterContainer/Panel/Margin"]
+[node name="VBox" type="VBoxContainer" parent="UI/PauseMenu/CenterContainer/Panel/Margin" unique_id=1807346986]
 layout_mode = 2
 theme_override_constants/separation = 16
 alignment = 1
 
-[node name="Title" type="Label" parent="UI/PauseMenu/CenterContainer/Panel/Margin/VBox"]
+[node name="Title" type="Label" parent="UI/PauseMenu/CenterContainer/Panel/Margin/VBox" unique_id=813437549]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.88, 0.45, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
@@ -192,19 +191,19 @@ theme_override_font_sizes/font_size = 24
 text = "STONEHENGE"
 horizontal_alignment = 1
 
-[node name="Subtitle" type="Label" parent="UI/PauseMenu/CenterContainer/Panel/Margin/VBox"]
+[node name="Subtitle" type="Label" parent="UI/PauseMenu/CenterContainer/Panel/Margin/VBox" unique_id=1193801537]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.8, 0.82, 0.88, 0.9)
 theme_override_font_sizes/font_size = 13
 text = "Salisbury Plain, England • c. 3000 – 2000 BCE"
 horizontal_alignment = 1
 
-[node name="Divider" type="ColorRect" parent="UI/PauseMenu/CenterContainer/Panel/Margin/VBox"]
+[node name="Divider" type="ColorRect" parent="UI/PauseMenu/CenterContainer/Panel/Margin/VBox" unique_id=869918235]
 custom_minimum_size = Vector2(0, 1)
 layout_mode = 2
 color = Color(0.85, 0.7, 0.28, 0.5)
 
-[node name="BtnResume" type="Button" parent="UI/PauseMenu/CenterContainer/Panel/Margin/VBox"]
+[node name="BtnResume" type="Button" parent="UI/PauseMenu/CenterContainer/Panel/Margin/VBox" unique_id=1985372233]
 custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.9, 0.7, 1)
@@ -213,7 +212,7 @@ theme_override_styles/normal = SubResource("StyleBox_BtnNormal")
 theme_override_styles/hover = SubResource("StyleBox_BtnHover")
 text = "▶  Resume Exploration"
 
-[node name="BtnRestart" type="Button" parent="UI/PauseMenu/CenterContainer/Panel/Margin/VBox"]
+[node name="BtnRestart" type="Button" parent="UI/PauseMenu/CenterContainer/Panel/Margin/VBox" unique_id=1367134819]
 custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.88, 0.9, 0.95, 1)
@@ -222,7 +221,7 @@ theme_override_styles/normal = SubResource("StyleBox_BtnNormal")
 theme_override_styles/hover = SubResource("StyleBox_BtnHover")
 text = "↺  Reset Spawn Position"
 
-[node name="BtnMainMenu" type="Button" parent="UI/PauseMenu/CenterContainer/Panel/Margin/VBox"]
+[node name="BtnMainMenu" type="Button" parent="UI/PauseMenu/CenterContainer/Panel/Margin/VBox" unique_id=38582133]
 custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.88, 0.9, 0.95, 1)
@@ -231,7 +230,7 @@ theme_override_styles/normal = SubResource("StyleBox_BtnNormal")
 theme_override_styles/hover = SubResource("StyleBox_BtnHover")
 text = "⟵  Return to Main Menu"
 
-[node name="BtnQuit" type="Button" parent="UI/PauseMenu/CenterContainer/Panel/Margin/VBox"]
+[node name="BtnQuit" type="Button" parent="UI/PauseMenu/CenterContainer/Panel/Margin/VBox" unique_id=970458383]
 custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.65, 0.65, 1)
@@ -240,7 +239,7 @@ theme_override_styles/normal = SubResource("StyleBox_BtnNormal")
 theme_override_styles/hover = SubResource("StyleBox_BtnHover")
 text = "✕  Exit to Desktop"
 
-[node name="FadeOverlay" type="ColorRect" parent="UI"]
+[node name="FadeOverlay" type="ColorRect" parent="UI" unique_id=452876883]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0

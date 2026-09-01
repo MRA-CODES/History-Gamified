@@ -49,15 +49,50 @@ func _ready() -> void:
 			btn.mouse_entered.connect(func(): _on_card_hover(card_stonehenge, true))
 			btn.mouse_exited.connect(func(): _on_card_hover(card_stonehenge, false))
 
-	# 5. Connect Locked Cards (Cards 3 through 6)
+	# 5. Connect Card 3: Roman Colosseum
 	var grid = $MainContainer/GridContainer
 	if grid:
-		for i in range(3, 7):
+		var card_3 = grid.get_node_or_null("Card_Locked_3")
+		if card_3:
+			var title_lbl3 = card_3.get_node_or_null("Content/HeaderRow/TitleLabel")
+			if title_lbl3:
+				title_lbl3.text = "03. Colosseum, Rome"
+			var badge_lbl3 = card_3.get_node_or_null("Content/HeaderRow/StatusBadge")
+			if badge_lbl3:
+				badge_lbl3.text = " EXPLORE "
+			var desc_lbl3 = card_3.get_node_or_null("Content/DescriptionLabel")
+			if desc_lbl3:
+				desc_lbl3.text = "Explore the legendary Roman Colosseum arena, vaulted arcades, and Roman surroundings."
+			var btn3 = card_3.get_node_or_null("CardButton")
+			if btn3:
+				btn3.pressed.connect(_on_colosseum_card_pressed)
+				btn3.mouse_entered.connect(func(): _on_card_hover(card_3, true))
+				btn3.mouse_exited.connect(func(): _on_card_hover(card_3, false))
+
+		# Connect Card 4: Taj Mahal / Agra World
+		var card_4 = grid.get_node_or_null("Card_Locked_4")
+		if card_4:
+			var title_lbl = card_4.get_node_or_null("Content/HeaderRow/TitleLabel")
+			if title_lbl:
+				title_lbl.text = "04. Taj Mahal, Agra"
+			var badge_lbl = card_4.get_node_or_null("Content/HeaderRow/StatusBadge")
+			if badge_lbl:
+				badge_lbl.text = " EXPLORE "
+			var desc_lbl = card_4.get_node_or_null("Content/DescriptionLabel")
+			if desc_lbl:
+				desc_lbl.text = "Explore the majestic 1:1 Taj Mahal complex, Yamuna river valley & Mughal gardens."
+			var btn4 = card_4.get_node_or_null("CardButton")
+			if btn4:
+				btn4.pressed.connect(_on_agra_card_pressed)
+				btn4.mouse_entered.connect(func(): _on_card_hover(card_4, true))
+				btn4.mouse_exited.connect(func(): _on_card_hover(card_4, false))
+
+		for i in [5, 6]:
 			var card_node = grid.get_node_or_null("Card_Locked_" + str(i))
 			if card_node:
 				var btn = card_node.get_node_or_null("CardButton")
 				if btn:
-					btn.pressed.connect(func(): _on_locked_card_pressed(card_node.get_node_or_null("TitleLabel")))
+					btn.pressed.connect(func(): _on_locked_card_pressed(card_node.get_node_or_null("Content/HeaderRow/TitleLabel")))
 
 # -----------------------------------------------------------------------------
 # Card Actions & Hover Effects
@@ -97,6 +132,34 @@ func _on_stonehenge_card_pressed() -> void:
 		)
 	else:
 		get_tree().change_scene_to_file("res://scenes/stonehenge_map.tscn")
+
+func _on_colosseum_card_pressed() -> void:
+	if is_transitioning:
+		return
+	is_transitioning = true
+	
+	if fade_rect:
+		var tween = create_tween()
+		tween.tween_property(fade_rect, "modulate:a", 1.0, 0.4).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		tween.tween_callback(func():
+			get_tree().change_scene_to_file("res://scenes/colosseum_map.tscn")
+		)
+	else:
+		get_tree().change_scene_to_file("res://scenes/colosseum_map.tscn")
+
+func _on_agra_card_pressed() -> void:
+	if is_transitioning:
+		return
+	is_transitioning = true
+	
+	if fade_rect:
+		var tween = create_tween()
+		tween.tween_property(fade_rect, "modulate:a", 1.0, 0.4).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		tween.tween_callback(func():
+			get_tree().change_scene_to_file("res://scenes/agra_world.tscn")
+		)
+	else:
+		get_tree().change_scene_to_file("res://scenes/agra_world.tscn")
 
 func _on_locked_card_pressed(title_node: Label) -> void:
 	var map_name = title_node.text if title_node else "This Era"

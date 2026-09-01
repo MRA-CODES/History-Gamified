@@ -1,5 +1,5 @@
 extends Control
-class_name VirtualJoystick
+class_name CustomVirtualJoystick
 
 # -----------------------------------------------------------------------------
 # Virtual Analog Joystick for Mobile Movement

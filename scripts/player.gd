@@ -337,12 +337,8 @@ func _find_animation_player(node: Node) -> AnimationPlayer:
 	return null
 
 func _normalize_visual_scale() -> void:
-	var mesh_inst = _find_first_mesh_instance(visuals)
-	if mesh_inst and mesh_inst.mesh:
-		var aabb = mesh_inst.mesh.get_aabb()
-		# If raw mesh size in Y is over 50 (Mixamo centimeter units), scale by 0.01
-		if aabb.size.y > 50.0:
-			visuals.scale = Vector3(0.01, 0.01, 0.01)
+	if visuals:
+		visuals.scale = Vector3(1.0, 1.0, 1.0)
 
 func _find_first_mesh_instance(node: Node) -> MeshInstance3D:
 	if node is MeshInstance3D:

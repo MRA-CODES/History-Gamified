@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://dnixestf2owhy"
-path="res://.godot/imported/NHM London.glb-1923b1c44165b63efe4222c09b439914.scn"
+path="res://.godot/imported/NHM London.glb-426805321538bb496ef4186bcad49a42.scn"
 
 [deps]
 
 source_file="res://assets/environment/buildings/Map 1-NHM Museum/NHM London.glb"
-dest_files=["res://.godot/imported/NHM London.glb-1923b1c44165b63efe4222c09b439914.scn"]
+dest_files=["res://.godot/imported/NHM London.glb-426805321538bb496ef4186bcad49a42.scn"]
 
 [params]
 

@@ -9,7 +9,7 @@ class_name MobileControlsLayer
 # -----------------------------------------------------------------------------
 
 @onready var touch_camera_zone: TouchCameraZone = $TouchCameraZone
-@onready var virtual_joystick: VirtualJoystick = $JoystickContainer/VirtualJoystick
+@onready var virtual_joystick: CustomVirtualJoystick = $JoystickContainer/VirtualJoystick
 @onready var btn_jump: TouchActionButton = $ButtonsContainer/BtnJump
 @onready var btn_sprint: TouchActionButton = $ButtonsContainer/BtnSprint
 @onready var btn_interact: TouchActionButton = $ButtonsContainer/BtnInteract

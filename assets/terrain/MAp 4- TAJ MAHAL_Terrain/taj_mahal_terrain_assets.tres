@@ -1,0 +1,89 @@
+[gd_resource type="Terrain3DAssets" format=3 uid="uid://f7ejwjof7inj"]
+
+[ext_resource type="Texture2D" uid="uid://wmb4ptuf4a6l" path="res://assets/textures/Map -4 TAJ MAHAL_Textures/river_sand/gravelly_sand_diff_2k.jpg" id="1_sand_diff"]
+[ext_resource type="Texture2D" uid="uid://43116oig8al1" path="res://assets/textures/Map -4 TAJ MAHAL_Textures/river_sand/gravelly_sand_nor_gl_2k.jpg" id="2_sand_norm"]
+[ext_resource type="Texture2D" uid="uid://8t0g0grbg8l7" path="res://assets/textures/Map -4 TAJ MAHAL_Textures/grass/leafy_grass_diff_2k.jpg" id="3_grass_diff"]
+[ext_resource type="Texture2D" uid="uid://bv56veqgx6how" path="res://assets/textures/Map -4 TAJ MAHAL_Textures/grass/leafy_grass_nor_gl_2k.jpg" id="4_grass_norm"]
+[ext_resource type="Texture2D" uid="uid://1xpb5q4ukd4p" path="res://assets/textures/Map -4 TAJ MAHAL_Textures/walkways/PavingStones092_2K-JPG_Color.jpg" id="5_walk_diff"]
+[ext_resource type="Texture2D" uid="uid://c4eevlop3fw3u" path="res://assets/textures/Map -4 TAJ MAHAL_Textures/walkways/PavingStones092_2K-JPG_NormalGL.jpg" id="6_walk_norm"]
+[ext_resource type="Texture2D" uid="uid://cbxbhnwcug6rc" path="res://assets/textures/Map -4 TAJ MAHAL_Textures/red_sandstone/red_sandstone_pavement_diff_2k.jpg" id="7_sandstone_diff"]
+[ext_resource type="Texture2D" uid="uid://bl18m1uglcmh1" path="res://assets/textures/Map -4 TAJ MAHAL_Textures/red_sandstone/red_sandstone_pavement_nor_gl_2k.jpg" id="8_sandstone_norm"]
+[ext_resource type="Texture2D" uid="uid://btkm7pe20ipby" path="res://assets/textures/Map -4 TAJ MAHAL_Textures/marble/marble_tiles_diff_2k.jpg" id="9_marble_diff"]
+[ext_resource type="Texture2D" uid="uid://d2h0dgsgfly84" path="res://assets/textures/Map -4 TAJ MAHAL_Textures/marble/marble_tiles_nor_gl_2k.jpg" id="10_marble_norm"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4y11c"]
+transparency = 4
+cull_mode = 2
+vertex_color_use_as_albedo = true
+backlight_enabled = true
+backlight = Color(0.5, 0.5, 0.5, 1)
+distance_fade_mode = 1
+distance_fade_min_distance = 128.0
+distance_fade_max_distance = 96.0
+
+[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_l42ad"]
+generated_type = 1
+height_offset = 0.5
+material_override = SubResource("StandardMaterial3D_4y11c")
+last_lod = 0
+last_shadow_lod = 0
+lod0_range = 128.0
+
+[sub_resource type="Terrain3DTextureAsset" id="Terrain3DTextureAsset_sand"]
+name = "River Sand"
+albedo_color = Color(0.9, 0.85, 0.78, 1)
+albedo_texture = ExtResource("1_sand_diff")
+normal_texture = ExtResource("2_sand_norm")
+normal_depth = 1.0
+ao_strength = 1.2
+roughness = 0.95
+uv_scale = 0.12
+detiling_rotation = 0.15
+
+[sub_resource type="Terrain3DTextureAsset" id="Terrain3DTextureAsset_grass"]
+name = "Lawn Grass"
+id = 1
+albedo_color = Color(0.72, 0.82, 0.65, 1)
+albedo_texture = ExtResource("3_grass_diff")
+normal_texture = ExtResource("4_grass_norm")
+normal_depth = 1.0
+ao_strength = 1.5
+roughness = 0.85
+detiling_rotation = 0.16
+
+[sub_resource type="Terrain3DTextureAsset" id="Terrain3DTextureAsset_walkways"]
+name = "Walkways"
+id = 2
+albedo_color = Color(0.95, 0.92, 0.88, 1)
+albedo_texture = ExtResource("5_walk_diff")
+normal_texture = ExtResource("6_walk_norm")
+normal_depth = 1.0
+ao_strength = 1.5
+roughness = 0.75
+uv_scale = 0.08
+
+[sub_resource type="Terrain3DTextureAsset" id="Terrain3DTextureAsset_sandstone"]
+name = "Red Sandstone"
+id = 3
+albedo_color = Color(0.9, 0.75, 0.7, 1)
+albedo_texture = ExtResource("7_sandstone_diff")
+normal_texture = ExtResource("8_sandstone_norm")
+normal_depth = 1.0
+ao_strength = 1.4
+roughness = 0.8
+uv_scale = 0.07
+
+[sub_resource type="Terrain3DTextureAsset" id="Terrain3DTextureAsset_marble"]
+name = "Marble"
+id = 4
+albedo_color = Color(0.98, 0.98, 0.98, 1)
+albedo_texture = ExtResource("9_marble_diff")
+normal_texture = ExtResource("10_marble_norm")
+normal_depth = 1.0
+ao_strength = 1.0
+roughness = 0.4
+uv_scale = 0.05
+
+[resource]
+mesh_list = Array[Terrain3DMeshAsset]([SubResource("Terrain3DMeshAsset_l42ad")])
+texture_list = Array[Terrain3DTextureAsset]([SubResource("Terrain3DTextureAsset_sand"), SubResource("Terrain3DTextureAsset_grass"), SubResource("Terrain3DTextureAsset_walkways"), SubResource("Terrain3DTextureAsset_sandstone"), SubResource("Terrain3DTextureAsset_marble")])

@@ -3,60 +3,46 @@
 /android/
 
 # ==========================================
-# GODOT
+# GODOT & ENGINE ARTIFACTS
 # ==========================================
-
 .import/
+.summer/local/
 
 # Exported builds
 /export/
 /exports/
 /builds/
+History Gamified (Prototype).exe
+History Gamified (Prototype).pck
 
 # ==========================================
-# SUMMER ENGINE
-# ==========================================
-
-.summer/local/
-
-# ==========================================
-# VS CODE
+# VS CODE & IDES
 # Keep Summer Engine MCP configuration
 # ==========================================
-
 .vscode/*
 !.vscode/mcp.json
-
-# ==========================================
-# OTHER IDE FILES
-# ==========================================
-
 .idea/
 
 # ==========================================
 # OS FILES
 # ==========================================
-
 Thumbs.db
 desktop.ini
 $RECYCLE.BIN/
 .DS_Store
 
 # ==========================================
-# TEMPORARY FILES
+# TEMPORARY & CACHE FILES
 # ==========================================
-
 *.tmp
 *.temp
 *.bak
 *.swp
 *.swo
 video/
-assets/environment/buildings/NHM London.glb
 
-History Gamified (Prototype).exe
-History Gamified (Prototype).pck
-assets/environment/buildings/NHM London.glb
-video/
-
+# ==========================================
+# LARGE ASSETS (> 120MB)
+# ==========================================
 assets/environment/buildings/Map 1-NHM Museum/NHM London.glb
+assets/environment/buildings/NHM London.glb

@@ -76,6 +76,25 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 # -----------------------------------------------------------------------------
+# Safe Cross-Platform Texture Loader (Works in Android APK, PCK & Desktop)
+# -----------------------------------------------------------------------------
+func _safe_load_texture(res_path: String) -> Texture2D:
+	# Primary: Godot virtual ResourceLoader (reads inside exported APK / PCK)
+	if ResourceLoader.exists(res_path):
+		var res = load(res_path)
+		if res is Texture2D:
+			return res
+			
+	# Secondary fallback: Direct Image file loading
+	var global_path = ProjectSettings.globalize_path(res_path)
+	if FileAccess.file_exists(global_path):
+		var img = Image.load_from_file(global_path)
+		if img:
+			return ImageTexture.create_from_image(img)
+			
+	return null
+
+# -----------------------------------------------------------------------------
 # Elevation Conformity Function
 # -----------------------------------------------------------------------------
 func _get_conforming_height(radius: float, angle: float) -> float:
@@ -106,17 +125,12 @@ func _generate_conforming_terrain() -> void:
 	var mat = StandardMaterial3D.new()
 	mat.albedo_color = Color(1.0, 1.0, 1.0, 1.0)
 	
-	var albedo_path = "res://assets/environment/buildings/Map 2-StoneHenge/meadow_ground_albedo.jpg"
-	var normal_path = "res://assets/environment/buildings/Map 2-StoneHenge/meadow_ground_normal.jpg"
-	
-	var img_albedo = Image.load_from_file(ProjectSettings.globalize_path(albedo_path))
-	if img_albedo:
-		var tex_albedo = ImageTexture.create_from_image(img_albedo)
+	var tex_albedo = _safe_load_texture("res://assets/environment/buildings/Map 2-StoneHenge/meadow_ground_albedo.jpg")
+	if tex_albedo:
 		mat.albedo_texture = tex_albedo
 		
-	var img_normal = Image.load_from_file(ProjectSettings.globalize_path(normal_path))
-	if img_normal:
-		var tex_normal = ImageTexture.create_from_image(img_normal)
+	var tex_normal = _safe_load_texture("res://assets/environment/buildings/Map 2-StoneHenge/meadow_ground_normal.jpg")
+	if tex_normal:
 		mat.normal_enabled = true
 		mat.normal_texture = tex_normal
 		mat.normal_scale = 0.4
@@ -137,7 +151,7 @@ func _generate_conforming_terrain() -> void:
 		var t1 = float(ring) / float(ring_steps)
 		var t2 = float(ring + 1) / float(ring_steps)
 		
-		# Exponential radial distribution: dense rings near boundary, sparser at horizon
+		# Exponential radial distribution
 		var factor1 = pow(t1, 1.35)
 		var factor2 = pow(t2, 1.35)
 		
@@ -228,10 +242,8 @@ func _populate_surrounding_3d_grass() -> void:
 	add_child(foliage_node)
 	
 	var grass_mat = StandardMaterial3D.new()
-	var blade_path = "res://assets/environment/buildings/Map 2-StoneHenge/grass_blade_diffuse.png"
-	var img_blade = Image.load_from_file(ProjectSettings.globalize_path(blade_path))
-	if img_blade:
-		var tex_blade = ImageTexture.create_from_image(img_blade)
+	var tex_blade = _safe_load_texture("res://assets/environment/buildings/Map 2-StoneHenge/grass_blade_diffuse.png")
+	if tex_blade:
 		grass_mat.albedo_texture = tex_blade
 		
 	grass_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
