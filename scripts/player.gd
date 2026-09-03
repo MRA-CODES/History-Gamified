@@ -37,6 +37,7 @@ var camera_rot_y: float = 0.0
 # Gravity from ProjectSettings with fallback
 var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity", 9.8)
 var is_movement_enabled: bool = true
+var allow_stair_animation: bool = true
 var stair_climbing_timer: float = 0.0
 var prev_y_pos: float = 0.0
 
@@ -109,6 +110,16 @@ func _input(event: InputEvent) -> void:
 		if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
 			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
+func rotate_camera_relative(relative_motion: Vector2, sensitivity_scale: float = 1.0) -> void:
+	if not is_movement_enabled or not camera_pivot or not spring_arm:
+		return
+	camera_rot_y -= relative_motion.x * sensitivity_scale
+	camera_rot_x -= relative_motion.y * sensitivity_scale
+	camera_rot_x = clampf(camera_rot_x, deg_to_rad(-75.0), deg_to_rad(60.0))
+	
+	camera_pivot.rotation.y = camera_rot_y
+	spring_arm.rotation.x = camera_rot_x
+
 # -----------------------------------------------------------------------------
 # Physics & Movement Loop
 # -----------------------------------------------------------------------------
@@ -169,10 +180,7 @@ func _physics_process(delta: float) -> void:
 	# 6. Move Character using Godot 4 CharacterBody3D physics
 	move_and_slide()
 
-	# Detect elevation gain while walking to confirm stairs climbing
-	var y_gain = global_position.y - prev_y_pos
-	if is_on_floor() and y_gain > 0.02 and h_vel.length() > 0.15:
-		stair_climbing_timer = 0.4
+	# Only count stair climbing timer if specifically stepped up via _snap_up_stairs_check
 	prev_y_pos = global_position.y
 
 	# 7. Update Animations
@@ -208,7 +216,8 @@ func _snap_up_stairs_check(delta: float, move_dir: Vector3) -> void:
 				var step_gain = MAX_STEP_HEIGHT + col.get_travel().y
 				if step_gain > 0.01 and step_gain <= MAX_STEP_HEIGHT:
 					global_position.y += step_gain
-					stair_climbing_timer = 0.4
+					if allow_stair_animation and step_gain >= 0.12:
+						stair_climbing_timer = 0.35
 
 # -----------------------------------------------------------------------------
 # Input Helper
@@ -292,7 +301,7 @@ func _update_animation(h_speed: float, is_sprinting: bool) -> void:
 	
 	if not is_on_floor():
 		target_anim = "jump"
-	elif stair_climbing_timer > 0.0 and anim_player.has_animation("walk_stairs"):
+	elif allow_stair_animation and stair_climbing_timer > 0.0 and anim_player.has_animation("walk_stairs"):
 		target_anim = "walk_stairs"
 	elif h_speed > 4.5 or (h_speed > 0.2 and is_sprinting):
 		target_anim = "run"
@@ -328,12 +337,8 @@ func _find_animation_player(node: Node) -> AnimationPlayer:
 	return null
 
 func _normalize_visual_scale() -> void:
-	var mesh_inst = _find_first_mesh_instance(visuals)
-	if mesh_inst and mesh_inst.mesh:
-		var aabb = mesh_inst.mesh.get_aabb()
-		# If raw mesh size in Y is over 50 (Mixamo centimeter units), scale by 0.01
-		if aabb.size.y > 50.0:
-			visuals.scale = Vector3(0.01, 0.01, 0.01)
+	if visuals:
+		visuals.scale = Vector3(1.0, 1.0, 1.0)
 
 func _find_first_mesh_instance(node: Node) -> MeshInstance3D:
 	if node is MeshInstance3D:

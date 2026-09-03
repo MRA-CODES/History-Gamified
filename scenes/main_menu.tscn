@@ -276,20 +276,20 @@ layout_mode = 2
 [node name="TitleLabel" type="Label" parent="MainContainer/GridContainer/Card_Stonehenge/Content/HeaderRow"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_colors/font_color = Color(1, 0.88, 0.45, 1)
+theme_override_colors/font_color = Color(1, 0.9, 0.5, 1)
 theme_override_font_sizes/font_size = 18
-text = "02. Bronze Age - Stonehenge"
+text = "02. Stonehenge"
 
 [node name="StatusBadge" type="Label" parent="MainContainer/GridContainer/Card_Stonehenge/Content/HeaderRow"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.12, 0.08, 0.02, 1)
+theme_override_colors/font_color = Color(0.1, 0.08, 0.02, 1)
 theme_override_font_sizes/font_size = 12
 theme_override_styles/normal = SubResource("StyleBox_BadgeActive")
-text = " ✦ PLAYABLE ✦ "
+text = " PLAYABLE "
 
 [node name="DescriptionLabel" type="Label" parent="MainContainer/GridContainer/Card_Stonehenge/Content"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.85, 0.88, 0.92, 1)
+theme_override_colors/font_color = Color(0.8, 0.82, 0.85, 1)
 theme_override_font_sizes/font_size = 13
 text = "Explore the prehistoric megalithic stone circle on Salisbury Plain."
 autowrap_mode = 2
@@ -302,17 +302,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 flat = true
-
-[node name="BorderGlow" type="Panel" parent="MainContainer/GridContainer/Card_Stonehenge"]
-modulate = Color(1, 1, 1, 0.5)
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBox_CardActive")
 
 [node name="Card_Locked_3" type="Panel" parent="MainContainer/GridContainer"]
 layout_mode = 2

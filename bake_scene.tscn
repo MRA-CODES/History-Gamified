@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://dj883a472k01p"]
+
+[ext_resource type="Script" uid="uid://dfk8830174kdp" path="res://scripts/bake_terrain_scene.gd" id="1_script"]
+
+[node name="BakeScene" type="Node3D"]
+script = ExtResource("1_script")
