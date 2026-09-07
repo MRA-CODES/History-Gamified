@@ -43,7 +43,7 @@ const ASSETS_TRES_PATH := "res://assets/terrain/MAp 4- TAJ MAHAL_Terrain/taj_mah
 const TAJ_SCALE := Vector3(0.196, 0.196, 0.196)
 
 # Vegetation & Water Constants
-const CYPRESS_MODEL_PATH: String = "res://assets/environment/buildings/Map 4 - Taj Mahal_Buildings/tree_cypress.glb"
+const CYPRESS_MODEL_PATH: String = "res://assets/environment/props/cypress_tree.glb"
 const TEX_CYPRESS_LEAVES: String = "res://assets/environment/buildings/Map 4 - Taj Mahal_Buildings/tree_cypress_0.jpg"
 const TEX_CYPRESS_TRUNK: String = "res://assets/environment/buildings/Map 4 - Taj Mahal_Buildings/tree_cypress_1.jpg"
 const GRASS_SHADER_PATH: String = "res://shaders/grass_foliage.gdshader"
@@ -86,22 +86,28 @@ func _ready() -> void:
 	# 2. Setup or Configure Terrain3D
 	_setup_terrain()
 	
-	# 3. Instantiate Taj Mahal model at 1:1 scale and position on plinth
+	# 3. Dedicated PBR Ground Surfaces (50.0 UV Grass & 30.0 UV Paved Walkways)
+	_setup_ground_surfaces()
+	
+	# 4. Instantiate Taj Mahal model at 1:1 scale and position on plinth
 	_setup_taj_mahal_monument()
 	
-	# 4. Position Player on the Charbagh entrance promenade
+	# 5. Twin Lateral Plinth Access Staircases (Smooth player access onto terrace)
+	_setup_plinth_staircases()
+	
+	# 6. Position Player on the Charbagh entrance promenade
 	_setup_player()
 	
-	# 5. Symmetrical Cypress Trees & Procedural Waving Grass Scattering
+	# 7. Symmetrical Cypress Trees (Southern Charbagh avenue)
 	_setup_vegetation()
 	
-	# 6. Realistic Water Systems (Yamuna River & Charbagh Reflecting Pools)
+	# 8. Realistic Water Systems (Yamuna River & Southern Reflection Canal)
 	_setup_water_systems()
 	
-	# 7. AAA Realism Lighting & Atmosphere (SDFGI, SSAO, SSIL, Volumetric Fog)
+	# 9. AAA Realism Lighting & Atmosphere (PhysicalSky, ACES, Warm Sun, 0.0002 Fog)
 	_setup_lighting_and_atmosphere()
 	
-	# 8. Generate Trimesh Collision for all building structures
+	# 10. Generate Trimesh Collision for all building structures
 	if taj_mahal_root:
 		_generate_trimesh_collisions(taj_mahal_root)
 		print("AgraWorld: Trimesh collision generated for Taj Mahal complex.")
@@ -113,23 +119,24 @@ func _setup_player() -> void:
 	# Capture mouse by default for 3rd person exploration
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	
-	# Calculate ground elevation on southern Charbagh promenade aligned with Taj Mahal
-	var start_pos: Vector3 = Vector3(-125.844, 0.0, 40.0)
-	var ground_y: float = 33.2
+	# Position player close to the Taj Mahal monument (Z = -55.0m) facing North
+	var spawn_x: float = 0.0 # Centered on the central promenade axis facing the monument
+	var spawn_z: float = -55.0 # Close to the plinth base and staircase entrance
+	var ground_y: float = 33.20
 	if terrain_node and ("data" in terrain_node) and terrain_node.data:
-		var q_y: float = terrain_node.data.get_height(start_pos)
+		var q_y: float = terrain_node.data.get_height(Vector3(spawn_x, 0.0, spawn_z))
 		if not is_nan(q_y) and abs(q_y) < 50.0:
-			ground_y = q_y
+			ground_y = max(ground_y, q_y)
 			
-	player.global_position = Vector3(-125.844, ground_y + 1.2, 40.0)
+	player.global_position = Vector3(spawn_x, ground_y + 0.05, spawn_z)
 	player.rotation = Vector3(0.0, PI, 0.0) # Face North towards Taj Mahal
-	print("AgraWorld: Player placed at Charbagh promenade (", -125.844, ", ", ground_y + 1.2, ", 40.0) facing Taj Mahal.")
+	print("AgraWorld: Player placed close to Taj Mahal at (", spawn_x, ", ", ground_y + 0.05, ", ", spawn_z, ") facing North.")
 
 func _physics_process(delta: float) -> void:
 	# Fallback out-of-bounds safety check for Player
 	if player and not is_freecam:
 		if player.global_position.y < 28.0:
-			player.global_position = Vector3(-125.844, 34.5, 40.0)
+			player.global_position = Vector3(0.0, 33.25, -55.0)
 			player.velocity = Vector3.ZERO
 			
 	if is_paused or not is_freecam or not overview_camera:
@@ -249,7 +256,7 @@ func _setup_terrain() -> void:
 		var box: BoxShape3D = BoxShape3D.new()
 		box.size = Vector3(600.0, 4.0, 600.0)
 		cs.shape = box
-		cs.position = Vector3(-125.844, 30.5, 30.0)
+		cs.position = Vector3(0.0, 31.20, 78.0)
 		ground_col.add_child(cs)
 		add_child(ground_col)
 
@@ -269,24 +276,24 @@ func _setup_terrain() -> void:
 	elif ClassDB.class_exists("Terrain3DAssets") and ClassDB.class_exists("Terrain3DTextureAsset"):
 		assets = ClassDB.instantiate("Terrain3DAssets") as Terrain3DAssets
 		
-		# Slot 0 (River Sand)
-		var ta_sand: Resource = _create_texture_asset("River Sand", 0, TEX_SAND_DIFF, TEX_SAND_NORM, 0.12, 1.2, 0.95, Color(0.9, 0.85, 0.78, 1))
+		# Slot 0 (River Sand) - 8x UV Tiling
+		var ta_sand: Resource = _create_texture_asset("River Sand", 0, TEX_SAND_DIFF, TEX_SAND_NORM, 0.96, 1.2, 0.95, Color(1, 1, 1, 1))
 		if ta_sand: assets.set_texture(0, ta_sand)
 		
-		# Slot 1 (Lawn Grass)
-		var ta_grass: Resource = _create_texture_asset("Lawn Grass", 1, TEX_GRASS_DIFF, TEX_GRASS_NORM, 0.1, 1.5, 0.85, Color(0.72, 0.82, 0.65, 1))
+		# Slot 1 (Lawn Grass) - 8x UV Tiling
+		var ta_grass: Resource = _create_texture_asset("Lawn Grass", 1, TEX_GRASS_DIFF, TEX_GRASS_NORM, 0.80, 1.5, 0.85, Color(1, 1, 1, 1))
 		if ta_grass: assets.set_texture(1, ta_grass)
 		
-		# Slot 2 (Walkways)
-		var ta_walkways: Resource = _create_texture_asset("Walkways", 2, TEX_WALKWAYS_DIFF, TEX_WALKWAYS_NORM, 0.08, 1.5, 0.75, Color(0.95, 0.92, 0.88, 1))
+		# Slot 2 (Walkways) - 8x UV Tiling
+		var ta_walkways: Resource = _create_texture_asset("Walkways", 2, TEX_WALKWAYS_DIFF, TEX_WALKWAYS_NORM, 0.64, 1.5, 0.75, Color(1, 1, 1, 1))
 		if ta_walkways: assets.set_texture(2, ta_walkways)
 		
-		# Slot 3 (Red Sandstone)
-		var ta_sandstone: Resource = _create_texture_asset("Red Sandstone", 3, TEX_SANDSTONE_DIFF, TEX_SANDSTONE_NORM, 0.07, 1.4, 0.8, Color(0.9, 0.75, 0.7, 1))
+		# Slot 3 (Red Sandstone) - 8x UV Tiling
+		var ta_sandstone: Resource = _create_texture_asset("Red Sandstone", 3, TEX_SANDSTONE_DIFF, TEX_SANDSTONE_NORM, 0.56, 1.4, 0.8, Color(1, 1, 1, 1))
 		if ta_sandstone: assets.set_texture(3, ta_sandstone)
 		
-		# Slot 4 (Marble)
-		var ta_marble: Resource = _create_texture_asset("Marble", 4, TEX_MARBLE_DIFF, TEX_MARBLE_NORM, 0.05, 1.0, 0.4, Color(0.98, 0.98, 0.98, 1))
+		# Slot 4 (Marble) - 8x UV Tiling
+		var ta_marble: Resource = _create_texture_asset("Marble", 4, TEX_MARBLE_DIFF, TEX_MARBLE_NORM, 0.40, 1.0, 0.4, Color(1, 1, 1, 1))
 		if ta_marble: assets.set_texture(4, ta_marble)
 		
 	if assets:
@@ -456,8 +463,8 @@ func _setup_taj_mahal_monument() -> void:
 	if not taj_mahal_root:
 		return
 		
-	# Target plinth coordinates on the northern sandstone riverfront terrace
-	const TAJ_PLINTH_POS: Vector3 = Vector3(-125.844, 32.840, -131.457)
+	# Target plinth coordinates on the northern sandstone riverfront terrace (centered at X = 0.0)
+	const TAJ_PLINTH_POS: Vector3 = Vector3(0.0, 32.840, -131.457)
 		
 	# Check if model already instanced as child
 	var existing_model: Node3D = taj_mahal_root.get_node_or_null("TajMahalModel") as Node3D
@@ -476,6 +483,184 @@ func _setup_taj_mahal_monument() -> void:
 		# Set to exact aligned plinth coordinate
 		existing_model.position = TAJ_PLINTH_POS
 		print("AgraWorld: Taj Mahal instanced on Northern Terrace (", TAJ_PLINTH_POS.x, ", ", TAJ_PLINTH_POS.y, ", ", TAJ_PLINTH_POS.z, ")")
+
+# -----------------------------------------------------------------------------
+# Twin Lateral Plinth Access Staircases (Flush White Marble Flight & Collision Ramp)
+# -----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+# Strict Plinth Staircase Replacement (Solid Marble Steps, No Railings, Aligned Flush)
+# -----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+# Strict Plinth Staircase Replacement (Solid Marble Steps, No Railings, Aligned Flush)
+# -----------------------------------------------------------------------------
+func _setup_plinth_staircases() -> void:
+	# 1. Purge Any Existing Stair Assets
+	var old_nodes: Array[String] = ["PlinthStaircases", "PlinthStairs_Left", "PlinthStairs_Right"]
+	for node_name in old_nodes:
+		var old_node: Node = get_node_or_null(node_name)
+		if old_node:
+			old_node.queue_free()
+			
+	# 2. Retrieve Active Material Directly from Adjacent Taj Mahal Plinth Wall Mesh
+	var plinth_mat: Material = _get_taj_plinth_material()
+	
+	# 3. Flight Parameters:
+	# Base ground: Y = 33.15m (flush with garden turf)
+	# Top deck: Y = 41.72m (flush with the boundary parapet wall of the Taj Mahal plinth)
+	# Total rise = 8.57m
+	# Number of steps reduced from 42 to 22 (increasing step rise to ~0.39m and tread to ~0.61m)
+	var base_y: float = 33.15
+	var target_top_y: float = 41.72
+	var total_rise: float = target_top_y - base_y # 8.57m
+	var num_steps: int = 22
+	var total_run_x: float = 13.44 # Preserved total staircase length
+	var step_tread_x: float = total_run_x / float(num_steps) # ~0.6109m (increased tread length)
+	var step_rise: float = total_rise / float(num_steps) # ~0.3895m (increased step rise height)
+	var step_width_z: float = 4.40 # Widened to 4.40m to fill the entire recessed alcove
+	var wall_z: float = -72.65
+	var center_z: float = wall_z + (step_width_z * 0.5) # -70.45m
+	
+	# Build flights for both left and right plinth recess pockets
+	var stair_configs: Array[Dictionary] = [
+		{"name": "PlinthStairs_Left", "end_x": -14.70, "dir_x": 1.0},
+		{"name": "PlinthStairs_Right", "end_x": 14.70, "dir_x": -1.0}
+	]
+	
+	for cfg in stair_configs:
+		var stairs_container: Node3D = Node3D.new()
+		stairs_container.name = cfg["name"]
+		
+		var end_x: float = cfg["end_x"]
+		var dir_x: float = cfg["dir_x"]
+		var start_x: float = end_x - (total_run_x * dir_x)
+		
+		# Build solid visual steps without individual step face colliders
+		for step_i in range(num_steps):
+			var step_mesh: BoxMesh = BoxMesh.new()
+			var s_height: float = step_rise * float(step_i + 1)
+			step_mesh.size = Vector3(step_tread_x + 0.02, s_height, step_width_z)
+			
+			var step_inst: MeshInstance3D = MeshInstance3D.new()
+			step_inst.name = "Step_%d" % step_i
+			step_inst.mesh = step_mesh
+			step_inst.material_override = plinth_mat
+			step_inst.rotation = Vector3.ZERO # Rotation locked to (0, 0, 0), zero pitch or roll
+			
+			var cur_x: float = start_x + (float(step_i) + 0.5) * step_tread_x * dir_x
+			var s_y: float = base_y + s_height * 0.5
+			step_inst.position = Vector3(cur_x, s_y, center_z)
+			stairs_container.add_child(step_inst)
+			
+		# Top crest threshold over boundary wall (compact 0.5m crest)
+		var crest_len: float = 0.50
+		var trans_len: float = 1.40 # Short 1.4m transition ramp onto terrace floor (only ~1.9m total extension)
+		var terrace_floor_y: float = 40.68
+		var drop_to_floor: float = target_top_y - terrace_floor_y # ~1.04m
+		
+		var crest_mesh: BoxMesh = BoxMesh.new()
+		crest_mesh.size = Vector3(crest_len, 0.40, step_width_z)
+		var crest_inst: MeshInstance3D = MeshInstance3D.new()
+		crest_inst.name = "TopCrestBridge"
+		crest_inst.mesh = crest_mesh
+		crest_inst.material_override = plinth_mat
+		crest_inst.position = Vector3(end_x + (crest_len * 0.5 * dir_x), target_top_y - 0.20, center_z)
+		stairs_container.add_child(crest_inst)
+		
+		# 3 shallow steps on the terrace side descending to terrace floor
+		var num_trans_steps: int = 3
+		var trans_step_len: float = trans_len / float(num_trans_steps)
+		var trans_step_drop: float = drop_to_floor / float(num_trans_steps)
+		for t in range(num_trans_steps):
+			var s_top: float = target_top_y - trans_step_drop * float(t + 1)
+			var step_h: float = s_top - 40.0
+			var t_mesh: BoxMesh = BoxMesh.new()
+			t_mesh.size = Vector3(trans_step_len + 0.02, step_h, step_width_z)
+			var t_inst: MeshInstance3D = MeshInstance3D.new()
+			t_inst.name = "TerraceTransitionStep_%d" % t
+			t_inst.mesh = t_mesh
+			t_inst.material_override = plinth_mat
+			var cur_tx: float = end_x + (crest_len + (float(t) + 0.5) * trans_step_len) * dir_x
+			t_inst.position = Vector3(cur_tx, 40.0 + step_h * 0.5, center_z)
+			stairs_container.add_child(t_inst)
+		
+		# Dedicated StairRampCollider: Smooth continuous invisible collision ramp spanning threshold to terrace landing
+		var col_body: StaticBody3D = StaticBody3D.new()
+		col_body.name = "StairRampCollider"
+		col_body.collision_layer = 1
+		col_body.collision_mask = 1
+		
+		# 1. Main flight collision ramp (garden ground to top crest)
+		var col_shape: CollisionShape3D = CollisionShape3D.new()
+		var ramp_box: BoxShape3D = BoxShape3D.new()
+		var ramp_thickness: float = 0.40
+		var ramp_hypotenuse: float = sqrt(total_run_x * total_run_x + total_rise * total_rise) # ~15.94m
+		ramp_box.size = Vector3(ramp_hypotenuse + 0.30, ramp_thickness, step_width_z + 0.10)
+		col_shape.shape = ramp_box
+		
+		var slope_angle: float = atan2(total_rise, total_run_x) # ~32.51 deg gentle slope
+		var str_angle: float = slope_angle * dir_x # Positive rotation for Left (+X ascent), negative for Right (-X ascent)
+		var y_shift: float = (ramp_thickness * 0.5) / cos(slope_angle)
+		
+		var mid_x: float = start_x + (total_run_x * 0.5) * dir_x
+		var mid_y: float = base_y + (total_rise * 0.5) - y_shift + 0.03
+		
+		col_shape.position = Vector3(mid_x, mid_y, center_z)
+		col_shape.rotation = Vector3(0.0, 0.0, str_angle)
+		col_body.add_child(col_shape)
+		
+		# 2. Crest threshold collision pad
+		var crest_pad_shape: CollisionShape3D = CollisionShape3D.new()
+		var crest_pad_box: BoxShape3D = BoxShape3D.new()
+		crest_pad_box.size = Vector3(crest_len + 0.20, 0.40, step_width_z + 0.10)
+		crest_pad_shape.shape = crest_pad_box
+		crest_pad_shape.position = Vector3(end_x + (crest_len * 0.5 * dir_x), target_top_y - 0.20, center_z)
+		col_body.add_child(crest_pad_shape)
+		
+		# 3. Bi-directional terrace transition ramp collider (enables walking down without jumping)
+		var trans_pad_shape: CollisionShape3D = CollisionShape3D.new()
+		var trans_pad_box: BoxShape3D = BoxShape3D.new()
+		var trans_thickness: float = 0.35
+		var trans_hypotenuse: float = sqrt(trans_len * trans_len + drop_to_floor * drop_to_floor) # ~1.74m
+		trans_pad_box.size = Vector3(trans_hypotenuse + 0.20, trans_thickness, step_width_z + 0.10)
+		trans_pad_shape.shape = trans_pad_box
+		
+		var trans_slope: float = atan2(drop_to_floor, trans_len) # ~36.5 deg
+		var trans_angle: float = trans_slope * (-dir_x) # Slopes down as X moves further into terrace
+		var trans_y_shift: float = (trans_thickness * 0.5) / cos(trans_slope)
+		var trans_mid_x: float = end_x + (crest_len + trans_len * 0.5) * dir_x
+		var trans_mid_y: float = (target_top_y + terrace_floor_y) * 0.5 - trans_y_shift + 0.03
+		
+		trans_pad_shape.position = Vector3(trans_mid_x, trans_mid_y, center_z)
+		trans_pad_shape.rotation = Vector3(0.0, 0.0, trans_angle)
+		col_body.add_child(trans_pad_shape)
+		
+		stairs_container.add_child(col_body)
+		
+		add_child(stairs_container)
+		
+	print("AgraWorld: Widened Solid White Marble Plinth Stairs (4.40m, Corrected Slope Collision) initialized.")
+
+func _get_taj_plinth_material() -> Material:
+	if taj_mahal_root:
+		var meshes: Array[Node] = taj_mahal_root.find_children("*", "MeshInstance3D", true, false)
+		for m in meshes:
+			if m is MeshInstance3D and m.mesh:
+				var mat: Material = m.get_active_material(0)
+				if mat:
+					return mat
+	# Fallback high-fidelity marble material
+	var fallback_mat: StandardMaterial3D = StandardMaterial3D.new()
+	var marble_diff: Texture2D = _safe_load_texture(TEX_MARBLE_DIFF)
+	var marble_norm: Texture2D = _safe_load_texture(TEX_MARBLE_NORM)
+	if marble_diff:
+		fallback_mat.albedo_texture = marble_diff
+	fallback_mat.albedo_color = Color(0.95, 0.95, 0.95, 1.0)
+	if marble_norm:
+		fallback_mat.normal_enabled = true
+		fallback_mat.normal_texture = marble_norm
+	fallback_mat.uv1_scale = Vector3(2.0, 2.0, 1.0)
+	fallback_mat.roughness = 0.15
+	return fallback_mat
 
 # -----------------------------------------------------------------------------
 # Trimesh Collision Generation
@@ -553,11 +738,432 @@ func _on_quit_pressed() -> void:
 	get_tree().quit()
 
 # -----------------------------------------------------------------------------
-# Vegetation Scattering (Cypress Avenues & Procedural Grass)
+# Dedicated PBR Ground Surfaces (True Promenade Hierarchy Centered on X = 0.0)
+# -----------------------------------------------------------------------------
+func _setup_ground_surfaces() -> void:
+	var surfaces_root: Node3D = get_node_or_null("GroundSurfaces") as Node3D
+	if not surfaces_root:
+		surfaces_root = Node3D.new()
+		surfaces_root.name = "GroundSurfaces"
+		add_child(surfaces_root)
+		
+	var grass_diff: Texture2D = _safe_load_texture(TEX_GRASS_DIFF)
+	var grass_norm: Texture2D = _safe_load_texture(TEX_GRASS_NORM)
+	var walk_diff: Texture2D = _safe_load_texture(TEX_WALKWAYS_DIFF)
+	var walk_norm: Texture2D = _safe_load_texture(TEX_WALKWAYS_NORM)
+	var sand_diff: Texture2D = _safe_load_texture(TEX_SANDSTONE_DIFF)
+	var sand_norm: Texture2D = _safe_load_texture(TEX_SANDSTONE_NORM)
+	var marble_diff: Texture2D = _safe_load_texture(TEX_MARBLE_DIFF)
+	var marble_norm: Texture2D = _safe_load_texture(TEX_MARBLE_NORM)
+	
+	# 1. Vibrant Lush Green Grass Lawns (UV Scale Vector3(30.0, 30.0, 1.0), Color(0.35, 0.55, 0.22))
+	var grass_mat: StandardMaterial3D = StandardMaterial3D.new()
+	grass_mat.albedo_texture = grass_diff
+	grass_mat.albedo_color = Color(0.35, 0.55, 0.22, 1.0)
+	if grass_norm:
+		grass_mat.normal_enabled = true
+		grass_mat.normal_texture = grass_norm
+		grass_mat.normal_scale = 1.0
+	grass_mat.uv1_scale = Vector3(30.0, 30.0, 1.0)
+	grass_mat.roughness = 0.80
+	
+	# Parterre Grass Material (Color(0.35, 0.55, 0.22), roughness 0.80, UV Scale 30.0)
+	var parterre_mat: StandardMaterial3D = StandardMaterial3D.new()
+	parterre_mat.albedo_texture = grass_diff
+	parterre_mat.albedo_color = Color(0.35, 0.55, 0.22, 1.0)
+	if grass_norm:
+		parterre_mat.normal_enabled = true
+		parterre_mat.normal_texture = grass_norm
+		parterre_mat.normal_scale = 1.0
+	parterre_mat.uv1_scale = Vector3(30.0, 30.0, 1.0)
+	parterre_mat.roughness = 0.80
+	
+	# 2. Main Promenade Pedestrian Walkways (UV Scale 8.0, 40.0, 1.0)
+	var walk_mat: StandardMaterial3D = StandardMaterial3D.new()
+	walk_mat.albedo_texture = walk_diff
+	if walk_norm:
+		walk_mat.normal_enabled = true
+		walk_mat.normal_texture = walk_norm
+		walk_mat.normal_scale = 1.0
+	walk_mat.uv1_scale = Vector3(8.0, 40.0, 1.0)
+	walk_mat.roughness = 0.75
+	
+	# 3. Main E-W Crossroad Promenade (UV Scale 40.0, 8.0, 1.0)
+	var walk_mat_ew: StandardMaterial3D = StandardMaterial3D.new()
+	walk_mat_ew.albedo_texture = walk_diff
+	if walk_norm:
+		walk_mat_ew.normal_enabled = true
+		walk_mat_ew.normal_texture = walk_norm
+		walk_mat_ew.normal_scale = 1.0
+	walk_mat_ew.uv1_scale = Vector3(40.0, 8.0, 1.0)
+	walk_mat_ew.roughness = 0.75
+	
+	# 4. Northern Red Sandstone River Terrace (Chameli Farsh)
+	var sand_mat: StandardMaterial3D = StandardMaterial3D.new()
+	sand_mat.albedo_texture = sand_diff
+	if sand_norm:
+		sand_mat.normal_enabled = true
+		sand_mat.normal_texture = sand_norm
+		sand_mat.normal_scale = 1.0
+	sand_mat.uv1_scale = Vector3(25.0, 25.0, 1.0)
+	sand_mat.roughness = 0.80
+	
+	# White Marble Material for Borders and Inlays
+	var marble_mat: StandardMaterial3D = StandardMaterial3D.new()
+	if marble_diff:
+		marble_mat.albedo_texture = marble_diff
+	else:
+		marble_mat.albedo_color = Color(0.96, 0.95, 0.92, 1.0)
+	if marble_norm:
+		marble_mat.normal_enabled = true
+		marble_mat.normal_texture = marble_norm
+	marble_mat.uv1_scale = Vector3(10.0, 10.0, 1.0)
+	marble_mat.roughness = 0.40
+	
+	# Authentic Mughal 8-Pointed Star Curb Ribbon Material (Light beige sandstone / marble, roughness 0.70)
+	var star_ribbon_mat: StandardMaterial3D = StandardMaterial3D.new()
+	if walk_diff:
+		star_ribbon_mat.albedo_texture = walk_diff
+	elif marble_diff:
+		star_ribbon_mat.albedo_texture = marble_diff
+	star_ribbon_mat.albedo_color = Color(0.95, 0.92, 0.88, 1.0)
+	if walk_norm:
+		star_ribbon_mat.normal_enabled = true
+		star_ribbon_mat.normal_texture = walk_norm
+	star_ribbon_mat.uv1_scale = Vector3(4.0, 4.0, 1.0)
+	star_ribbon_mat.roughness = 0.70
+	
+	# Circular Dark Earth Mulch Bed Material
+	var mulch_mat: StandardMaterial3D = StandardMaterial3D.new()
+	mulch_mat.albedo_color = Color(0.18, 0.14, 0.10, 1.0)
+	mulch_mat.roughness = 0.95
+	
+	var center_x: float = 0.0 # Strictly centered on player and monument axis
+	var garden_center_z: float = 78.0 # Center of 304.6m Charbagh square
+	
+	# Continuous Green Foundation Plinth (320m x 320m at Y = 33.10m sealing all seams)
+	var under_plinth: MeshInstance3D = MeshInstance3D.new()
+	under_plinth.name = "UnderCrossroadsFiller"
+	var under_mesh: PlaneMesh = PlaneMesh.new()
+	under_mesh.size = Vector2(320.0, 320.0)
+	under_plinth.mesh = under_mesh
+	under_plinth.material_override = grass_mat
+	under_plinth.position = Vector3(center_x, 33.10, garden_center_z)
+	surfaces_root.add_child(under_plinth)
+	
+	# -------------------------------------------------------------------------
+	# True Layered Promenade Hierarchy (Section 1 South + Section 2 North)
+	# -------------------------------------------------------------------------
+	# 1. Parterre Strips:
+	# Southern Section (Z = 86m to 220m, length 134m, center Z = 153m)
+	var parterre_mesh_s: PlaneMesh = PlaneMesh.new()
+	parterre_mesh_s.size = Vector2(3.9, 134.0)
+	
+	var parterre_left_s: MeshInstance3D = MeshInstance3D.new()
+	parterre_left_s.name = "Parterre_Left_South"
+	parterre_left_s.mesh = parterre_mesh_s
+	parterre_left_s.material_override = parterre_mat
+	parterre_left_s.position = Vector3(center_x - 3.55, 33.21, 153.0)
+	surfaces_root.add_child(parterre_left_s)
+	
+	var parterre_right_s: MeshInstance3D = MeshInstance3D.new()
+	parterre_right_s.name = "Parterre_Right_South"
+	parterre_right_s.mesh = parterre_mesh_s
+	parterre_right_s.material_override = parterre_mat
+	parterre_right_s.position = Vector3(center_x + 3.55, 33.21, 153.0)
+	surfaces_root.add_child(parterre_right_s)
+	
+	# Northern Section (Z = -74.3m to 70m, length 144.3m, center Z = -2.15m)
+	var parterre_mesh_n: PlaneMesh = PlaneMesh.new()
+	parterre_mesh_n.size = Vector2(3.9, 144.3)
+	
+	var parterre_left_n: MeshInstance3D = MeshInstance3D.new()
+	parterre_left_n.name = "Parterre_Left_North"
+	parterre_left_n.mesh = parterre_mesh_n
+	parterre_left_n.material_override = parterre_mat
+	parterre_left_n.position = Vector3(center_x - 3.55, 33.21, -2.15)
+	surfaces_root.add_child(parterre_left_n)
+	
+	var parterre_right_n: MeshInstance3D = MeshInstance3D.new()
+	parterre_right_n.name = "Parterre_Right_North"
+	parterre_right_n.mesh = parterre_mesh_n
+	parterre_right_n.material_override = parterre_mat
+	parterre_right_n.position = Vector3(center_x + 3.55, 33.21, -2.15)
+	surfaces_root.add_child(parterre_right_n)
+	
+	# Parterre Outer Marble Curb Edging (X = +/- 5.5m along South and North sections)
+	var curb_edge_box_s: BoxMesh = BoxMesh.new()
+	curb_edge_box_s.size = Vector3(0.18, 0.12, 134.0)
+	
+	var curb_edge_l_s: MeshInstance3D = MeshInstance3D.new()
+	curb_edge_l_s.name = "Curb_Edge_Left_South"
+	curb_edge_l_s.mesh = curb_edge_box_s
+	curb_edge_l_s.material_override = marble_mat
+	curb_edge_l_s.position = Vector3(center_x - 5.5, 33.22, 153.0)
+	surfaces_root.add_child(curb_edge_l_s)
+	
+	var curb_edge_r_s: MeshInstance3D = MeshInstance3D.new()
+	curb_edge_r_s.name = "Curb_Edge_Right_South"
+	curb_edge_r_s.mesh = curb_edge_box_s
+	curb_edge_r_s.material_override = marble_mat
+	curb_edge_r_s.position = Vector3(center_x + 5.5, 33.22, 153.0)
+	surfaces_root.add_child(curb_edge_r_s)
+	
+	var curb_edge_box_n: BoxMesh = BoxMesh.new()
+	curb_edge_box_n.size = Vector3(0.18, 0.12, 144.3)
+	
+	var curb_edge_l_n: MeshInstance3D = MeshInstance3D.new()
+	curb_edge_l_n.name = "Curb_Edge_Left_North"
+	curb_edge_l_n.mesh = curb_edge_box_n
+	curb_edge_l_n.material_override = marble_mat
+	curb_edge_l_n.position = Vector3(center_x - 5.5, 33.22, -2.15)
+	surfaces_root.add_child(curb_edge_l_n)
+	
+	var curb_edge_r_n: MeshInstance3D = MeshInstance3D.new()
+	curb_edge_r_n.name = "Curb_Edge_Right_North"
+	curb_edge_r_n.mesh = curb_edge_box_n
+	curb_edge_r_n.material_override = marble_mat
+	curb_edge_r_n.position = Vector3(center_x + 5.5, 33.22, -2.15)
+	surfaces_root.add_child(curb_edge_r_n)
+	
+	# -------------------------------------------------------------------------
+	# True Mughal Interlocking 8-Pointed Star Curb Ribbon (Full-Length: South & North)
+	# -------------------------------------------------------------------------
+	var star_pts: Array[Vector2] = [
+		Vector2(1.60, 0.0),    # 0: Top tip (facing outer walkway)
+		Vector2(0.90, 0.60),   # 1: Valley
+		Vector2(1.40, 1.40),   # 2: Top-Right diagonal tip
+		Vector2(0.60, 0.90),   # 3: Valley
+		Vector2(0.0, 2.75),    # 4: Right connecting tip (X-link to neighbor star)
+		Vector2(-0.60, 0.90),  # 5: Valley
+		Vector2(-1.40, 1.40),  # 6: Bottom-Right diagonal tip
+		Vector2(-0.90, 0.60),  # 7: Valley
+		Vector2(-1.60, 0.0),   # 8: Bottom tip (facing central canal)
+		Vector2(-0.90, -0.60), # 9: Valley
+		Vector2(-1.40, -1.40), # 10: Bottom-Left diagonal tip
+		Vector2(-0.60, -0.90), # 11: Valley
+		Vector2(0.0, -2.75),   # 12: Left connecting tip (X-link to neighbor star)
+		Vector2(0.60, -0.90),  # 13: Valley
+		Vector2(1.40, -1.40),  # 14: Top-Left diagonal tip
+		Vector2(0.90, -0.60)   # 15: Valley
+	]
+	
+	# Precompute the 16 segment lengths and orientations
+	var segment_meshes: Array[BoxMesh] = []
+	var segment_offsets: Array[Vector3] = []
+	var segment_rotations: Array[float] = []
+	var num_pts: int = star_pts.size()
+	
+	for i in range(num_pts):
+		var p1: Vector2 = star_pts[i]
+		var p2: Vector2 = star_pts[(i + 1) % num_pts]
+		var mid: Vector2 = (p1 + p2) * 0.5
+		var diff: Vector2 = p2 - p1
+		var seg_len: float = diff.length()
+		var seg_angle: float = atan2(diff.x, diff.y)
+		
+		var b_mesh: BoxMesh = BoxMesh.new()
+		b_mesh.size = Vector3(0.25, 0.03, seg_len + 0.06) # 0.25m wide ribbon, 3cm elevated with miter overlap
+		segment_meshes.append(b_mesh)
+		segment_offsets.append(Vector3(mid.x, 33.25, mid.y))
+		segment_rotations.append(seg_angle)
+		
+	# Circular Mulch Disc (Diameter 0.8m)
+	var mulch_mesh: CylinderMesh = CylinderMesh.new()
+	mulch_mesh.top_radius = 0.40
+	mulch_mesh.bottom_radius = 0.40
+	mulch_mesh.height = 0.015
+	mulch_mesh.radial_segments = 16
+	
+	# Place Khatam star inlays along both Section 1 (South) and Section 2 (North)
+	var star_idx: int = 0
+	var z_ranges: Array[Dictionary] = [
+		{"start": -68.0, "end": 66.0},  # Section 2 (North of Lotus pond up to terrace)
+		{"start": 88.0, "end": 220.0}   # Section 1 (South of Lotus pond)
+	]
+	for z_range in z_ranges:
+		var node_z: float = z_range["start"]
+		while node_z <= z_range["end"]:
+			for side_x in [-3.55, 3.55]:
+				# 1. Circular Mulch Cutout for Tree Base
+				var mulch_inst: MeshInstance3D = MeshInstance3D.new()
+				mulch_inst.name = "MulchBed_%d" % star_idx
+				mulch_inst.mesh = mulch_mesh
+				mulch_inst.material_override = mulch_mat
+				mulch_inst.position = Vector3(center_x + side_x, 33.22, node_z)
+				surfaces_root.add_child(mulch_inst)
+				
+				# 2. Authentic Interlocking 8-Pointed Star Curb Ribbon
+				var star_root: Node3D = Node3D.new()
+				star_root.name = "KhatamStar_%d" % star_idx
+				star_root.position = Vector3(center_x + side_x, 0.0, node_z)
+				
+				for s in range(num_pts):
+					var seg_inst: MeshInstance3D = MeshInstance3D.new()
+					seg_inst.mesh = segment_meshes[s]
+					seg_inst.material_override = star_ribbon_mat
+					seg_inst.position = segment_offsets[s]
+					seg_inst.rotation.y = segment_rotations[s]
+					star_root.add_child(seg_inst)
+					
+				surfaces_root.add_child(star_root)
+				star_idx += 1
+			node_z += 5.5
+	
+	# 2. Outer Pedestrian Walkways (South: 134m + North: 144.3m):
+	var walk_s_mesh: PlaneMesh = PlaneMesh.new()
+	walk_s_mesh.size = Vector2(5.0, 134.0)
+	
+	var walk_left_s: MeshInstance3D = MeshInstance3D.new()
+	walk_left_s.name = "Walkway_Pedestrian_Left_South"
+	walk_left_s.mesh = walk_s_mesh
+	walk_left_s.material_override = walk_mat
+	walk_left_s.position = Vector3(center_x - 8.0, 33.20, 153.0)
+	surfaces_root.add_child(walk_left_s)
+	
+	var walk_right_s: MeshInstance3D = MeshInstance3D.new()
+	walk_right_s.name = "Walkway_Pedestrian_Right_South"
+	walk_right_s.mesh = walk_s_mesh
+	walk_right_s.material_override = walk_mat
+	walk_right_s.position = Vector3(center_x + 8.0, 33.20, 153.0)
+	surfaces_root.add_child(walk_right_s)
+	
+	var walk_n_mesh: PlaneMesh = PlaneMesh.new()
+	walk_n_mesh.size = Vector2(5.0, 144.3)
+	
+	var walk_left_n: MeshInstance3D = MeshInstance3D.new()
+	walk_left_n.name = "Walkway_Pedestrian_Left_North"
+	walk_left_n.mesh = walk_n_mesh
+	walk_left_n.material_override = walk_mat
+	walk_left_n.position = Vector3(center_x - 8.0, 33.20, -2.15)
+	surfaces_root.add_child(walk_left_n)
+	
+	var walk_right_n: MeshInstance3D = MeshInstance3D.new()
+	walk_right_n.name = "Walkway_Pedestrian_Right_North"
+	walk_right_n.mesh = walk_n_mesh
+	walk_right_n.material_override = walk_mat
+	walk_right_n.position = Vector3(center_x + 8.0, 33.20, -2.15)
+	surfaces_root.add_child(walk_right_n)
+	
+	# 3. Main Central E-W Crossroad Promenade (18.0m wide total x 304.6m long at Y = 33.20m)
+	var walk_ew: PlaneMesh = PlaneMesh.new()
+	walk_ew.size = Vector2(304.6, 18.0)
+	var walk_ew_inst: MeshInstance3D = MeshInstance3D.new()
+	walk_ew_inst.name = "Walkway_EW"
+	walk_ew_inst.mesh = walk_ew
+	walk_ew_inst.material_override = walk_mat_ew
+	walk_ew_inst.position = Vector3(center_x, 33.20, garden_center_z)
+	surfaces_root.add_child(walk_ew_inst)
+	
+	# 4. Outer Sunken Lawns (16 Exact Lawns beyond X < -10.5m and X > +10.5m across Charbagh)
+	var bed_size: Vector2 = Vector2(62.0, 62.0)
+	var quad_offsets_x: Array[float] = [-115.0, -48.0, 48.0, 115.0]
+	var quad_offsets_z: Array[float] = [-115.0, -48.0, 48.0, 115.0]
+	
+	var bed_idx: int = 0
+	for ox in quad_offsets_x:
+		for oz in quad_offsets_z:
+			var bed_mesh: PlaneMesh = PlaneMesh.new()
+			bed_mesh.size = bed_size
+			var bed_inst: MeshInstance3D = MeshInstance3D.new()
+			bed_inst.name = "LawnBed_%d" % bed_idx
+			bed_inst.mesh = bed_mesh
+			bed_inst.material_override = grass_mat
+			bed_inst.position = Vector3(center_x + ox, 33.15, garden_center_z + oz)
+			surfaces_root.add_child(bed_inst)
+			bed_idx += 1
+			
+	# Secondary Subdividing Walkways (5.0m wide)
+	var sec_walk_w: PlaneMesh = PlaneMesh.new()
+	sec_walk_w.size = Vector2(5.0, 304.6)
+	var sec_w_inst: MeshInstance3D = MeshInstance3D.new()
+	sec_w_inst.name = "SecondaryWalk_West"
+	sec_w_inst.mesh = sec_walk_w
+	sec_w_inst.material_override = walk_mat
+	sec_w_inst.position = Vector3(center_x - 81.5, 33.18, garden_center_z)
+	surfaces_root.add_child(sec_w_inst)
+	
+	var sec_e_inst: MeshInstance3D = MeshInstance3D.new()
+	sec_e_inst.name = "SecondaryWalk_East"
+	sec_e_inst.mesh = sec_walk_w
+	sec_e_inst.material_override = walk_mat
+	sec_e_inst.position = Vector3(center_x + 81.5, 33.18, garden_center_z)
+	surfaces_root.add_child(sec_e_inst)
+	
+	var sec_walk_h: PlaneMesh = PlaneMesh.new()
+	sec_walk_h.size = Vector2(304.6, 5.0)
+	var sec_n_inst: MeshInstance3D = MeshInstance3D.new()
+	sec_n_inst.name = "SecondaryWalk_North"
+	sec_n_inst.mesh = sec_walk_h
+	sec_n_inst.material_override = walk_mat_ew
+	sec_n_inst.position = Vector3(center_x, 33.18, garden_center_z - 81.5)
+	surfaces_root.add_child(sec_n_inst)
+	
+	var sec_s_inst: MeshInstance3D = MeshInstance3D.new()
+	sec_s_inst.name = "SecondaryWalk_South"
+	sec_s_inst.mesh = sec_walk_h
+	sec_s_inst.material_override = walk_mat_ew
+	sec_s_inst.position = Vector3(center_x, 33.18, garden_center_z + 81.5)
+	surfaces_root.add_child(sec_s_inst)
+	
+	# -------------------------------------------------------------------------
+	# Elevated Red Sandstone Terrace Plinth (Chameli Farsh: 304.6m x 114.2m)
+	# -------------------------------------------------------------------------
+	var terrace_box: BoxMesh = BoxMesh.new()
+	terrace_box.size = Vector3(304.6, 1.20, 114.2)
+	
+	var terrace_inst: MeshInstance3D = MeshInstance3D.new()
+	terrace_inst.name = "SandstoneTerracePlinth"
+	terrace_inst.mesh = terrace_box
+	terrace_inst.material_override = sand_mat
+	# Center at Y = 33.80m so top deck is at Y = 34.40m, elevated 1.2m above lawn (Y=33.20m)
+	terrace_inst.position = Vector3(center_x, 33.80, -131.4)
+	
+	# Solid StaticBody3D collision for Chameli Farsh terrace
+	var terrace_body: StaticBody3D = StaticBody3D.new()
+	var terrace_col: CollisionShape3D = CollisionShape3D.new()
+	var terrace_col_shape: BoxShape3D = BoxShape3D.new()
+	terrace_col_shape.size = Vector3(304.6, 1.20, 114.2)
+	terrace_col.shape = terrace_col_shape
+	terrace_body.add_child(terrace_col)
+	terrace_inst.add_child(terrace_body)
+	surfaces_root.add_child(terrace_inst)
+	
+	# Red Sandstone Terrace South Retaining Curb (at Z = -74.3m)
+	var terrace_curb_box: BoxMesh = BoxMesh.new()
+	terrace_curb_box.size = Vector3(304.6, 0.25, 0.40)
+	var terrace_curb: MeshInstance3D = MeshInstance3D.new()
+	terrace_curb.name = "TerraceSouthCurb"
+	terrace_curb.mesh = terrace_curb_box
+	terrace_curb.material_override = sand_mat
+	terrace_curb.position = Vector3(center_x, 34.42, -74.3)
+	surfaces_root.add_child(terrace_curb)
+	
+	# Central Promenade Transition Steps to Terrace Deck (X = -10.5m to +10.5m at Z = -74.3m)
+	var trans_steps_box: BoxMesh = BoxMesh.new()
+	trans_steps_box.size = Vector3(21.0, 1.20, 2.0)
+	var trans_steps: MeshInstance3D = MeshInstance3D.new()
+	trans_steps.name = "TerraceEntranceRamp"
+	trans_steps.mesh = trans_steps_box
+	trans_steps.material_override = sand_mat
+	trans_steps.position = Vector3(center_x, 33.80, -74.3)
+	
+	var trans_body: StaticBody3D = StaticBody3D.new()
+	var trans_col: CollisionShape3D = CollisionShape3D.new()
+	var trans_shape: BoxShape3D = BoxShape3D.new()
+	trans_shape.size = Vector3(21.0, 1.20, 2.0)
+	trans_col.shape = trans_shape
+	trans_body.add_child(trans_col)
+	trans_steps.add_child(trans_body)
+	surfaces_root.add_child(trans_steps)
+	
+	print("AgraWorld: Full-length promenade and Elevated Red Sandstone Chameli Farsh terrace created.")
+
+# -----------------------------------------------------------------------------
+# Vegetation Scattering (Symmetrical Cypress Trees Along Full-Length Walkways)
 # -----------------------------------------------------------------------------
 func _setup_vegetation() -> void:
 	_setup_cypress_trees()
-	_setup_procedural_grass()
 
 func _setup_cypress_trees() -> void:
 	var foliage_root: Node3D = get_node_or_null("Foliage") as Node3D
@@ -565,240 +1171,62 @@ func _setup_cypress_trees() -> void:
 		foliage_root = Node3D.new()
 		foliage_root.name = "Foliage"
 		add_child(foliage_root)
+	else:
+		for child in foliage_root.get_children():
+			child.queue_free()
 		
 	if not ResourceLoader.exists(CYPRESS_MODEL_PATH):
+		print("AgraWorld: Cypress model not found at ", CYPRESS_MODEL_PATH)
 		return
 		
 	var tree_scene = load(CYPRESS_MODEL_PATH)
 	if not tree_scene is PackedScene:
+		print("AgraWorld: Cypress model is not PackedScene.")
 		return
 		
-	var leaves_tex: Texture2D = _safe_load_texture(TEX_CYPRESS_LEAVES)
-	var trunk_tex: Texture2D = _safe_load_texture(TEX_CYPRESS_TRUNK)
-	
-	# Leaves Material with Alpha Scissor and SSS Backlight
-	var leaves_mat: StandardMaterial3D = StandardMaterial3D.new()
-	leaves_mat.albedo_texture = leaves_tex
-	leaves_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
-	leaves_mat.alpha_scissor_threshold = 0.5
-	leaves_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
-	leaves_mat.backlight_enabled = true
-	leaves_mat.backlight = Color(0.25, 0.45, 0.18, 1.0)
-	leaves_mat.roughness = 0.85
-	
-	# Trunk Material
-	var trunk_mat: StandardMaterial3D = StandardMaterial3D.new()
-	trunk_mat.albedo_texture = trunk_tex
-	trunk_mat.roughness = 0.9
-	
-	# Extract meshes from tree instance
-	var dummy_tree: Node3D = tree_scene.instantiate() as Node3D
-	var leaves_mesh: Mesh = null
-	var trunk_mesh: Mesh = null
-	
-	for child in dummy_tree.get_children():
-		if child is MeshInstance3D and child.mesh:
-			if "Leaves" in child.name or child.name == "Object_0" or leaves_mesh == null:
-				if leaves_mesh == null:
-					leaves_mesh = child.mesh
-				else:
-					trunk_mesh = child.mesh
-			elif trunk_mesh == null:
-				trunk_mesh = child.mesh
-	dummy_tree.queue_free()
-	
-	if not leaves_mesh:
-		return
-		
-	# Symmetrical avenue coordinates around the Taj Mahal axis
-	var center_x: float = -125.844
+	# Two strictly symmetrical rows of cypress trees centered inside parterres at X = +/- 3.55m
+	var center_x: float = 0.0 # Active player and monument axis
 	var tree_coords: Array[Vector2] = []
 	
-	# 1. Central North-South Promenade Avenue
-	for z in range(-105, 185, 9):
-		if z >= 25 and z <= 55:
-			continue
-		tree_coords.append(Vector2(center_x - 5.5, float(z)))
-		tree_coords.append(Vector2(center_x + 5.5, float(z)))
-		
-	# 2. Central East-West Promenade Avenue
-	for x_off in range(-135, 140, 9):
-		if abs(x_off) <= 15:
-			continue
-		tree_coords.append(Vector2(center_x + float(x_off), 40.0 - 5.5))
-		tree_coords.append(Vector2(center_x + float(x_off), 40.0 + 5.5))
-		
-	# 3. Perimeter Garden Walkways
-	for z in range(-105, 185, 14):
-		tree_coords.append(Vector2(center_x - 135.0, float(z)))
-		tree_coords.append(Vector2(center_x + 135.0, float(z)))
-		
-	for x_off in range(-135, 140, 14):
-		tree_coords.append(Vector2(center_x + float(x_off), 180.0))
-		tree_coords.append(Vector2(center_x + float(x_off), -105.0))
+	# Plant trees along both Section 2 (North: Z = -68m to 66m) and Section 1 (South: Z = 88m to 220m), spaced every 5.5m
+	var z_ranges: Array[Dictionary] = [
+		{"start": -68.0, "end": 66.0},
+		{"start": 88.0, "end": 220.0}
+	]
+	for z_range in z_ranges:
+		var z_curr: float = z_range["start"]
+		while z_curr <= z_range["end"]:
+			tree_coords.append(Vector2(center_x - 3.55, z_curr))
+			tree_coords.append(Vector2(center_x + 3.55, z_curr))
+			z_curr += 5.5
 		
 	var tree_count: int = tree_coords.size()
-	print("AgraWorld: Instantiating ", tree_count, " symmetrical cypress trees via MultiMeshInstance3D...")
+	print("AgraWorld: Instantiating ", tree_count, " full-length cypress trees at X = +/- 3.55m, Y = 33.25m, scale Vector3(0.55, 0.65, 0.55)...")
 	
-	# Create Leaves MultiMesh
-	var mm_leaves: MultiMesh = MultiMesh.new()
-	mm_leaves.transform_format = MultiMesh.TRANSFORM_3D
-	mm_leaves.mesh = leaves_mesh
-	mm_leaves.instance_count = tree_count
-	
-	var mmi_leaves: MultiMeshInstance3D = MultiMeshInstance3D.new()
-	mmi_leaves.name = "CypressLeavesMultiMesh"
-	mmi_leaves.multimesh = mm_leaves
-	mmi_leaves.material_override = leaves_mat
-	foliage_root.add_child(mmi_leaves)
-	
-	# Create Trunk MultiMesh
-	var mm_trunk: MultiMesh = null
-	if trunk_mesh and trunk_mesh != leaves_mesh:
-		mm_trunk = MultiMesh.new()
-		mm_trunk.transform_format = MultiMesh.TRANSFORM_3D
-		mm_trunk.mesh = trunk_mesh
-		mm_trunk.instance_count = tree_count
-		
-		var mmi_trunk: MultiMeshInstance3D = MultiMeshInstance3D.new()
-		mmi_trunk.name = "CypressTrunkMultiMesh"
-		mmi_trunk.multimesh = mm_trunk
-		mmi_trunk.material_override = trunk_mat
-		foliage_root.add_child(mmi_trunk)
-		
 	for i in range(tree_count):
 		var pos_2d: Vector2 = tree_coords[i]
-		var ground_h: float = 33.0
-		if terrain_node and ("data" in terrain_node) and terrain_node.data:
-			var q_h: float = terrain_node.data.get_height(Vector3(pos_2d.x, 0.0, pos_2d.y))
-			if not is_nan(q_h) and abs(q_h) < 50.0:
-				ground_h = q_h
-				
-		var t_pos: Vector3 = Vector3(pos_2d.x, ground_h, pos_2d.y)
-		var scale_factor: float = 0.018 + float((i * 17) % 7) * 0.0005
-		var rot_y: float = float((i * 31) % 360) * (PI / 180.0)
+		var tree_inst: Node3D = tree_scene.instantiate() as Node3D
+		tree_inst.name = "CypressTree_%d" % i
+		tree_inst.position = Vector3(pos_2d.x, 33.25, pos_2d.y)
 		
-		var t_xform: Transform3D = Transform3D()
-		t_xform = t_xform.scaled(Vector3(scale_factor, scale_factor, scale_factor))
-		t_xform = t_xform.rotated(Vector3.UP, rot_y)
-		t_xform.origin = t_pos
+		# Scaled to realistic human scale 4.5m - 5.2m height (Vector3(0.55, 0.65, 0.55) +/- 5% organic variation)
+		var scale_var: float = 0.95 + 0.10 * float((i * 17) % 7) / 6.0
+		tree_inst.scale = Vector3(0.55 * scale_var, 0.65 * scale_var, 0.55 * scale_var)
+		tree_inst.rotation.y = float((i * 53) % 360) * (PI / 180.0)
 		
-		mm_leaves.set_instance_transform(i, t_xform)
-		if mm_trunk:
-			mm_trunk.set_instance_transform(i, t_xform)
+		_enable_tree_shadows(tree_inst)
+		foliage_root.add_child(tree_inst)
+		
+	print("AgraWorld: Full-length human-scale cypress colonnades successfully instantiated.")
 
-func _setup_procedural_grass() -> void:
-	var foliage_root: Node3D = get_node_or_null("Foliage") as Node3D
-	if not foliage_root:
-		foliage_root = Node3D.new()
-		foliage_root.name = "Foliage"
-		add_child(foliage_root)
-		
-	var shader_res = load(GRASS_SHADER_PATH)
-	if not shader_res:
-		return
-		
-	var grass_mat: ShaderMaterial = ShaderMaterial.new()
-	grass_mat.shader = shader_res
-	
-	var grass_tex: Texture2D = _safe_load_texture(TEX_GRASS_DIFF)
-	if grass_tex:
-		grass_mat.set_shader_parameter("grass_texture", grass_tex)
-		
-	# Build 3-plane cross grass tuft mesh
-	var st: SurfaceTool = SurfaceTool.new()
-	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	
-	for blade_idx in range(3):
-		var ang: float = float(blade_idx) * (PI / 3.0)
-		var hw: float = 0.55
-		var h: float = 0.85
-		var dir: Vector3 = Vector3(cos(ang), 0.0, sin(ang)) * hw
-		
-		var p1: Vector3 = -dir
-		var p2: Vector3 = dir
-		var p3: Vector3 = -dir + Vector3(0.0, h, 0.0)
-		var p4: Vector3 = dir + Vector3(0.0, h, 0.0)
-		
-		st.set_uv(Vector2(0.0, 1.0))
-		st.add_vertex(p1)
-		st.set_uv(Vector2(1.0, 1.0))
-		st.add_vertex(p2)
-		st.set_uv(Vector2(1.0, 0.0))
-		st.add_vertex(p4)
-		
-		st.set_uv(Vector2(0.0, 1.0))
-		st.add_vertex(p1)
-		st.set_uv(Vector2(1.0, 0.0))
-		st.add_vertex(p4)
-		st.set_uv(Vector2(0.0, 0.0))
-		st.add_vertex(p3)
-		
-	st.generate_normals()
-	var grass_mesh: ArrayMesh = st.commit()
-	
-	# Generate grass tuft positions across 16 lawn beds in the Charbagh grid
-	var center_x: float = -125.844
-	var grass_positions: Array[Vector2] = []
-	
-	var x_ranges: Array[Vector2] = [
-		Vector2(center_x - 130.0, center_x - 15.0),
-		Vector2(center_x + 15.0, center_x + 130.0)
-	]
-	var z_ranges: Array[Vector2] = [
-		Vector2(-95.0, 25.0),
-		Vector2(55.0, 170.0)
-	]
-	
-	var step: float = 2.8
-	for xr in x_ranges:
-		var curr_x: float = xr.x
-		while curr_x <= xr.y:
-			for zr in z_ranges:
-				var curr_z: float = zr.x
-				while curr_z <= zr.y:
-					var dx_mid: float = abs(curr_x - (xr.x + xr.y) * 0.5)
-					var dz_mid: float = abs(curr_z - (zr.x + zr.y) * 0.5)
-					if dx_mid > 3.0 and dz_mid > 3.0:
-						var jitter_x: float = float((int(curr_x * 13.0 + curr_z * 7.0) % 100)) * 0.015 - 0.75
-						var jitter_z: float = float((int(curr_x * 7.0 + curr_z * 17.0) % 100)) * 0.015 - 0.75
-						grass_positions.append(Vector2(curr_x + jitter_x, curr_z + jitter_z))
-					curr_z += step
-			curr_x += step
-			
-	var grass_count: int = grass_positions.size()
-	print("AgraWorld: Instantiating ", grass_count, " procedural waving grass tufts via MultiMeshInstance3D...")
-	
-	var mm_grass: MultiMesh = MultiMesh.new()
-	mm_grass.transform_format = MultiMesh.TRANSFORM_3D
-	mm_grass.mesh = grass_mesh
-	mm_grass.instance_count = grass_count
-	
-	var mmi_grass: MultiMeshInstance3D = MultiMeshInstance3D.new()
-	mmi_grass.name = "GrassMultiMeshInstance"
-	mmi_grass.multimesh = mm_grass
-	mmi_grass.material_override = grass_mat
-	foliage_root.add_child(mmi_grass)
-	
-	for i in range(grass_count):
-		var pos_2d: Vector2 = grass_positions[i]
-		var ground_h: float = 33.0
-		if terrain_node and ("data" in terrain_node) and terrain_node.data:
-			var q_h: float = terrain_node.data.get_height(Vector3(pos_2d.x, 0.0, pos_2d.y))
-			if not is_nan(q_h) and abs(q_h) < 50.0:
-				ground_h = q_h
-				
-		var g_scale: float = 0.85 + float((i * 19) % 30) * 0.01
-		var g_rot: float = float((i * 47) % 360) * (PI / 180.0)
-		
-		var gx: Transform3D = Transform3D()
-		gx = gx.scaled(Vector3(g_scale, g_scale, g_scale))
-		gx = gx.rotated(Vector3.UP, g_rot)
-		gx.origin = Vector3(pos_2d.x, ground_h, pos_2d.y)
-		mm_grass.set_instance_transform(i, gx)
+func _enable_tree_shadows(node: Node) -> void:
+	if node is GeometryInstance3D:
+		node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+	for child in node.get_children():
+		_enable_tree_shadows(child)
 
 # -----------------------------------------------------------------------------
-# Water Systems (Yamuna River & Charbagh Reflecting Pools)
+# Water Systems (Yamuna River & Sunken Reflection Canal)
 # -----------------------------------------------------------------------------
 func _setup_water_systems() -> void:
 	var water_root: Node3D = get_node_or_null("WaterBodies") as Node3D
@@ -814,138 +1242,178 @@ func _setup_water_systems() -> void:
 	if not shader_res is Shader:
 		return
 		
-	# 1. Northern Yamuna River Water System
+	# 1. Northern Yamuna River Basin Water System
 	_setup_yamuna_river(water_root, shader_res)
 	
-	# 2. Central Charbagh Reflecting Pools & Canals System
+	# 2. Central Recessed Reflection Canal & Lotus Pool
 	_setup_reflecting_pools(water_root, shader_res)
 
 func _setup_yamuna_river(parent: Node3D, shader: Shader) -> void:
 	var river_mat: ShaderMaterial = ShaderMaterial.new()
 	river_mat.shader = shader
 	
-	# Murky green-blue natural river absorption colors
-	river_mat.set_shader_parameter("shallow_color", Color(0.22, 0.46, 0.42, 0.78))
-	river_mat.set_shader_parameter("deep_color", Color(0.06, 0.22, 0.25, 0.96))
-	river_mat.set_shader_parameter("depth_distance", 5.5)
-	river_mat.set_shader_parameter("absorption_strength", 1.4)
-	river_mat.set_shader_parameter("wave_speed1", Vector2(0.035, 0.015))
-	river_mat.set_shader_parameter("wave_speed2", Vector2(-0.02, 0.025))
-	river_mat.set_shader_parameter("wave_scale1", 0.04)
-	river_mat.set_shader_parameter("wave_scale2", 0.07)
-	river_mat.set_shader_parameter("foam_distance", 0.75)
-	river_mat.set_shader_parameter("foam_color", Color(0.88, 0.94, 0.96, 0.85))
-	river_mat.set_shader_parameter("fresnel_power", 3.2)
-	river_mat.set_shader_parameter("refraction_strength", 0.03)
+	# Deep navy/cyan #1a3d4c water colors with 0.05 roughness
+	river_mat.set_shader_parameter("shallow_color", Color(0.102, 0.239, 0.298, 0.82))
+	river_mat.set_shader_parameter("deep_color", Color(0.045, 0.125, 0.165, 0.98))
+	river_mat.set_shader_parameter("roughness", 0.05)
+	river_mat.set_shader_parameter("depth_distance", 4.0)
+	river_mat.set_shader_parameter("absorption_strength", 1.6)
+	river_mat.set_shader_parameter("wave_speed1", Vector2(0.02, 0.01))
+	river_mat.set_shader_parameter("wave_speed2", Vector2(-0.015, 0.02))
+	river_mat.set_shader_parameter("wave_scale1", 0.05)
+	river_mat.set_shader_parameter("wave_scale2", 0.08)
+	river_mat.set_shader_parameter("foam_distance", 0.5)
+	river_mat.set_shader_parameter("foam_color", Color(0.85, 0.92, 0.96, 0.75))
+	river_mat.set_shader_parameter("fresnel_power", 4.0)
+	river_mat.set_shader_parameter("refraction_strength", 0.025)
 	
 	var river_mesh: PlaneMesh = PlaneMesh.new()
-	river_mesh.size = Vector2(1400.0, 500.0)
-	river_mesh.subdivide_width = 48
-	river_mesh.subdivide_depth = 32
+	river_mesh.size = Vector2(1200.0, 350.0)
+	river_mesh.subdivide_width = 32
+	river_mesh.subdivide_depth = 24
 	
 	var river_instance: MeshInstance3D = MeshInstance3D.new()
 	river_instance.name = "YamunaRiver"
 	river_instance.mesh = river_mesh
 	river_instance.material_override = river_mat
 	
-	# Position in northern riverbed depression
-	var river_y: float = 27.2
-	river_instance.position = Vector3(-125.844, river_y, -360.0)
+	# Strictly inside the northern Yamuna river depression
+	var river_y: float = 26.8
+	river_instance.position = Vector3(0.0, river_y, -360.0)
 	parent.add_child(river_instance)
-	print("AgraWorld: Yamuna river water plane initialized at Y=", river_y)
+	print("AgraWorld: Yamuna river basin water initialized at Y=", river_y)
 
-func _setup_reflecting_pools(parent: Node3D, shader: Shader) -> void:
-	var pool_mat: ShaderMaterial = ShaderMaterial.new()
-	pool_mat.shader = shader
+func _setup_reflecting_pools(parent: Node3D, _shader: Shader) -> void:
+	var center_x: float = 0.0 # Strictly centered on active player and monument axis
+	var garden_center_z: float = 78.0 # Center of 304.6m Charbagh square
+	var canal_y: float = 33.22 # Raised 2cm above base stone slab to eliminate Z-fighting
 	
-	# Clean turquoise reflecting fountain colors
-	pool_mat.set_shader_parameter("shallow_color", Color(0.16, 0.72, 0.78, 0.65))
-	pool_mat.set_shader_parameter("deep_color", Color(0.04, 0.36, 0.50, 0.92))
-	pool_mat.set_shader_parameter("depth_distance", 2.2)
-	pool_mat.set_shader_parameter("absorption_strength", 2.2)
-	pool_mat.set_shader_parameter("wave_speed1", Vector2(0.012, 0.016))
-	pool_mat.set_shader_parameter("wave_speed2", Vector2(-0.014, 0.01))
-	pool_mat.set_shader_parameter("wave_scale1", 0.16)
-	pool_mat.set_shader_parameter("wave_scale2", 0.24)
-	pool_mat.set_shader_parameter("foam_distance", 0.3)
-	pool_mat.set_shader_parameter("foam_color", Color(0.95, 0.98, 1.0, 0.9))
-	pool_mat.set_shader_parameter("fresnel_power", 4.0)
-	pool_mat.set_shader_parameter("refraction_strength", 0.02)
+	# High-Gloss Mirror Water Material (Color(0.05, 0.25, 0.35, 0.95), 0.02 roughness, 0.1 metallic, SSR enabled)
+	var water_mat: StandardMaterial3D = StandardMaterial3D.new()
+	water_mat.albedo_color = Color(0.05, 0.25, 0.35, 0.95)
+	water_mat.roughness = 0.02
+	water_mat.metallic = 0.1
+	water_mat.transparency = BaseMaterial3D.TRANSPARENCY_DISABLED
+	water_mat.clearcoat_enabled = true
+	water_mat.clearcoat = 1.0
+	water_mat.clearcoat_roughness = 0.02
 	
-	var center_x: float = -125.844
-	var canal_y: float = 32.1
+	# White Marble Material for Platform and Curbs
+	var marble_mat: StandardMaterial3D = StandardMaterial3D.new()
+	var marble_diff: Texture2D = _safe_load_texture(TEX_MARBLE_DIFF)
+	var marble_norm: Texture2D = _safe_load_texture(TEX_MARBLE_NORM)
+	if marble_diff:
+		marble_mat.albedo_texture = marble_diff
+	else:
+		marble_mat.albedo_color = Color(0.96, 0.95, 0.92, 1.0)
+	if marble_norm:
+		marble_mat.normal_enabled = true
+		marble_mat.normal_texture = marble_norm
+	marble_mat.uv1_scale = Vector3(10.0, 10.0, 1.0)
+	marble_mat.roughness = 0.35
 	
-	# 1. Central Square Lotus Pool (al-Hawd al-Kawthar)
+	# -------------------------------------------------------------------------
+	# Section 1 (South): Reflecting Canal (3.2m wide, Z = 86m to 220m)
+	# -------------------------------------------------------------------------
+	var canal_mesh_s: PlaneMesh = PlaneMesh.new()
+	canal_mesh_s.size = Vector2(3.2, 134.0)
+	canal_mesh_s.subdivide_depth = 24
+	
+	var central_pool_s: MeshInstance3D = MeshInstance3D.new()
+	central_pool_s.name = "CentralReflectingPool_South"
+	central_pool_s.mesh = canal_mesh_s
+	central_pool_s.material_override = water_mat
+	central_pool_s.position = Vector3(center_x, canal_y, 153.0)
+	parent.add_child(central_pool_s)
+	
+	# White Marble Curbs framing the Southern canal at X = +/- 1.675m
+	var curb_box_s: BoxMesh = BoxMesh.new()
+	curb_box_s.size = Vector3(0.15, 0.12, 134.0)
+	
+	var curb_w_s: MeshInstance3D = MeshInstance3D.new()
+	curb_w_s.name = "Curb_West_South"
+	curb_w_s.mesh = curb_box_s
+	curb_w_s.material_override = marble_mat
+	curb_w_s.position = Vector3(center_x - 1.675, 33.22, 153.0)
+	parent.add_child(curb_w_s)
+	
+	var curb_e_s: MeshInstance3D = MeshInstance3D.new()
+	curb_e_s.name = "Curb_East_South"
+	curb_e_s.mesh = curb_box_s
+	curb_e_s.material_override = marble_mat
+	curb_e_s.position = Vector3(center_x + 1.675, 33.22, 153.0)
+	parent.add_child(curb_e_s)
+	
+	# -------------------------------------------------------------------------
+	# Section 2 (North): Reflecting Canal (3.2m wide, Z = -74.3m to 70m, length 144.3m)
+	# -------------------------------------------------------------------------
+	var canal_mesh_n: PlaneMesh = PlaneMesh.new()
+	canal_mesh_n.size = Vector2(3.2, 144.3)
+	canal_mesh_n.subdivide_depth = 24
+	
+	var central_pool_n: MeshInstance3D = MeshInstance3D.new()
+	central_pool_n.name = "CentralReflectingPool_North"
+	central_pool_n.mesh = canal_mesh_n
+	central_pool_n.material_override = water_mat
+	central_pool_n.position = Vector3(center_x, canal_y, -2.15)
+	parent.add_child(central_pool_n)
+	
+	# White Marble Curbs framing the Northern canal at X = +/- 1.675m
+	var curb_box_n: BoxMesh = BoxMesh.new()
+	curb_box_n.size = Vector3(0.15, 0.12, 144.3)
+	
+	var curb_w_n: MeshInstance3D = MeshInstance3D.new()
+	curb_w_n.name = "Curb_West_North"
+	curb_w_n.mesh = curb_box_n
+	curb_w_n.material_override = marble_mat
+	curb_w_n.position = Vector3(center_x - 1.675, 33.22, -2.15)
+	parent.add_child(curb_w_n)
+	
+	var curb_e_n: MeshInstance3D = MeshInstance3D.new()
+	curb_e_n.name = "Curb_East_North"
+	curb_e_n.mesh = curb_box_n
+	curb_e_n.material_override = marble_mat
+	curb_e_n.position = Vector3(center_x + 1.675, 33.22, -2.15)
+	parent.add_child(curb_e_n)
+	
+	# -------------------------------------------------------------------------
+	# Central Raised Square Lotus Platform (Hawd al-Kawthar: 16m x 16m at Y = 33.25m)
+	# -------------------------------------------------------------------------
+	var platform_box: BoxMesh = BoxMesh.new()
+	platform_box.size = Vector3(16.0, 0.10, 16.0)
+	var platform_inst: MeshInstance3D = MeshInstance3D.new()
+	platform_inst.name = "HawdAlKawtharPlatform"
+	platform_inst.mesh = platform_box
+	platform_inst.material_override = marble_mat
+	platform_inst.position = Vector3(center_x, 33.25, garden_center_z)
+	parent.add_child(platform_inst)
+	
+	# Central Sunken Lotus Pool in center of platform (10.0m x 10.0m at Y = 33.31m)
 	var lotus_mesh: PlaneMesh = PlaneMesh.new()
-	lotus_mesh.size = Vector2(26.0, 26.0)
-	lotus_mesh.subdivide_width = 8
-	lotus_mesh.subdivide_depth = 8
-	
+	lotus_mesh.size = Vector2(10.0, 10.0)
 	var lotus_instance: MeshInstance3D = MeshInstance3D.new()
 	lotus_instance.name = "LotusReflectingPool"
 	lotus_instance.mesh = lotus_mesh
-	lotus_instance.material_override = pool_mat
-	lotus_instance.position = Vector3(center_x, canal_y, 40.0)
+	lotus_instance.material_override = water_mat
+	lotus_instance.position = Vector3(center_x, 33.31, garden_center_z)
 	parent.add_child(lotus_instance)
 	
-	# 2. Central North-South Canals
-	var ns_mesh: PlaneMesh = PlaneMesh.new()
-	ns_mesh.size = Vector2(8.5, 125.0)
-	ns_mesh.subdivide_depth = 24
-	
-	# North Canal (leading toward Taj Mahal)
-	var north_canal: MeshInstance3D = MeshInstance3D.new()
-	north_canal.name = "NorthCanal"
-	north_canal.mesh = ns_mesh
-	north_canal.material_override = pool_mat
-	north_canal.position = Vector3(center_x, canal_y, -36.0)
-	parent.add_child(north_canal)
-	
-	# South Canal (leading toward Great Gate)
-	var south_canal: MeshInstance3D = MeshInstance3D.new()
-	south_canal.name = "SouthCanal"
-	south_canal.mesh = ns_mesh
-	south_canal.material_override = pool_mat
-	south_canal.position = Vector3(center_x, canal_y, 116.0)
-	parent.add_child(south_canal)
-	
-	# 3. Central East-West Canals
-	var ew_mesh: PlaneMesh = PlaneMesh.new()
-	ew_mesh.size = Vector2(125.0, 8.5)
-	ew_mesh.subdivide_width = 24
-	
-	# West Canal
-	var west_canal: MeshInstance3D = MeshInstance3D.new()
-	west_canal.name = "WestCanal"
-	west_canal.mesh = ew_mesh
-	west_canal.material_override = pool_mat
-	west_canal.position = Vector3(center_x - 76.0, canal_y, 40.0)
-	parent.add_child(west_canal)
-	
-	# East Canal
-	var east_canal: MeshInstance3D = MeshInstance3D.new()
-	east_canal.name = "EastCanal"
-	east_canal.mesh = ew_mesh
-	east_canal.material_override = pool_mat
-	east_canal.position = Vector3(center_x + 76.0, canal_y, 40.0)
-	parent.add_child(east_canal)
-	
-	print("AgraWorld: Charbagh reflecting pools and cross-canals initialized at Y=", canal_y)
+	print("AgraWorld: CentralReflectingPool & Hawd al-Kawthar centered on X = 0.0 (3.2m canal, SSR enabled).")
 
 # -----------------------------------------------------------------------------
-# AAA Realism Lighting & Atmosphere
+# AAA Realism Lighting & Atmosphere (PhysicalSky, ACES, Warm Sun, 0.0002 Fog)
 # -----------------------------------------------------------------------------
 func _setup_lighting_and_atmosphere() -> void:
-	# 1. Warm Golden-Hour Directional Sun Light
+	# 1. Realistic Warm Sunlight (DirectionalLight3D)
 	if sun_light:
-		sun_light.light_color = Color(1.0, 0.92, 0.78, 1.0)
-		sun_light.light_energy = 1.45
-		sun_light.light_volumetric_fog_energy = 1.6
-		sun_light.light_angular_distance = 0.65
+		sun_light.light_color = Color(1.0, 0.95, 0.88, 1.0) # Warm sunlight
+		sun_light.light_energy = 1.0
+		sun_light.light_indirect_energy = 0.5
+		sun_light.rotation = Vector3(-0.6, 0.7, 0.0) # Angled golden-hour shadows
 		sun_light.shadow_enabled = true
 		sun_light.shadow_bias = 0.02
 		sun_light.shadow_normal_bias = 1.5
-		sun_light.shadow_blur = 1.2
+		sun_light.shadow_blur = 1.5
 		sun_light.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS
 		sun_light.directional_shadow_split_1 = 0.08
 		sun_light.directional_shadow_split_2 = 0.20
@@ -954,38 +1422,53 @@ func _setup_lighting_and_atmosphere() -> void:
 		sun_light.directional_shadow_max_distance = 500.0
 		sun_light.directional_shadow_pancake_size = 35.0
 		
-	# 2. WorldEnvironment Configuration (SDFGI, SSAO, SSIL, Volumetric Fog)
+	# 2. WorldEnvironment Configuration (PhysicalSky, ACES, SSAO, SSR, 0.0002 Fog)
 	if world_env and world_env.environment:
 		var env: Environment = world_env.environment
 		
-		# Tonemapping & Color Grading
+		# Realistic Sky with PhysicalSkyMaterial
+		env.background_mode = Environment.BG_SKY
+		var sky: Sky = Sky.new()
+		var sky_mat: PhysicalSkyMaterial = PhysicalSkyMaterial.new()
+		sky_mat.rayleigh_coefficient = 2.0
+		sky_mat.mie_coefficient = 0.005
+		sky_mat.turbidity = 10.0
+		sky_mat.ground_color = Color(0.25, 0.22, 0.18, 1.0)
+		sky.sky_material = sky_mat
+		env.sky = sky
+		
+		# ACES Tonemapping (prevents marble blowout)
 		env.tonemap_mode = Environment.TONE_MAPPER_ACES
-		env.tonemap_exposure = 1.08
+		env.tonemap_exposure = 1.05
 		env.tonemap_white = 1.0
 		
-		# Ambient Lighting
+		# Ambient Lighting from Physical Sky (0.3 energy)
 		env.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
-		env.ambient_light_color = Color(0.98, 0.92, 0.84, 1.0)
-		env.ambient_light_sky_contribution = 0.75
-		env.ambient_light_energy = 0.85
+		env.ambient_light_sky_contribution = 0.5
+		env.ambient_light_energy = 0.3
 		
-		# Screen-Space Ambient Occlusion (SSAO)
+		# Screen-Space Ambient Occlusion (SSAO: radius 1.5, intensity 2.0)
 		env.ssao_enabled = true
-		env.ssao_radius = 2.5
-		env.ssao_intensity = 2.2
+		env.ssao_radius = 1.5
+		env.ssao_intensity = 2.0
 		env.ssao_power = 1.5
 		env.ssao_detail = 0.5
 		env.ssao_horizon = 0.06
 		env.ssao_sharpness = 0.98
-		env.ssao_light_affect = 0.6
-		env.ssao_ao_channel_affect = 0.5
 		
 		# Screen-Space Indirect Lighting (SSIL)
 		env.ssil_enabled = true
 		env.ssil_radius = 5.0
-		env.ssil_intensity = 1.2
+		env.ssil_intensity = 1.0
 		env.ssil_sharpness = 0.9
 		env.ssil_normal_rejection = 1.0
+		
+		# Screen-Space Reflections (SSR) for water
+		env.ssr_enabled = true
+		env.ssr_max_steps = 64
+		env.ssr_fade_in = 0.15
+		env.ssr_fade_out = 2.0
+		env.ssr_depth_tolerance = 0.2
 		
 		# Signed Distance Field Global Illumination (SDFGI)
 		env.sdfgi_enabled = true
@@ -998,29 +1481,22 @@ func _setup_lighting_and_atmosphere() -> void:
 		env.sdfgi_y_scale = Environment.SDFGI_Y_SCALE_100_PERCENT
 		env.sdfgi_energy = 1.15
 		
-		# Subtle Bloom & Glow
+		# Subtle Bloom
 		env.glow_enabled = true
 		env.glow_normalized = true
-		env.glow_intensity = 0.35
-		env.glow_bloom = 0.12
+		env.glow_intensity = 0.20
+		env.glow_bloom = 0.06
 		
-		# Volumetric Fog & Atmospheric River Mist
+		# Volumetric Fog (density 0.0002 to remove white haze)
 		env.volumetric_fog_enabled = true
-		env.volumetric_fog_density = 0.003
+		env.volumetric_fog_density = 0.0002
 		env.volumetric_fog_albedo = Color(0.92, 0.94, 0.98, 1.0)
 		env.volumetric_fog_emission = Color(0.12, 0.15, 0.20, 1.0)
-		env.volumetric_fog_emission_energy = 0.3
+		env.volumetric_fog_emission_energy = 0.05
 		env.volumetric_fog_anisotropy = 0.35
-		env.volumetric_fog_length = 350.0
-		env.volumetric_fog_detail_spread = 2.0
-		env.volumetric_fog_ambient_inject = 0.2
-		env.volumetric_fog_sky_affect = 0.15
+		env.volumetric_fog_length = 400.0
 		
-		# Atmospheric Height Mist
-		env.fog_enabled = true
-		env.fog_light_color = Color(0.92, 0.94, 0.98, 1.0)
-		env.fog_density = 0.001
-		env.fog_height = 32.0
-		env.fog_height_density = -0.06
+		# Regular height fog disabled to eliminate whiteout
+		env.fog_enabled = false
 		
-		print("AgraWorld: AAA Realism Environment & Lighting configured (SDFGI, SSAO, SSIL, Volumetric Fog).")
+		print("AgraWorld: PhysicalSky + ACES + Warm Sun + 0.0002 Fog successfully configured.")

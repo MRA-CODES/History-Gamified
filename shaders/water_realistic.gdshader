@@ -1,27 +1,27 @@
 shader_type spatial;
 render_mode blend_mix, depth_draw_always, cull_back, diffuse_burley, specular_schlick_ggx;
 
-// Water Color & Depth Absorption
-uniform vec4 shallow_color : source_color = vec4(0.18, 0.68, 0.72, 0.65);
-uniform vec4 deep_color : source_color = vec4(0.05, 0.28, 0.42, 0.92);
-uniform float depth_distance : hint_range(0.1, 20.0) = 4.0;
-uniform float absorption_strength : hint_range(0.1, 5.0) = 1.2;
+// Water Color & Depth Absorption (Deep navy/cyan #1a3d4c)
+uniform vec4 shallow_color : source_color = vec4(0.102, 0.239, 0.298, 0.82);
+uniform vec4 deep_color : source_color = vec4(0.045, 0.125, 0.165, 0.98);
+uniform float depth_distance : hint_range(0.1, 20.0) = 3.0;
+uniform float absorption_strength : hint_range(0.1, 5.0) = 1.6;
 
 // Wave Animation & Normal Map
 uniform sampler2D wave_normal1 : hint_normal, filter_linear_mipmap_anisotropic, repeat_enable;
 uniform sampler2D wave_normal2 : hint_normal, filter_linear_mipmap_anisotropic, repeat_enable;
-uniform vec2 wave_speed1 = vec2(0.02, 0.03);
-uniform vec2 wave_speed2 = vec2(-0.025, 0.018);
-uniform float wave_scale1 : hint_range(0.01, 1.0) = 0.08;
-uniform float wave_scale2 : hint_range(0.01, 1.0) = 0.12;
+uniform vec2 wave_speed1 = vec2(0.015, 0.02);
+uniform vec2 wave_speed2 = vec2(-0.02, 0.012);
+uniform float wave_scale1 : hint_range(0.01, 1.0) = 0.15;
+uniform float wave_scale2 : hint_range(0.01, 1.0) = 0.22;
 uniform float normal_blend : hint_range(0.0, 1.0) = 0.5;
 
 // Surface & Lighting Properties
 uniform float roughness : hint_range(0.0, 1.0) = 0.05;
-uniform float metallic : hint_range(0.0, 1.0) = 0.1;
-uniform float specular : hint_range(0.0, 1.0) = 0.8;
-uniform float fresnel_power : hint_range(0.5, 8.0) = 3.5;
-uniform float refraction_strength : hint_range(0.0, 0.1) = 0.03;
+uniform float metallic : hint_range(0.0, 1.0) = 0.15;
+uniform float specular : hint_range(0.0, 1.0) = 0.9;
+uniform float fresnel_power : hint_range(0.5, 8.0) = 4.0;
+uniform float refraction_strength : hint_range(0.0, 0.1) = 0.025;
 
 // Shoreline Foam
 uniform vec4 foam_color : source_color = vec4(0.92, 0.96, 1.0, 0.9);
