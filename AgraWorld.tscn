@@ -2,13 +2,10 @@
 
 [ext_resource type="Script" uid="uid://bc6ukyt2q3yqp" path="res://scripts/agra_world.gd" id="1_script"]
 [ext_resource type="PackedScene" uid="uid://bhvov7mqrad0o" path="res://assets/environment/buildings/Map 4 - Taj Mahal_Buildings/TajMahal (lowpoly).glb" id="2_taj_model"]
-[ext_resource type="Terrain3DAssets" uid="uid://delkgyd8odypk" path="res://assets/terrain/MAp 4- TAJ MAHAL_Terrain/taj_mahal_terrain_assets.tres" id="3_taj_assets"]
+[ext_resource type="Terrain3DAssets" uid="uid://5cag7j1a1kxq" path="res://assets/terrain/MAp 4- TAJ MAHAL_Terrain/taj_mahal_terrain_assets.tres" id="3_taj_assets"]
 [ext_resource type="PackedScene" uid="uid://c6f3k0p8m5y21" path="res://scenes/player.tscn" id="4_player"]
 
 [sub_resource type="PhysicalSkyMaterial" id="SkyMat_Agra"]
-rayleigh_coefficient = 2.0
-mie_coefficient = 0.005
-turbidity = 10.0
 ground_color = Color(0.25, 0.22, 0.18, 1)
 
 [sub_resource type="Sky" id="Sky_Agra"]
@@ -22,34 +19,17 @@ ambient_light_sky_contribution = 0.5
 ambient_light_energy = 0.3
 tonemap_mode = 3
 tonemap_exposure = 1.05
-tonemap_white = 1.0
+ssr_enabled = true
+ssr_depth_tolerance = 0.2
 ssao_enabled = true
 ssao_radius = 1.5
-ssao_intensity = 2.0
-ssao_power = 1.5
-ssao_detail = 0.5
-ssao_horizon = 0.06
-ssao_sharpness = 0.98
 ssao_light_affect = 0.6
 ssao_ao_channel_affect = 0.5
 ssil_enabled = true
-ssil_radius = 5.0
-ssil_intensity = 1.0
 ssil_sharpness = 0.9
-ssil_normal_rejection = 1.0
-ssr_enabled = true
-ssr_max_steps = 64
-ssr_fade_in = 0.15
-ssr_fade_out = 2.0
-ssr_depth_tolerance = 0.2
 sdfgi_enabled = true
 sdfgi_use_occlusion = true
-sdfgi_read_sky_light = true
 sdfgi_cascades = 6
-sdfgi_min_cell_size = 0.4
-sdfgi_cascade0_distance = 12.8
-sdfgi_max_distance = 819.2
-sdfgi_y_scale = 1
 sdfgi_energy = 1.15
 glow_enabled = true
 glow_normalized = true
@@ -62,9 +42,7 @@ volumetric_fog_emission = Color(0.12, 0.15, 0.2, 1)
 volumetric_fog_emission_energy = 0.1
 volumetric_fog_anisotropy = 0.35
 volumetric_fog_length = 400.0
-volumetric_fog_detail_spread = 2.0
 volumetric_fog_sky_affect = 0.15
-fog_enabled = false
 
 [sub_resource type="Gradient" id="Gradient_3bmby"]
 offsets = PackedFloat32Array(0.2, 1)
@@ -107,8 +85,6 @@ _shader_parameters = {
 &"projection_threshold": null
 }
 world_background = 0
-show_checkered = false
-auto_shader = false
 
 [sub_resource type="StyleBoxFlat" id="StyleBox_PausePanel"]
 bg_color = Color(0.08, 0.09, 0.14, 0.96)
@@ -157,25 +133,19 @@ environment = SubResource("Env_Agra")
 [node name="SunLight" type="DirectionalLight3D" parent="." unique_id=112781786]
 transform = Transform3D(0.764842, 0.38096, -0.519543, 0, 0.806845, 0.590767, 0.644218, -0.451839, 0.617105, -125.844, 120, -131.457)
 light_color = Color(1, 0.95, 0.88, 1)
-light_energy = 1.0
 light_indirect_energy = 0.5
-light_volumetric_fog_energy = 1.0
 light_angular_distance = 0.65
 shadow_enabled = true
 shadow_bias = 0.02
 shadow_normal_bias = 1.5
 shadow_blur = 1.5
-directional_shadow_mode = 2
 directional_shadow_split_1 = 0.08
-directional_shadow_split_2 = 0.2
-directional_shadow_split_3 = 0.5
 directional_shadow_blend_splits = true
 directional_shadow_max_distance = 500.0
 directional_shadow_pancake_size = 35.0
 
 [node name="OverviewCamera" type="Camera3D" parent="." unique_id=1575501922]
 transform = Transform3D(1, 0, 0, 0, 0.996272, 0.08627, 0, -0.08627, 0.996272, -125.844, 45, 140)
-current = false
 fov = 65.0
 far = 2000.0
 
@@ -186,7 +156,6 @@ transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 33.
 data_directory = "res://data/terrain/map4"
 material = SubResource("Terrain3DMaterial_uprpe")
 assets = ExtResource("3_taj_assets")
-show_checkered = false
 top_level = true
 metadata/_edit_lock_ = true
 

@@ -4,8 +4,9 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://baneqsvitis4a"
 path.s3tc="res://.godot/imported/NHM London_1.jpg-f019e1ab5a366501167be04e342a278f.s3tc.ctex"
+path.etc2="res://.godot/imported/NHM London_1.jpg-f019e1ab5a366501167be04e342a278f.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 generator_parameters={
@@ -15,7 +16,7 @@ generator_parameters={
 [deps]
 
 source_file="res://assets/environment/buildings/NHM London_1.jpg"
-dest_files=["res://.godot/imported/NHM London_1.jpg-f019e1ab5a366501167be04e342a278f.s3tc.ctex"]
+dest_files=["res://.godot/imported/NHM London_1.jpg-f019e1ab5a366501167be04e342a278f.s3tc.ctex", "res://.godot/imported/NHM London_1.jpg-f019e1ab5a366501167be04e342a278f.etc2.ctex"]
 
 [params]
 
