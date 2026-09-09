@@ -35,6 +35,8 @@ func _process(_delta: float) -> void:
 
 func set_floors(p_floors: Array) -> void:
 	floors = p_floors
+	active_floor_index = 0
+	_discover_scene_elements()
 	_update_active_floor(true)
 
 func set_player(p_player: Node3D) -> void:
@@ -86,8 +88,8 @@ func get_exhibits_for_floor(p_floor: MapFloorData) -> Array[Dictionary]:
 		
 	for ex in discovered_exhibits:
 		var pos: Vector3 = ex.get("pos", Vector3.ZERO)
-		var is_ext = (ex.get("floor_id") == "exterior_plaza")
-		if p_floor.is_elevation_in_range(pos.y, not is_ext) or ex.get("floor_id") == p_floor.floor_id:
+		var f_id = ex.get("floor_id", "")
+		if f_id == p_floor.floor_id or p_floor.is_elevation_in_range(pos.y, not p_floor.is_exterior):
 			result.append(ex)
 	return result
 
@@ -119,8 +121,12 @@ func _find_player() -> void:
 		
 	# Fallback search
 	var root = get_tree().current_scene
+	if not root:
+		root = owner
+	if not root:
+		root = get_tree().root
 	if root:
-		var p = root.get_node_or_null("Player")
+		var p = root.find_child("Player", true, false)
 		if p and p is Node3D:
 			player_node = p
 
@@ -128,15 +134,22 @@ func _update_active_floor(force_emit: bool = false) -> void:
 	if floors.is_empty():
 		return
 		
-	var py = player_node.global_position.y if player_node else 3.5
+	var py = player_node.global_position.y if player_node else 0.5
 	var pz = player_node.global_position.z if player_node else 0.0
 	
-	# Determine if outside based on flag or position
+	# Determine if outside based on flag or scene heuristic
 	var actually_inside = is_inside
-	if not is_inside and pz < 28.0:
-		actually_inside = true
-	elif is_inside and pz > 33.0:
-		actually_inside = false
+	var is_nhm = false
+	for f in floors:
+		if f.floor_id == "ground_floor":
+			is_nhm = true
+			break
+			
+	if is_nhm:
+		if not is_inside and pz < 28.0:
+			actually_inside = true
+		elif is_inside and pz > 33.0:
+			actually_inside = false
 		
 	var new_index = active_floor_index
 	
@@ -161,6 +174,10 @@ func _discover_scene_elements() -> void:
 	discovered_exhibits.clear()
 	var root = get_tree().current_scene
 	if not root:
+		root = owner
+	if not root:
+		root = get_tree().root
+	if not root:
 		return
 		
 	_scan_nodes_for_exhibits(root)
@@ -173,16 +190,28 @@ func _scan_nodes_for_exhibits(node: Node) -> void:
 			var pos: Vector3 = node.global_position if node is Node3D else Vector3.ZERO
 			var ex_data = EducationalEventBus.get_exhibit_data(ex_id)
 			
-			# Assign floor based on location and height
-			var f_id = "ground_floor"
-			if pos.z > 30.0 or ex_id == "waterhouse_terracotta":
-				f_id = "exterior_plaza"
-			elif pos.y > 13.0:
-				f_id = "second_floor"
-			elif pos.y > 6.5:
-				f_id = "first_floor"
-			else:
-				f_id = "ground_floor"
+			# Assign floor dynamically by checking matching elevation / exterior flag
+			var f_id = ""
+			for f in floors:
+				var is_ext = f.is_exterior
+				# If exhibit category or id indicates exterior
+				var cat = str(ex_data.get("category", "")).to_lower()
+				if "exterior" in cat or "plaza" in cat:
+					if is_ext:
+						f_id = f.floor_id
+						break
+				elif not is_ext and f.is_elevation_in_range(pos.y, true):
+					f_id = f.floor_id
+					break
+					
+			# Fallback matching
+			if f_id.is_empty() and not floors.is_empty():
+				for f in floors:
+					if f.is_elevation_in_range(pos.y, not f.is_exterior):
+						f_id = f.floor_id
+						break
+				if f_id.is_empty():
+					f_id = floors[0].floor_id
 				
 			discovered_exhibits.append({
 				"id": ex_id,

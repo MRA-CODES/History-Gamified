@@ -19,11 +19,11 @@ extends Node3D
 # -----------------------------------------------------------------------------
 # Spawn & Interaction Coordinates
 # -----------------------------------------------------------------------------
-# Exterior city plaza facing the Colosseum grand facade:
+# Exterior city plaza facing the Colosseum grand facade (on leveled stone brick road):
 const SPAWN_EXTERIOR: Vector3 = Vector3(0.0, 0.5, 160.0)
 
-# Interior gladiatorial arena floor:
-const SPAWN_INTERIOR: Vector3 = Vector3(0.0, 3.5, 15.0)
+# Interior gladiatorial arena floor (on arena sand):
+const SPAWN_INTERIOR: Vector3 = Vector3(0.0, 2.5, 15.0)
 
 # Colosseum outer perimeter wall is at R ≈ 140m.
 # Proximity trigger activates when player approaches the exterior walls (R <= 158m):
@@ -37,6 +37,8 @@ var is_inside_interior: bool = false
 # -----------------------------------------------------------------------------
 # Lifecycle
 # -----------------------------------------------------------------------------
+const RomeMapConfig = preload("res://scripts/minimap/rome_map_config.gd")
+
 func _ready() -> void:
 	# 1. Generate 1:1 solid Trimesh collisions for all Colosseum and city meshes
 	if colosseum_model:
@@ -78,8 +80,40 @@ func _ready() -> void:
 	if btn_quit:
 		btn_quit.pressed.connect(_on_quit_pressed)
 		
-	# 6. Capture mouse for free look
+	# 6. Initialize educational monument & universal minimap systems
+	_setup_educational_and_minimap_system()
+
+	# 7. Capture mouse for free look
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+
+func _setup_educational_and_minimap_system() -> void:
+	if not has_node("MonumentPopupUI"):
+		var popup_scene = load("res://ui/monument_popup.tscn")
+		if popup_scene:
+			var popup_inst = popup_scene.instantiate()
+			popup_inst.name = "MonumentPopupUI"
+			add_child(popup_inst)
+			
+	if not has_node("ColosseumExhibits"):
+		var exhibits_scene = load("res://scenes/exhibits/colosseum_exhibits.tscn")
+		if exhibits_scene:
+			var exhibits_inst = exhibits_scene.instantiate()
+			exhibits_inst.name = "ColosseumExhibits"
+			add_child(exhibits_inst)
+			
+	if not has_node("MinimapUI"):
+		var minimap_scene = load("res://scenes/minimap/minimap.tscn")
+		if minimap_scene:
+			var minimap_inst = minimap_scene.instantiate()
+			minimap_inst.name = "MinimapUI"
+			add_child(minimap_inst)
+			
+	var map_mgr = get_node_or_null("MinimapUI/MapManager")
+	if map_mgr:
+		var rome_floors = RomeMapConfig.create_rome_floors()
+		map_mgr.set_floors(rome_floors)
+		map_mgr.set_player(player)
+		map_mgr.set_inside_state(is_inside_interior)
 
 func _process(_delta: float) -> void:
 	if not player or is_transitioning or is_paused:
@@ -138,6 +172,9 @@ func _transition_to_interior() -> void:
 			player.velocity = Vector3.ZERO
 			player.rotation = Vector3.ZERO
 			is_inside_interior = true
+			var map_mgr = get_node_or_null("MinimapUI/MapManager")
+			if map_mgr:
+				map_mgr.set_inside_state(true)
 			if exit_hint:
 				exit_hint.visible = true
 			if exit_label:
@@ -152,6 +189,9 @@ func _transition_to_interior() -> void:
 		player.velocity = Vector3.ZERO
 		player.rotation = Vector3.ZERO
 		is_inside_interior = true
+		var map_mgr = get_node_or_null("MinimapUI/MapManager")
+		if map_mgr:
+			map_mgr.set_inside_state(true)
 		if exit_hint:
 			exit_hint.visible = true
 		if exit_label:
@@ -176,6 +216,9 @@ func _transition_to_exterior() -> void:
 			if cam_pivot:
 				cam_pivot.rotation.y = PI
 			is_inside_interior = false
+			var map_mgr = get_node_or_null("MinimapUI/MapManager")
+			if map_mgr:
+				map_mgr.set_inside_state(false)
 			if exit_hint:
 				exit_hint.visible = true
 			if exit_label:
@@ -195,6 +238,9 @@ func _transition_to_exterior() -> void:
 		if cam_pivot:
 			cam_pivot.rotation.y = PI
 		is_inside_interior = false
+		var map_mgr = get_node_or_null("MinimapUI/MapManager")
+		if map_mgr:
+			map_mgr.set_inside_state(false)
 		if exit_hint:
 			exit_hint.visible = true
 		if exit_label:
@@ -267,12 +313,43 @@ func _traverse_and_add_trimesh(n: Node) -> void:
 				has_static_body = true
 				break
 		if not has_static_body:
-			var trimesh_shape = n.mesh.create_trimesh_shape()
-			if trimesh_shape:
+			var shape: Shape3D = null
+			var is_district_mesh: bool = n.name.contains("Rome_District") or n.name.contains("geometry_0")
+			if is_district_mesh:
+				# Filter out bumpy photogrammetry ground so the leveled stone road handles ground collision
+				shape = _create_building_collision_shape(n.mesh)
+			else:
+				shape = n.mesh.create_trimesh_shape()
+
+			if shape:
 				var static_body = StaticBody3D.new()
 				var col_shape = CollisionShape3D.new()
-				col_shape.shape = trimesh_shape
+				col_shape.shape = shape
 				static_body.add_child(col_shape)
 				n.add_child(static_body)
 	for child in n.get_children():
 		_traverse_and_add_trimesh(child)
+
+func _create_building_collision_shape(mesh: Mesh) -> ConcavePolygonShape3D:
+	var all_faces: PackedVector3Array = mesh.get_faces()
+	if all_faces.is_empty():
+		return null
+	var building_faces: PackedVector3Array = PackedVector3Array()
+	var tri_count = all_faces.size() / 3
+	for i in range(tri_count):
+		var idx = i * 3
+		var v1 = all_faces[idx]
+		var v2 = all_faces[idx + 1]
+		var v3 = all_faces[idx + 2]
+		# Only include vertical structures, walls, and buildings (above ground level Y > 1.2m)
+		if v1.y > 1.2 or v2.y > 1.2 or v3.y > 1.2:
+			building_faces.append(v1)
+			building_faces.append(v2)
+			building_faces.append(v3)
+	
+	if building_faces.is_empty():
+		return null
+	var concave_shape = ConcavePolygonShape3D.new()
+	concave_shape.set_faces(building_faces)
+	return concave_shape
+

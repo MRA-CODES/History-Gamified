@@ -251,6 +251,150 @@
       "source_url": "https://en.wikipedia.org/wiki/Hintze_Hall",
       "audio_narration_path": "res://audio/narration/hintze_hall_cathedral_architecture.mp3",
       "audio_narration_text": "From this vantage point on the grand staircase in front of the giant tree bark, you can view the complete grand architecture of Hintze Hall. Measuring 72 metres long and 22 metres high, the hall's monumental arches and vaulted ceiling were designed by Alfred Waterhouse to evoke a magnificent Cathedral to Nature."
+    },
+    {
+      "id": "colosseum_exterior_facade",
+      "title": "Flavian Amphitheatre Exterior Facade",
+      "subtitle_or_era": "Flavian Dynasty (72-80 AD) | Commissioned by Emperor Vespasian",
+      "category": "Exterior Plaza - Roman Architecture",
+      "image_path": "res://data/educational/images/colosseum_exterior_facade.jpg",
+      "description": "Standing before the monument is the monumental four-tiered exterior facade of the Colosseum, originally known as the Amphitheatrum Flavium. Commissioned by Emperor Vespasian in 72 AD on the site of Nero's Golden House lake and inaugurated by his son Titus in 80 AD, the facade stands 48 meters tall and was constructed using over 100,000 cubic meters of travertine limestone quarried at Tivoli, bound by 300 tonnes of iron clamps. The exterior features 80 soaring arched entrances, framed by Tuscan, Ionic, and Corinthian pilasters.",
+      "key_facts": [
+        "Stands 48 meters high with an elliptical perimeter measuring 527 meters.",
+        "Features 80 numbered ground-level arches providing rapid evacuation for up to 70,000 spectators within 15 minutes.",
+        "Originally embellished with gilded bronze shields and marble statues within every upper arch.",
+        "Financed by the spoils of the Jewish War and the siege of Jerusalem in 70 AD."
+      ],
+      "source_name": "Wikipedia - Colosseum",
+      "source_url": "https://en.wikipedia.org/wiki/Colosseum",
+      "audio_narration_path": "res://audio/narration/colosseum_exterior_facade.mp3",
+      "audio_narration_text": "Standing before you is the monumental exterior facade of the Colosseum, known originally as the Flavian Amphitheatre. Commissioned by Emperor Vespasian in 72 AD and opened by Titus in 80 AD, the facade stands 48 meters tall, built from over 100,000 cubic meters of travertine limestone. Its eighty numbered arches allowed up to 70,000 spectators to enter or evacuate within minutes."
+    },
+    {
+      "id": "colosseum_arena_floor",
+      "title": "The Gladiatorial Arena & Blood-Soaked Sand",
+      "subtitle_or_era": "80 AD - 5th Century AD | Center of Imperial Roman Munera",
+      "category": "Arena Floor - Gladiatorial Combat",
+      "image_path": "res://data/educational/images/colosseum_arena_floor.jpg",
+      "description": "At the heart of the Colosseum lies the grand arena floor, measuring 83 by 48 meters. The word 'arena' originates from the Latin 'harena', meaning fine yellow sand. Wooden floorboards were spread across subterranean masonry and blanketed in thick sand brought from the Tiber and Nile rivers to absorb the blood of gladiators and wild animals during gladiatorial combats (munera) and public animal hunts (venationes).",
+      "key_facts": [
+        "Arena surface spans an ellipse 83 meters long by 48 meters wide.",
+        "Covered in deep river sand (harena) designed to provide traction and absorb spilled blood.",
+        "Hosted the legendary 100-day inaugural games under Emperor Titus, where over 9,000 wild beasts were slaughtered.",
+        "Protected by a 4-meter-high bronze-netted marble podium wall to safeguard VIP spectators from leaping predators."
+      ],
+      "source_name": "Wikipedia - Colosseum (Arena)",
+      "source_url": "https://en.wikipedia.org/wiki/Colosseum#Interior",
+      "audio_narration_path": "res://audio/narration/colosseum_arena_floor.mp3",
+      "audio_narration_text": "At the heart of the amphitheater lies the gladiatorial arena floor. Spanning 83 by 48 meters, the wooden platform was covered in deep yellow sand, known as harena, specifically laid to absorb blood and provide footing for gladiators and wild beasts during public combat games."
+    },
+    {
+      "id": "colosseum_hypogeum",
+      "title": "The Subterranean Hypogeum & Beast Elevators",
+      "subtitle_or_era": "Constructed c. 85 AD under Emperor Domitian | Underground Engineering",
+      "category": "Hypogeum - Roman Engineering",
+      "image_path": "res://data/educational/images/colosseum_hypogeum.jpg",
+      "description": "Beneath the arena floor lies the Hypogeum, an intricate two-story subterranean labyrinth added by Emperor Domitian. This marvel of Roman hydraulic and mechanical engineering contained 28 manual counterweight wooden winches and elevators. Slaves worked the winches in dim torchlight to hoist lions, tigers, elephants, scenery, and combatants upward through 60 trapdoors directly onto the arena floor in theatrical surprises.",
+      "key_facts": [
+        "Consisted of 28 vertical wooden lifts capable of hoisting cages weighing up to 300 kilograms.",
+        "Connected via underground subterranean tunnels to the Ludus Magnus (gladiatorial training barracks) and imperial palace.",
+        "Included sophisticated aqueduct-fed drainage conduits and freshwater channels for sanitary clearing.",
+        "Excavated and conserved in the 19th and 20th centuries to reveal the hidden mechanics behind the games."
+      ],
+      "source_name": "Wikipedia - Hypogeum of the Colosseum",
+      "source_url": "https://en.wikipedia.org/wiki/Hypogeum",
+      "audio_narration_path": "res://audio/narration/colosseum_hypogeum.mp3",
+      "audio_narration_text": "Beneath the arena floor lies the Hypogeum, an elaborate subterranean labyrinth added by Emperor Domitian. This marvel of Roman engineering used 28 wooden elevators and pulleys, allowing crews to hoist ferocious wild beasts, scenery, and gladiators through trapdoors directly onto the sands above."
+    },
+    {
+      "id": "colosseum_imperial_box",
+      "title": "The Imperial Podium & Pulvinar Box",
+      "subtitle_or_era": "South Podial Center | Seat of the Roman Emperor & Vestal Virgins",
+      "category": "Imperial Box - Roman Politics",
+      "image_path": "res://data/educational/images/colosseum_imperial_box.jpg",
+      "description": "Projecting directly above the southern podium wall is the Pulvinar, the grand imperial box reserved exclusively for the Roman Emperor, the Empress, and the sacred Vestal Virgins. Raised 4 meters above the sand, this opulent marble balcony granted the supreme ruler an unobstructed view of the combat, while functioning as a stage of imperial propaganda where the crowd voiced political demands and the Emperor signaled life or death with the famous thumb gesture (pollice verso).",
+      "key_facts": [
+        "Positioned at the minor axis of the amphitheater, offering the premier acoustic and visual vantage point.",
+        "Equipped with a private subterranean security passage (the Cryptoporticus) connecting directly to the Imperial Palatine Palace.",
+        "The six sacred Vestal Virgins sat directly opposite the Emperor in their own dedicated place of honor.",
+        "The Emperor determined the ultimate fate of defeated gladiators (missio or death) based on the clamor of the Roman plebeians."
+      ],
+      "source_name": "Wikipedia - Colosseum Imperial Seating",
+      "source_url": "https://en.wikipedia.org/wiki/Colosseum#Seating",
+      "audio_narration_path": "res://audio/narration/colosseum_imperial_box.mp3",
+      "audio_narration_text": "Projecting above the arena is the Pulvinar, the imperial box reserved for the Roman Emperor and the sacred Vestal Virgins. From this marble seat, the Emperor held court before 50,000 subjects, offering the famous life-or-death thumb signals to decide the fate of fallen gladiators."
+    },
+    {
+      "id": "colosseum_porta_triumphalis",
+      "title": "Porta Triumphalis (The Gate of Life)",
+      "subtitle_or_era": "East Axial Entrance | Portal of the Gladiatorial Pompa",
+      "category": "East Gate - Gladiatorial Procession",
+      "image_path": "res://data/educational/images/colosseum_porta_triumphalis.jpg",
+      "description": "Located on the eastern axis of the Colosseum is the Porta Triumphalis, also known as the Gate of Life. Through this monumental triumphal archway, all combatants entered the arena in solemn, dazzling procession (the pompa) wearing polished bronze armor, feather-crested helmets, and silk cloaks, saluting the imperial box. Victorious gladiators who survived their bouts marched back out through this gate, crowned with olive leaves and laden with gold coins and silver palm fronds.",
+      "key_facts": [
+        "Directly connected to the Ludus Magnus gladiatorial academy via a secure vaulted underground corridor.",
+        "Gladiators who won their freedom received the wooden sword (rudis) here, signifying their status as free citizens.",
+        "Trumpeters (cornicines) and pipe players announced the arrival of each troop of fighters through this portal.",
+        "Only living, undefeated gladiators were permitted to walk through the Porta Triumphalis."
+      ],
+      "source_name": "Wikipedia - Gladiator",
+      "source_url": "https://en.wikipedia.org/wiki/Gladiator",
+      "audio_narration_path": "res://audio/narration/colosseum_porta_triumphalis.mp3",
+      "audio_narration_text": "On the eastern axis stands the Porta Triumphalis, known as the Gate of Life. Through this archway, gladiators paraded in gleaming armor before the crowd, and through this same portal, victorious fighters exited crowned with laurel to claim their freedom and prizes."
+    },
+    {
+      "id": "colosseum_porta_libitinaria",
+      "title": "Porta Libitinaria (The Gate of Death)",
+      "subtitle_or_era": "West Axial Portal | Named for Libitina, Goddess of Funerals",
+      "category": "West Gate - Funerary Customs",
+      "image_path": "res://data/educational/images/colosseum_porta_libitinaria.jpg",
+      "description": "Situated on the western axis opposite the gate of triumph, the Porta Libitinaria was the solemn Gate of Death, named in honor of Libitina, the ancient Roman goddess of funerals and burial. Mortally wounded or slain gladiators and slaughtered animals were dragged off the sands by hook through this portal by arena attendants dressed as Charon (the Etruscan demon of the underworld) and Mercury, to be stripped of their armor in the Spoliarium.",
+      "key_facts": [
+        "Attendants dressed as Charon tapped downed fighters on the forehead with a mallet to confirm death.",
+        "Led directly to the Spoliarium mortuary room where corpses were stripped of armor and examined by surgeons.",
+        "The bodies of fallen gladiators were claimed by their burial collegia (brotherhoods) for ceremonial cremation.",
+        "Formed an essential part of the Roman religious ritual underpinning gladiatorial combat."
+      ],
+      "source_name": "Wikipedia - Libitina",
+      "source_url": "https://en.wikipedia.org/wiki/Libitina",
+      "audio_narration_path": "res://audio/narration/colosseum_porta_libitinaria.mp3",
+      "audio_narration_text": "Located on the western axis is the Porta Libitinaria, the solemn Gate of Death, named for the Roman goddess of funerals. Through this portal, fallen fighters and slain beasts were dragged from the sands by arena attendants dressed as Charon and Mercury to the mortuary."
+    },
+    {
+      "id": "colosseum_cavea_seating",
+      "title": "The Cavea & Roman Social Seating Tiers",
+      "subtitle_or_era": "Strictly Stratified Hierarchy | Capacity of 50,000-70,000 Spectators",
+      "category": "Cavea - Roman Society",
+      "image_path": "res://data/educational/images/colosseum_cavea_seating.jpg",
+      "description": "The tiered spectator seating (the cavea) of the Colosseum was a physical reflection of ancient Rome's rigid social hierarchy. The lowest level, the podium, held wide marble curule chairs inscribed with the names of Roman senators. Above lay the ima cavea for the equestrian knights (Equites), followed by the media cavea for ordinary free Roman male citizens in white togas, while the uppermost summa cavea and wooden portico held women, slaves, and foreigners.",
+      "key_facts": [
+        "Spectators accessed their seats via 80 vomitoria tunnels, which could empty the amphitheater in under 15 minutes.",
+        "Seating assignment was dictated by imperial decree, social class, wealth, and citizenship status.",
+        "Spectators received pottery shards (tesserae) stamped with their designated arch, gate, and seat row.",
+        "Senatorial seats were engraved with individual names, continuously re-carved across three centuries as senators died."
+      ],
+      "source_name": "Wikipedia - Colosseum Seating",
+      "source_url": "https://en.wikipedia.org/wiki/Colosseum#Seating",
+      "audio_narration_path": "res://audio/narration/colosseum_cavea_seating.mp3",
+      "audio_narration_text": "The tiered seating of the Colosseum, known as the cavea, mirrored Rome's strict social order. Senators occupied marble chairs along the podium, followed by equestrian knights and citizens in togas, with women, slaves, and commoners standing in the high wooden portico above."
+    },
+    {
+      "id": "colosseum_velarium_awning",
+      "title": "The Velarium Giant Canvas Awning Rigging",
+      "subtitle_or_era": "Upper Rim Mast System | Operated by the Roman Imperial Navy",
+      "category": "Upper Tier - Maritime Engineering",
+      "image_path": "res://data/educational/images/colosseum_velarium_awning.jpg",
+      "description": "Crowning the highest attic wall of the Colosseum were 240 massive wooden masts resting on corbels, anchoring the Velarium-a titanic retractable linen and canvas awning system. Spanning across the open sky like a naval sail, this extraordinary sunshade protected 50,000 spectators from the sweltering Mediterranean heat and summer rainstorms. The intricate system of pulleys, ropes, and winches was operated exclusively by an elite contingent of 1,000 Roman sailors dispatched from the Imperial fleet at Misenum.",
+      "key_facts": [
+        "Consisted of 240 wooden masts set around the exterior cornice wall to support the vast canvas canopy.",
+        "Left a circular aperture in the center (an oculus) to let in fresh air and light while maintaining full shade.",
+        "Manned by a special garrison of sailors stationed at the nearby Castra Misenatium barracks in Rome.",
+        "Required dozens of tonnes of specialized nautical ropes and counterweight pulleys anchored into street stones outside."
+      ],
+      "source_name": "Wikipedia - Velarium",
+      "source_url": "https://en.wikipedia.org/wiki/Velarium",
+      "audio_narration_path": "res://audio/narration/colosseum_velarium_awning.mp3",
+      "audio_narration_text": "Crowning the top of the Colosseum was the Velarium, a colossal retractable canvas awning spanning the open sky. Supported by 240 masts and operated by a detachment of Roman sailors from the imperial fleet, this ingenious sunshade sheltered 50,000 spectators from the scorching Roman sun."
     }
   ]
 }

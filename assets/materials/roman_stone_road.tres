@@ -1,0 +1,22 @@
+[gd_resource type="StandardMaterial3D" load_steps=5 format=3 uid="uid://b8mstone_roman_road"]
+
+[ext_resource type="Texture2D" uid="uid://1xpb5q4ukd4p" path="res://assets/textures/Map -4 TAJ MAHAL_Textures/walkways/PavingStones092_2K-JPG_Color.jpg" id="1_color"]
+[ext_resource type="Texture2D" uid="uid://c4eevlop3fw3u" path="res://assets/textures/Map -4 TAJ MAHAL_Textures/walkways/PavingStones092_2K-JPG_NormalGL.jpg" id="2_normal"]
+[ext_resource type="Texture2D" uid="uid://cvofkxq567aup" path="res://assets/textures/Map -4 TAJ MAHAL_Textures/walkways/PavingStones092_2K-JPG_Roughness.jpg" id="3_roughness"]
+[ext_resource type="Texture2D" uid="uid://cp5ochtgvvb4q" path="res://assets/textures/Map -4 TAJ MAHAL_Textures/walkways/PavingStones092_2K-JPG_AmbientOcclusion.jpg" id="4_ao"]
+
+[resource]
+resource_name = "RomanStoneRoad"
+albedo_color = Color(0.92, 0.88, 0.82, 1)
+albedo_texture = ExtResource("1_color")
+roughness = 0.85
+roughness_texture = ExtResource("3_roughness")
+normal_enabled = true
+normal_scale = 1.2
+normal_texture = ExtResource("2_normal")
+ao_enabled = true
+ao_texture = ExtResource("4_ao")
+uv1_scale = Vector3(0.35, 0.35, 0.35)
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 5

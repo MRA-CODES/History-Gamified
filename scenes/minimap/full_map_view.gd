@@ -195,19 +195,38 @@ func draw_blueprint_on_canvas(canvas: Control) -> void:
 		
 	# Draw Layout Elements
 	for el in floor_data.layout_elements:
+		var el_type = el.get("type", "rect")
 		var r: Rect2 = el.get("rect", Rect2())
 		var col: Color = el.get("color", Color(0.15, 0.2, 0.3, 0.9))
-		var p1 = world_to_screen.call(r.position.x, r.position.y)
-		var p2 = world_to_screen.call(r.end.x, r.end.y)
-		var elem_screen_rect = Rect2(p1, p2 - p1)
-		
-		canvas.draw_rect(elem_screen_rect, col, true)
-		canvas.draw_rect(elem_screen_rect, Color(floor_data.floor_accent_color.r, floor_data.floor_accent_color.g, floor_data.floor_accent_color.b, 0.5), false, 1.5)
-		
+		var border_col = Color(floor_data.floor_accent_color.r, floor_data.floor_accent_color.g, floor_data.floor_accent_color.b, 0.5)
 		var label = el.get("label", "")
-		if not label.is_empty() and elem_screen_rect.size.x > 50 and elem_screen_rect.size.y > 20:
-			var font = canvas.get_theme_default_font()
-			if font:
+		var font = canvas.get_theme_default_font()
+		
+		if el_type == "ellipse" or el_type == "circle":
+			var el_center = r.get_center()
+			var rx = r.size.x * 0.5
+			var ry = r.size.y * 0.5
+			var num_pts = 36
+			var poly = PackedVector2Array()
+			for p_i in range(num_pts):
+				var ang = p_i * (TAU / float(num_pts))
+				var wx = el_center.x + rx * cos(ang)
+				var wz = el_center.y + ry * sin(ang)
+				poly.append(world_to_screen.call(wx, wz))
+			canvas.draw_colored_polygon(poly, col)
+			canvas.draw_polyline(poly + PackedVector2Array([poly[0]]), border_col, 1.5)
+			if not label.is_empty() and font:
+				var c_screen = world_to_screen.call(el_center.x, el_center.y - ry * 0.75)
+				canvas.draw_string(font, c_screen + Vector2(-60, 0), label, HORIZONTAL_ALIGNMENT_CENTER, 120, 11, Color(1, 1, 1, 0.6))
+		else:
+			var p1 = world_to_screen.call(r.position.x, r.position.y)
+			var p2 = world_to_screen.call(r.end.x, r.end.y)
+			var elem_screen_rect = Rect2(p1, p2 - p1)
+			
+			canvas.draw_rect(elem_screen_rect, col, true)
+			canvas.draw_rect(elem_screen_rect, border_col, false, 1.5)
+			
+			if not label.is_empty() and elem_screen_rect.size.x > 50 and elem_screen_rect.size.y > 20 and font:
 				canvas.draw_string(font, elem_screen_rect.position + Vector2(6, 16), label, HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color(1, 1, 1, 0.5))
 				
 	# Draw Exhibits on this floor

@@ -24,6 +24,9 @@ var layout_elements: Array = []
 var floor_accent_color: Color = Color(0.85, 0.65, 0.25, 1.0) # Gold / Bronze
 var background_color: Color = Color(0.08, 0.10, 0.14, 0.92)
 
+# Radar HUD zoom scale (pixels per meter). Defaults to 4.0 for indoor, can be 0.7-1.2 for large monuments
+var radar_zoom: float = 4.0
+
 func _init(p_id: String = "", p_name: String = "", p_short: String = "", p_min_y: float = -999.0, p_max_y: float = 999.0, p_exterior: bool = false) -> void:
 	floor_id = p_id
 	display_name = p_name

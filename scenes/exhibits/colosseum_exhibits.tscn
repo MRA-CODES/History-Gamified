@@ -1,0 +1,37 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/exhibits/monument_interactable.tscn" id="1_monument"]
+
+[node name="ColosseumExhibits" type="Node3D"]
+
+[node name="ExteriorFacade" parent="." instance=ExtResource("1_monument")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 155.0)
+exhibit_id = "colosseum_exterior_facade"
+
+[node name="ArenaFloor" parent="." instance=ExtResource("1_monument")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.05, 1.98, 0.4)
+exhibit_id = "colosseum_arena_floor"
+
+[node name="Hypogeum" parent="." instance=ExtResource("1_monument")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3, 2.2, 16.7)
+exhibit_id = "colosseum_hypogeum"
+
+[node name="ImperialBox" parent="." instance=ExtResource("1_monument")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.54, 1.98, -27.38)
+exhibit_id = "colosseum_imperial_box"
+
+[node name="PortaTriumphalis" parent="." instance=ExtResource("1_monument")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -37.43, 1.98, 24.96)
+exhibit_id = "colosseum_porta_triumphalis"
+
+[node name="PortaLibitinaria" parent="." instance=ExtResource("1_monument")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 37.16, 1.98, -29.85)
+exhibit_id = "colosseum_porta_libitinaria"
+
+[node name="CaveaSeating" parent="." instance=ExtResource("1_monument")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.1, 7.0, -29.6)
+exhibit_id = "colosseum_cavea_seating"
+
+[node name="VelariumAwning" parent="." instance=ExtResource("1_monument")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 15.0, -45.0)
+exhibit_id = "colosseum_velarium_awning"

@@ -12,7 +12,7 @@ config_version=5
 
 config/name="History Gamified"
 run/main_scene="res://scenes/main_menu.tscn"
-config/features=PackedStringArray("4.7", "Forward Plus")
+config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="uid://o554dsxdd7k0"
 
 [dotnet]

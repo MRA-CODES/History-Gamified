@@ -86,37 +86,52 @@ func _draw() -> void:
 		
 	var player_pos_3d = map_manager.get_player_world_pos()
 	var player_rot_y = map_manager.get_player_rotation_y()
+	var active_zoom = current_floor.radar_zoom if ("radar_zoom" in current_floor and current_floor.radar_zoom > 0.0) else zoom_scale
 	
 	# 4. Draw floor blueprint elements ROTATED around player
 	for el in current_floor.layout_elements:
+		var el_type = el.get("type", "rect")
 		var el_rect: Rect2 = el.get("rect", Rect2())
 		var el_col: Color = el.get("color", Color(0.2, 0.25, 0.35, 0.5))
 		el_col.a = 0.35
 		
-		var corners = [
-			Vector2(el_rect.position.x, el_rect.position.y),
-			Vector2(el_rect.end.x, el_rect.position.y),
-			Vector2(el_rect.end.x, el_rect.end.y),
-			Vector2(el_rect.position.x, el_rect.end.y)
-		]
+		var corners = []
+		if el_type == "ellipse" or el_type == "circle":
+			var el_center = el_rect.get_center()
+			var rx = el_rect.size.x * 0.5
+			var ry = el_rect.size.y * 0.5
+			var num_pts = 32
+			for p_i in range(num_pts):
+				var ang = p_i * (TAU / float(num_pts))
+				corners.append(Vector2(el_center.x + rx * cos(ang), el_center.y + ry * sin(ang)))
+		else:
+			corners = [
+				Vector2(el_rect.position.x, el_rect.position.y),
+				Vector2(el_rect.end.x, el_rect.position.y),
+				Vector2(el_rect.end.x, el_rect.end.y),
+				Vector2(el_rect.position.x, el_rect.end.y)
+			]
 		
 		var poly = PackedVector2Array()
 		for pt in corners:
-			var raw_rel = Vector2(pt.x - player_pos_3d.x, pt.y - player_pos_3d.z) * zoom_scale
+			var raw_rel = Vector2(pt.x - player_pos_3d.x, pt.y - player_pos_3d.z) * active_zoom
 			var rot_pt = center + raw_rel.rotated(player_rot_y)
 			poly.append(rot_pt)
 			
 		# Check approximate bounding center
-		var poly_center = (poly[0] + poly[2]) * 0.5
-		if center.distance_squared_to(poly_center) < (radius * 2.0) * (radius * 2.0):
-			draw_colored_polygon(poly, el_col)
-			draw_polyline(poly + PackedVector2Array([poly[0]]), Color(el_col.r, el_col.g, el_col.b, 0.55), 1.0)
+		if poly.size() > 0:
+			var poly_center = Vector2.ZERO
+			for p in poly: poly_center += p
+			poly_center /= float(poly.size())
+			if center.distance_squared_to(poly_center) < (radius * 3.0) * (radius * 3.0):
+				draw_colored_polygon(poly, el_col)
+				draw_polyline(poly + PackedVector2Array([poly[0]]), Color(el_col.r, el_col.g, el_col.b, 0.55), 1.0)
 			
 	# 5. Draw exhibit markers ROTATED around player
 	var exhibits = map_manager.get_exhibits_for_floor(current_floor)
 	for ex in exhibits:
 		var ex_pos: Vector3 = ex.get("pos", Vector3.ZERO)
-		var raw_rel = Vector2(ex_pos.x - player_pos_3d.x, ex_pos.z - player_pos_3d.z) * zoom_scale
+		var raw_rel = Vector2(ex_pos.x - player_pos_3d.x, ex_pos.z - player_pos_3d.z) * active_zoom
 		var rot_rel = raw_rel.rotated(player_rot_y)
 		
 		var dist = rot_rel.length()

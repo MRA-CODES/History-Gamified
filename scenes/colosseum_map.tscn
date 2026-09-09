@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://scripts/colosseum_map.gd" id="1_script"]
 [ext_resource type="PackedScene" path="res://assets/environment/buildings/Map 3 - Colosseum_Rome/rome_colosseum_combined.glb" id="2_model"]
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="3_player"]
+[ext_resource type="Script" path="res://scripts/rome_ground_builder.gd" id="4_ground_script"]
 
 [sub_resource type="ProceduralSkyMaterial" id="SkyMat_Rome"]
 sky_top_color = Color(0.28, 0.52, 0.88, 1)
@@ -117,6 +118,9 @@ shape = SubResource("Shape_SafetyFloor")
 [node name="ColosseumModel" type="Node3D" parent="."]
 
 [node name="MeshInstance" parent="ColosseumModel" instance=ExtResource("2_model")]
+
+[node name="RomeGroundSystem" type="Node3D" parent="."]
+script = ExtResource("4_ground_script")
 
 [node name="Player" parent="." instance=ExtResource("3_player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 160.0)
