@@ -49,10 +49,10 @@ func _ready() -> void:
 		player.global_position = SPAWN_EXTERIOR
 		player.rotation = Vector3.ZERO
 		if "camera_rot_y" in player:
-			player.camera_rot_y = PI
+			player.camera_rot_y = 0.0
 		var cam_pivot = player.get_node_or_null("CameraPivot")
 		if cam_pivot:
-			cam_pivot.rotation.y = PI
+			cam_pivot.rotation.y = 0.0
 		is_inside_interior = false
 		
 	# 3. Setup UI hints
@@ -211,10 +211,10 @@ func _transition_to_exterior() -> void:
 			player.velocity = Vector3.ZERO
 			player.rotation = Vector3.ZERO
 			if "camera_rot_y" in player:
-				player.camera_rot_y = PI
+				player.camera_rot_y = 0.0
 			var cam_pivot = player.get_node_or_null("CameraPivot")
 			if cam_pivot:
-				cam_pivot.rotation.y = PI
+				cam_pivot.rotation.y = 0.0
 			is_inside_interior = false
 			var map_mgr = get_node_or_null("MinimapUI/MapManager")
 			if map_mgr:
@@ -233,10 +233,10 @@ func _transition_to_exterior() -> void:
 		player.velocity = Vector3.ZERO
 		player.rotation = Vector3.ZERO
 		if "camera_rot_y" in player:
-			player.camera_rot_y = PI
+			player.camera_rot_y = 0.0
 		var cam_pivot = player.get_node_or_null("CameraPivot")
 		if cam_pivot:
-			cam_pivot.rotation.y = PI
+			cam_pivot.rotation.y = 0.0
 		is_inside_interior = false
 		var map_mgr = get_node_or_null("MinimapUI/MapManager")
 		if map_mgr:

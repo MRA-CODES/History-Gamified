@@ -66,7 +66,7 @@ func _ready() -> void:
 	# Check and normalize visual model scale and forward facing orientation
 	_normalize_visual_scale()
 	if visuals:
-		visuals.rotation.y = PI
+		visuals.rotation.y = 0.0
 
 func set_movement_enabled(enabled: bool) -> void:
 	is_movement_enabled = enabled
@@ -166,8 +166,8 @@ func _physics_process(delta: float) -> void:
 	
 	if move_dir.length_squared() > 0.001:
 		h_vel = h_vel.move_toward(target_h_vel, ACCELERATION * delta)
-		# Rotate character visuals smoothly towards movement direction (accounting for model orientation)
-		var target_angle = atan2(move_dir.x, move_dir.z) + PI
+		# Rotate character visuals smoothly towards movement direction
+		var target_angle = atan2(move_dir.x, move_dir.z)
 		visuals.rotation.y = lerp_angle(visuals.rotation.y, target_angle, ROTATION_SPEED * delta)
 	else:
 		h_vel = h_vel.move_toward(Vector3.ZERO, DECELERATION * delta)
