@@ -51,7 +51,7 @@ func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	
 	# Configure floor snapping and slope handling
-	floor_snap_length = 0.5
+	floor_snap_length = 0.3
 	floor_max_angle = deg_to_rad(55.0)
 	floor_constant_speed = true
 	floor_stop_on_slope = true
@@ -63,8 +63,10 @@ func _ready() -> void:
 	# Setup animation player and animations
 	_setup_animations()
 	
-	# Check and normalize visual model scale
+	# Check and normalize visual model scale and forward facing orientation
 	_normalize_visual_scale()
+	if visuals:
+		visuals.rotation.y = PI
 
 func set_movement_enabled(enabled: bool) -> void:
 	is_movement_enabled = enabled
@@ -164,8 +166,8 @@ func _physics_process(delta: float) -> void:
 	
 	if move_dir.length_squared() > 0.001:
 		h_vel = h_vel.move_toward(target_h_vel, ACCELERATION * delta)
-		# Rotate character visuals smoothly towards movement direction
-		var target_angle = atan2(move_dir.x, move_dir.z)
+		# Rotate character visuals smoothly towards movement direction (accounting for model orientation)
+		var target_angle = atan2(move_dir.x, move_dir.z) + PI
 		visuals.rotation.y = lerp_angle(visuals.rotation.y, target_angle, ROTATION_SPEED * delta)
 	else:
 		h_vel = h_vel.move_toward(Vector3.ZERO, DECELERATION * delta)
@@ -178,9 +180,16 @@ func _physics_process(delta: float) -> void:
 		_snap_up_stairs_check(delta, move_dir)
 
 	# 6. Move Character using Godot 4 CharacterBody3D physics
+	var y_before: float = global_position.y
 	move_and_slide()
+	var y_gain: float = global_position.y - y_before
 
-	# Only count stair climbing timer if specifically stepped up via _snap_up_stairs_check
+	# Detect ascending an incline/staircase to activate stair climbing animation
+	if is_on_floor() and move_dir.length_squared() > 0.001:
+		var floor_angle: float = get_floor_normal().angle_to(Vector3.UP)
+		if floor_angle >= deg_to_rad(15.0) and y_gain > 0.005:
+			stair_climbing_timer = 0.35
+
 	prev_y_pos = global_position.y
 
 	# 7. Update Animations
