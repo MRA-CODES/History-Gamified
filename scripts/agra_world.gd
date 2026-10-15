@@ -73,6 +73,8 @@ var freecam_speed: float = 35.0
 var freecam_rot_x: float = -0.15
 var freecam_rot_y: float = 0.0
 var terrain_node: Node = null
+var _mat_cache: Dictionary = {}
+var _oob_check_timer: float = 0.0
 
 # -----------------------------------------------------------------------------
 # Lifecycle
@@ -150,17 +152,25 @@ func _setup_player() -> void:
 			ground_y = max(ground_y, q_y)
 			
 	player.global_position = Vector3(spawn_x, ground_y + 0.05, spawn_z)
-	player.rotation = Vector3(0.0, PI, 0.0) # Face North towards Taj Mahal
+	player.rotation = Vector3.ZERO # Face North (-Z) towards Taj Mahal
+	if "camera_rot_y" in player:
+		player.camera_rot_y = 0.0
+	var cam_p = player.get_node_or_null("CameraPivot")
+	if cam_p:
+		cam_p.rotation.y = 0.0
 	print("AgraWorld: Player placed close to Taj Mahal at (", spawn_x, ", ", ground_y + 0.05, ", ", spawn_z, ") facing North.")
 
 func _physics_process(delta: float) -> void:
-	# Fallback out-of-bounds safety check for Player
-	if player and not is_freecam:
-		if player.global_position.y < 28.0:
-			player.global_position = Vector3(0.0, 33.25, -55.0)
-			player.velocity = Vector3.ZERO
+	if not is_freecam:
+		_oob_check_timer += delta
+		if _oob_check_timer >= 0.5:
+			_oob_check_timer = 0.0
+			if player and player.global_position.y < 28.0:
+				player.global_position = Vector3(0.0, 33.25, -48.0)
+				player.velocity = Vector3.ZERO
+		return
 			
-	if is_paused or not is_freecam or not overview_camera:
+	if is_paused or not overview_camera:
 		return
 		
 	var input_dir: Vector3 = Vector3.ZERO
@@ -352,6 +362,17 @@ func _import_heightmap_to_terrain() -> void:
 	var data = terrain_node.data
 	if not data:
 		return
+		
+	# Skip re-import and re-saving 106 files to disk if pre-saved regions already exist
+	var map4_dir: String = ProjectSettings.globalize_path("res://data/terrain/map4")
+	if DirAccess.dir_exists_absolute(map4_dir):
+		if "data_directory" in terrain_node:
+			terrain_node.data_directory = "res://data/terrain/map4"
+		if data.has_method("load_directory"):
+			data.load_directory("res://data/terrain/map4")
+		if data.has_method("get_region_count") and data.get_region_count() > 0:
+			print("AgraWorld: Pre-saved terrain regions loaded successfully. Skipping re-import.")
+			return
 		
 	# Ensure active region Vector2i(0, 0) is allocated so physical geometry exists
 	if data.has_method("has_region") and not data.has_region(Vector2i(0, 0)):
@@ -741,12 +762,10 @@ func _on_main_menu_pressed() -> void:
 	if is_transitioning:
 		return
 	is_transitioning = true
-	if fade_rect:
-		var tween: Tween = create_tween()
-		tween.tween_property(fade_rect, "modulate:a", 1.0, 0.35).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-		tween.tween_callback(func():
-			get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
-		)
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	var loader = get_node_or_null("/root/SceneLoader")
+	if loader:
+		loader.change_scene_to("res://scenes/main_menu.tscn", "Main Menu", "History Gamified", "Returning to Era Selection...")
 	else:
 		get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
 
@@ -1166,7 +1185,7 @@ func _setup_cypress_trees() -> void:
 			z_curr += 5.5
 		
 	var tree_count: int = tree_coords.size()
-	print("AgraWorld: Instantiating ", tree_count, " full-length cypress trees at X = +/- 3.55m, Y = 33.25m, scale Vector3(0.55, 0.65, 0.55)...")
+	print("AgraWorld: Instantiating ", tree_count, " human-scale cypress trees along Charbagh avenue...")
 	
 	for i in range(tree_count):
 		var pos_2d: Vector2 = tree_coords[i]
@@ -1182,7 +1201,7 @@ func _setup_cypress_trees() -> void:
 		_enable_tree_shadows(tree_inst)
 		foliage_root.add_child(tree_inst)
 		
-	print("AgraWorld: Full-length human-scale cypress colonnades successfully instantiated.")
+	print("AgraWorld: Human-scale cypress colonnades successfully instantiated.")
 
 func _enable_tree_shadows(node: Node) -> void:
 	if node is GeometryInstance3D:
@@ -1482,6 +1501,10 @@ func _setup_lighting_and_atmosphere() -> void:
 # Material Helpers for Architectural Boundaries
 # -----------------------------------------------------------------------------
 func _get_sandstone_material(uv_scale: Vector3 = Vector3(0.35, 0.35, 0.35), use_triplanar: bool = true) -> StandardMaterial3D:
+	var key: String = "sandstone_%s_%s" % [str(uv_scale), str(use_triplanar)]
+	if _mat_cache.has(key):
+		return _mat_cache[key]
+		
 	var mat: StandardMaterial3D = StandardMaterial3D.new()
 	var diff: Texture2D = _safe_load_texture(TEX_SANDSTONE_DIFF)
 	var norm: Texture2D = _safe_load_texture(TEX_SANDSTONE_NORM)
@@ -1498,9 +1521,14 @@ func _get_sandstone_material(uv_scale: Vector3 = Vector3(0.35, 0.35, 0.35), use_
 	mat.roughness = 0.82
 	mat.uv1_triplanar = use_triplanar
 	mat.uv1_scale = uv_scale
+	_mat_cache[key] = mat
 	return mat
 
 func _get_gate_marble_material(uv_scale: Vector3 = Vector3(2.0, 2.0, 1.0)) -> StandardMaterial3D:
+	var key: String = "gate_marble_%s" % str(uv_scale)
+	if _mat_cache.has(key):
+		return _mat_cache[key]
+		
 	var mat: StandardMaterial3D = StandardMaterial3D.new()
 	var diff: Texture2D = _safe_load_texture(TEX_MARBLE_DIFF)
 	var norm: Texture2D = _safe_load_texture(TEX_MARBLE_NORM)
@@ -1512,19 +1540,30 @@ func _get_gate_marble_material(uv_scale: Vector3 = Vector3(2.0, 2.0, 1.0)) -> St
 		mat.normal_texture = norm
 	mat.uv1_scale = uv_scale
 	mat.roughness = 0.25
+	_mat_cache[key] = mat
 	return mat
 
 func _get_finial_material() -> StandardMaterial3D:
+	var key: String = "finial"
+	if _mat_cache.has(key):
+		return _mat_cache[key]
+		
 	var mat: StandardMaterial3D = StandardMaterial3D.new()
 	mat.albedo_color = Color(0.92, 0.78, 0.28, 1.0) # Authentic turned brass/gold
 	mat.metallic = 0.9
 	mat.roughness = 0.2
+	_mat_cache[key] = mat
 	return mat
 
 func _get_dark_niche_material() -> StandardMaterial3D:
+	var key: String = "dark_niche"
+	if _mat_cache.has(key):
+		return _mat_cache[key]
+		
 	var mat: StandardMaterial3D = StandardMaterial3D.new()
 	mat.albedo_color = Color(0.12, 0.08, 0.07, 1.0) # Deep shadowed recess
 	mat.roughness = 0.95
+	_mat_cache[key] = mat
 	return mat
 
 # -----------------------------------------------------------------------------
@@ -2288,25 +2327,53 @@ func _setup_outer_ground_skirt() -> void:
 # -----------------------------------------------------------------------------
 # Additional Architectural Materials
 # -----------------------------------------------------------------------------
-func _get_mosque_sandstone_material(uv_scale: Vector3 = Vector3(0.35, 0.35, 0.35)) -> StandardMaterial3D:
-	return _get_sandstone_material(uv_scale, true)
+func _get_mosque_sandstone_material(uv_scale: Vector3 = Vector3(0.25, 0.25, 0.25)) -> StandardMaterial3D:
+	var key: String = "mosque_sandstone_%s" % str(uv_scale)
+	if _mat_cache.has(key):
+		return _mat_cache[key]
+		
+	var mat: StandardMaterial3D = StandardMaterial3D.new()
+	var diff: Texture2D = _safe_load_texture(TEX_SANDSTONE_DIFF)
+	var norm: Texture2D = _safe_load_texture(TEX_SANDSTONE_NORM)
+	var rough: Texture2D = _safe_load_texture(TEX_SANDSTONE_ROUGH)
+	if diff:
+		mat.albedo_texture = diff
+	# Rich imperial terracotta red matching TajMahal_Mosque_ColorFrontView.jpg
+	mat.albedo_color = Color(0.70, 0.26, 0.18, 1.0)
+	if norm:
+		mat.normal_enabled = true
+		mat.normal_texture = norm
+		mat.normal_scale = 1.3
+	if rough:
+		mat.roughness_texture = rough
+	mat.roughness = 0.80
+	mat.uv1_triplanar = true
+	mat.uv1_scale = uv_scale
+	_mat_cache[key] = mat
+	return mat
 
 func _get_dome_marble_material() -> StandardMaterial3D:
+	var key: String = "dome_marble"
+	if _mat_cache.has(key):
+		return _mat_cache[key]
+		
 	var mat: StandardMaterial3D = StandardMaterial3D.new()
 	var diff: Texture2D = _safe_load_texture(TEX_MARBLE_DIFF)
 	var norm: Texture2D = _safe_load_texture(TEX_MARBLE_NORM)
 	if diff:
 		mat.albedo_texture = diff
-	mat.albedo_color = Color(0.96, 0.96, 0.94, 1.0) # Pure luminous off-white
+	mat.albedo_color = Color(0.97, 0.97, 0.95, 1.0) # Radiant Makrana pure white
 	if norm:
 		mat.normal_enabled = true
 		mat.normal_texture = norm
-	mat.roughness = 0.22
+		mat.normal_scale = 0.6
+	mat.roughness = 0.18
 	mat.clearcoat_enabled = true
-	mat.clearcoat = 0.4
-	mat.clearcoat_roughness = 0.15
+	mat.clearcoat = 0.5
+	mat.clearcoat_roughness = 0.12
 	mat.metallic = 0.02
-	mat.uv1_scale = Vector3(2.0, 2.0, 1.0)
+	mat.uv1_scale = Vector3(3.0, 3.0, 1.0)
+	_mat_cache[key] = mat
 	return mat
 
 func _get_water_material() -> StandardMaterial3D:
@@ -2318,6 +2385,33 @@ func _get_water_material() -> StandardMaterial3D:
 	water_mat.clearcoat = 1.0
 	water_mat.clearcoat_roughness = 0.02
 	return water_mat
+
+func _get_hauz_water_material() -> Material:
+	var water_shader: Shader = load(WATER_SHADER_PATH) as Shader
+	if water_shader:
+		var sm: ShaderMaterial = ShaderMaterial.new()
+		sm.shader = water_shader
+		sm.set_shader_parameter("shallow_color", Color(0.12, 0.38, 0.44, 0.88))
+		sm.set_shader_parameter("deep_color", Color(0.04, 0.18, 0.24, 0.98))
+		sm.set_shader_parameter("depth_distance", 2.0)
+		sm.set_shader_parameter("absorption_strength", 1.5)
+		sm.set_shader_parameter("roughness", 0.03)
+		sm.set_shader_parameter("metallic", 0.1)
+		sm.set_shader_parameter("specular", 0.95)
+		sm.set_shader_parameter("wave_speed1", Vector2(0.008, 0.010))
+		sm.set_shader_parameter("wave_speed2", Vector2(-0.010, 0.006))
+		sm.set_shader_parameter("wave_scale1", 0.25)
+		sm.set_shader_parameter("wave_scale2", 0.35)
+		sm.set_shader_parameter("refraction_strength", 0.015)
+		return sm
+	var wm: StandardMaterial3D = StandardMaterial3D.new()
+	wm.albedo_color = Color(0.08, 0.32, 0.40, 0.92)
+	wm.roughness = 0.02
+	wm.metallic = 0.08
+	wm.clearcoat_enabled = true
+	wm.clearcoat = 1.0
+	wm.clearcoat_roughness = 0.02
+	return wm
 
 # -----------------------------------------------------------------------------
 # Riverfront Chameli Farsh Terrace Foundation & Retaining Balustrade
@@ -2409,43 +2503,93 @@ func _setup_chameli_farsh() -> void:
 	var stairs_node: Node3D = Node3D.new()
 	stairs_node.name = "SouthernGrandSteps"
 	
-	for s in range(num_steps):
-		var s_mesh: BoxMesh = BoxMesh.new()
-		var s_height: float = step_h * float(s + 1)
-		s_mesh.size = Vector3(stair_w, s_height, step_d + 0.02)
-		var s_inst: MeshInstance3D = MeshInstance3D.new()
-		s_inst.name = "GrandStep_%d" % s
-		s_inst.mesh = s_mesh
-		s_inst.material_override = sand_mat
-		var s_z: float = stair_start_z - (float(s) + 0.5) * step_d
-		s_inst.position = Vector3(0.0, 33.15 + s_height * 0.5, s_z)
-		stairs_node.add_child(s_inst)
-		
-	# Dedicated Invisible Inclined StaticBody3D Ramp Collider over Southern Grand Steps
-	var grand_ramp_body: StaticBody3D = StaticBody3D.new()
-	grand_ramp_body.name = "EntranceRampCollider"
-	grand_ramp_body.collision_layer = 1
-	grand_ramp_body.collision_mask = 1
+	# Solid Static Body for Step Faces & Inclined Ramp
+	var grand_steps_body: StaticBody3D = StaticBody3D.new()
+	grand_steps_body.name = "GrandStepsStaticCollision"
+	grand_steps_body.collision_layer = 1
+	grand_steps_body.collision_mask = 1
 	
+	# Tread nosing material with subtle shadow contrast
+	var tread_mat: StandardMaterial3D = _get_sandstone_material(Vector3(0.4, 0.4, 0.4), true)
+	tread_mat.roughness = 0.78
+	var riser_mat: StandardMaterial3D = _get_sandstone_material(Vector3(0.3, 0.3, 0.3), true)
+	riser_mat.albedo_color = Color(0.56, 0.20, 0.15, 1.0) # Slightly deeper terracotta for riser shadow relief
+	
+	for s in range(num_steps):
+		var s_height: float = step_h * float(s + 1)
+		var s_z: float = stair_start_z - (float(s) + 0.5) * step_d
+		
+		# Base Riser Block
+		var riser_mesh: BoxMesh = BoxMesh.new()
+		riser_mesh.size = Vector3(stair_w, s_height, step_d)
+		var riser_inst: MeshInstance3D = MeshInstance3D.new()
+		riser_inst.name = "GrandRiser_%d" % s
+		riser_inst.mesh = riser_mesh
+		riser_inst.material_override = riser_mat
+		riser_inst.position = Vector3(0.0, 33.15 + s_height * 0.5, s_z)
+		stairs_node.add_child(riser_inst)
+		
+		# Defined Projecting Tread Slab (with 0.035m overhang nosing for crisp visual shadow)
+		var tread_mesh: BoxMesh = BoxMesh.new()
+		var nosing_overhang: float = 0.035
+		tread_mesh.size = Vector3(stair_w, 0.045, step_d + nosing_overhang)
+		var tread_inst: MeshInstance3D = MeshInstance3D.new()
+		tread_inst.name = "GrandTread_%d" % s
+		tread_inst.mesh = tread_mesh
+		tread_inst.material_override = tread_mat
+		tread_inst.position = Vector3(0.0, 33.15 + s_height - 0.0225, s_z + nosing_overhang * 0.5)
+		stairs_node.add_child(tread_inst)
+		
+		# Individual Solid Step Collision Shape
+		var s_col: CollisionShape3D = CollisionShape3D.new()
+		var s_box: BoxShape3D = BoxShape3D.new()
+		s_box.size = Vector3(stair_w, s_height, step_d)
+		s_col.shape = s_box
+		s_col.position = Vector3(0.0, 33.15 + s_height * 0.5, s_z)
+		grand_steps_body.add_child(s_col)
+		
+	# Sloped Sandstone Flanking Cheek Walls / Stringers (framing the stairs at X = +/- 9.25m)
+	var cheek_w: float = 0.50
+	var cheek_run: float = float(num_steps) * step_d + 0.60 # 4.02m
+	var cheek_mid_z: float = stair_start_z - (float(num_steps) * step_d * 0.5) # -54.29m
+	var cheek_h: float = 1.65 # Rises from ground Y=33.15 to Y=34.80 (0.3m above Chameli Farsh)
+	
+	for cx in [-9.25, 9.25]:
+		var cheek_mesh: BoxMesh = BoxMesh.new()
+		cheek_mesh.size = Vector3(cheek_w, cheek_h, cheek_run)
+		var cheek_inst: MeshInstance3D = MeshInstance3D.new()
+		cheek_inst.name = "CheekWall_%s" % ("L" if cx < 0 else "R")
+		cheek_inst.mesh = cheek_mesh
+		cheek_inst.material_override = sand_mat
+		cheek_inst.position = Vector3(cx, 33.15 + cheek_h * 0.5, cheek_mid_z)
+		stairs_node.add_child(cheek_inst)
+		
+		var cw_col: CollisionShape3D = CollisionShape3D.new()
+		var cw_box: BoxShape3D = BoxShape3D.new()
+		cw_box.size = Vector3(cheek_w, cheek_h, cheek_run)
+		cw_col.shape = cw_box
+		cw_col.position = Vector3(cx, 33.15 + cheek_h * 0.5, cheek_mid_z)
+		grand_steps_body.add_child(cw_col)
+
+	# Dedicated Smooth Ramp Collider (sloping UPWARDS toward North -Z)
 	var total_stair_run: float = float(num_steps) * step_d # 3.42m
 	var total_stair_rise: float = float(num_steps) * step_h # 1.35m
 	var stair_hyp: float = sqrt(total_stair_run * total_stair_run + total_stair_rise * total_stair_rise) # ~3.676m
-	var ramp_thick: float = 0.30
+	var ramp_thick: float = 0.20
 	
 	var r_cs: CollisionShape3D = CollisionShape3D.new()
 	var r_box: BoxShape3D = BoxShape3D.new()
-	r_box.size = Vector3(stair_w + 0.20, ramp_thick, stair_hyp + 0.15)
+	r_box.size = Vector3(stair_w, ramp_thick, stair_hyp + 0.10)
 	r_cs.shape = r_box
 	
-	var slope_ang: float = atan2(total_stair_rise, total_stair_run) # ~21.53 deg gentle slope
-	var y_offset: float = (ramp_thick * 0.5) / cos(slope_ang)
-	var mid_y: float = 33.15 + (total_stair_rise * 0.5) - y_offset + 0.02
+	var slope_ang: float = atan2(total_stair_rise, total_stair_run) # ~21.53 deg slope
+	var mid_y: float = 33.15 + (total_stair_rise * 0.5)
 	var mid_z: float = (stair_start_z + -56.0) * 0.5
 	
 	r_cs.position = Vector3(0.0, mid_y, mid_z)
-	r_cs.rotation = Vector3(-slope_ang, 0.0, 0.0) # Slopes upward towards North (-Z)
-	grand_ramp_body.add_child(r_cs)
-	stairs_node.add_child(grand_ramp_body)
+	r_cs.rotation = Vector3(slope_ang, 0.0, 0.0) # Correct positive pitch: elevates North (-Z) to meet terrace at Y = 34.50m
+	grand_steps_body.add_child(r_cs)
+	stairs_node.add_child(grand_steps_body)
 	terrace_root.add_child(stairs_node)
 	
 	# 3. Northern Riverfront 12m Retaining Wall (Z = -195.9m dropping into Yamuna riverbed)
@@ -2480,17 +2624,27 @@ func _setup_chameli_farsh() -> void:
 	balustrade_inst.position = Vector3(0.0, deck_y + balustrade_h * 0.5, -195.7)
 	terrace_root.add_child(balustrade_inst)
 	
-	# Balustrade decorative pier posts every 6.0m
+	# Balustrade decorative pier posts every 6.0m via MultiMesh GPU batching
 	var num_piers: int = 51
+	var pier_mesh: BoxMesh = BoxMesh.new()
+	pier_mesh.size = Vector3(0.50, balustrade_h + 0.15, 0.45)
+	
+	var mm_piers: MultiMesh = MultiMesh.new()
+	mm_piers.transform_format = MultiMesh.TRANSFORM_3D
+	mm_piers.mesh = pier_mesh
+	mm_piers.instance_count = num_piers
+	
 	for p in range(num_piers):
 		var p_x: float = -152.4 + float(p) * (304.8 / float(num_piers - 1))
-		var pier_mesh: BoxMesh = BoxMesh.new()
-		pier_mesh.size = Vector3(0.50, balustrade_h + 0.15, 0.45)
-		var p_inst: MeshInstance3D = MeshInstance3D.new()
-		p_inst.mesh = pier_mesh
-		p_inst.material_override = sand_mat
-		p_inst.position = Vector3(p_x, deck_y + (balustrade_h + 0.15) * 0.5, -195.7)
-		terrace_root.add_child(p_inst)
+		var pt: Transform3D = Transform3D()
+		pt.origin = Vector3(p_x, deck_y + (balustrade_h + 0.15) * 0.5, -195.7)
+		mm_piers.set_instance_transform(p, pt)
+		
+	var mm_piers_inst: MultiMeshInstance3D = MultiMeshInstance3D.new()
+	mm_piers_inst.name = "RiverfrontPierPosts"
+	mm_piers_inst.multimesh = mm_piers
+	mm_piers_inst.material_override = sand_mat
+	terrace_root.add_child(mm_piers_inst)
 		
 	# Balustrade collision
 	var b_col_body: StaticBody3D = StaticBody3D.new()
@@ -2627,43 +2781,70 @@ func _setup_ablution_basins() -> void:
 	
 	var marble_mat: StandardMaterial3D = _get_gate_marble_material()
 	marble_mat.roughness = 0.15
-	var water_mat: StandardMaterial3D = _get_water_material()
+	var water_mat: Material = _get_hauz_water_material()
 	var floor_mat: StandardMaterial3D = _get_sandstone_material(Vector3(0.35, 0.35, 0.35), true)
+	var finial_mat: StandardMaterial3D = _get_finial_material()
 	
-	# In the 50m open courtyards between each building and the Taj plinth (aligned to Taj plinth center Z = -131.457m)
-	# West Hauz: centered at X = -75.0m, Z = -131.457m
-	_build_single_hauz(basins_root, "Hauz_West", Vector3(-75.0, 34.50, -131.457), marble_mat, water_mat, floor_mat)
+	# Aligned to center between Taj plinth and each Flanking Monument (Z = -131.457m)
+	# West Hauz: centered at X = -91.0m
+	_build_single_hauz(basins_root, "Hauz_West", Vector3(-91.0, 34.50, -131.457), marble_mat, water_mat, floor_mat, finial_mat)
 	
-	# East Hauz: centered at X = +75.0m, Z = -131.457m
-	_build_single_hauz(basins_root, "Hauz_East", Vector3(75.0, 34.50, -131.457), marble_mat, water_mat, floor_mat)
+	# East Hauz: centered at X = +91.0m
+	_build_single_hauz(basins_root, "Hauz_East", Vector3(91.0, 34.50, -131.457), marble_mat, water_mat, floor_mat, finial_mat)
 	
-	print("AgraWorld: Twin flanking sunken marble ablution pools (Hauz: 12m x 12m) initialized in 50m courtyards.")
+	print("AgraWorld: Twin flanking marble ablution pools (Hauz: 14m x 14m raised plinth, 11.2m pool at Y=34.78m) initialized at X=+-91m.")
 
-func _build_single_hauz(parent: Node3D, hauz_name: String, center_pos: Vector3, marble_mat: Material, water_mat: Material, floor_mat: Material) -> void:
+func _build_single_hauz(parent: Node3D, hauz_name: String, center_pos: Vector3, marble_mat: Material, water_mat: Material, floor_mat: Material, finial_mat: Material) -> void:
 	var hauz_node: Node3D = Node3D.new()
 	hauz_node.name = hauz_name
 	
-	var size: float = 12.0 # 12.0m x 12.0m survey dimension
-	var recess_d: float = 0.45 # Recessed 0.45m into Chameli Farsh
-	var curb_w: float = 0.40 # Framed by polished white marble curbs (width 0.4m)
-	var curb_lip: float = 0.12 # 0.12m above terrace floor
-	var base_y: float = center_pos.y # 34.50m
-	var floor_y: float = base_y - recess_d # 34.05m
-	var water_y: float = base_y - 0.12 # 34.38m (active screen-space reflecting water)
+	var plinth_size: float = 14.0 # 14m x 14m outer raised stone plinth
+	var plinth_h: float = 0.35 # Raised 0.35m above Chameli Farsh terrace
+	var base_y: float = center_pos.y # 34.50m (terrace deck)
+	var plinth_top_y: float = base_y + plinth_h # 34.85m
 	
-	# 1. Sunken Basin Floor (12m x 12m)
+	var pool_inner_size: float = 11.2 # Inner water surface dimension
+	var curb_w: float = 0.40 # Polished white marble coping curb width
+	var curb_h: float = 0.35 # Curb height
+	var pool_outer_size: float = pool_inner_size + curb_w * 2.0 # 12.0m
+	
+	var basin_floor_y: float = base_y + 0.02 # 34.52m (sitting right atop Chameli Farsh slab)
+	var water_y: float = base_y + 0.28 # 34.78m (clearly elevated above terrace floor, completely unclipped!)
+	
+	# 1. Raised Red Sandstone Outer Courtyard Plinth (14m x 14m x 0.35m)
+	var plinth_mesh: BoxMesh = BoxMesh.new()
+	plinth_mesh.size = Vector3(plinth_size, plinth_h, plinth_size)
+	var plinth_inst: MeshInstance3D = MeshInstance3D.new()
+	plinth_inst.name = "CourtyardPlinth"
+	plinth_inst.mesh = plinth_mesh
+	plinth_inst.material_override = floor_mat
+	plinth_inst.position = Vector3(center_pos.x, base_y + plinth_h * 0.5, center_pos.z)
+	hauz_node.add_child(plinth_inst)
+	
+	# Shallow access steps on east & west sides of the plinth
+	for step_sign in [-1.0, 1.0]:
+		var step_mesh: BoxMesh = BoxMesh.new()
+		step_mesh.size = Vector3(0.50, plinth_h * 0.5, 4.0)
+		var step_inst: MeshInstance3D = MeshInstance3D.new()
+		step_inst.name = "PlinthStep_" + ("W" if step_sign < 0 else "E")
+		step_inst.mesh = step_mesh
+		step_inst.material_override = floor_mat
+		step_inst.position = Vector3(center_pos.x + (plinth_size * 0.5 + 0.25) * step_sign, base_y + plinth_h * 0.25, center_pos.z)
+		hauz_node.add_child(step_inst)
+	
+	# 2. Sunken Inner Basin Floor (12m x 12m)
 	var floor_mesh: PlaneMesh = PlaneMesh.new()
-	floor_mesh.size = Vector2(size, size)
+	floor_mesh.size = Vector2(pool_outer_size, pool_outer_size)
 	var floor_inst: MeshInstance3D = MeshInstance3D.new()
 	floor_inst.name = "BasinFloor"
 	floor_inst.mesh = floor_mesh
 	floor_inst.material_override = floor_mat
-	floor_inst.position = Vector3(center_pos.x, floor_y, center_pos.z)
+	floor_inst.position = Vector3(center_pos.x, basin_floor_y, center_pos.z)
 	hauz_node.add_child(floor_inst)
 	
-	# 2. Reflecting Pool Water Surface (11.2m x 11.2m)
+	# 3. Reflecting Pool Water Surface (11.2m x 11.2m) at Y = 34.78m
 	var water_mesh: PlaneMesh = PlaneMesh.new()
-	water_mesh.size = Vector2(size - curb_w * 2.0, size - curb_w * 2.0)
+	water_mesh.size = Vector2(pool_inner_size, pool_inner_size)
 	var water_inst: MeshInstance3D = MeshInstance3D.new()
 	water_inst.name = "WaterSurface"
 	water_inst.mesh = water_mesh
@@ -2671,22 +2852,21 @@ func _build_single_hauz(parent: Node3D, hauz_name: String, center_pos: Vector3, 
 	water_inst.position = Vector3(center_pos.x, water_y, center_pos.z)
 	hauz_node.add_child(water_inst)
 	
-	# 3. Raised Polished White Marble Coping Curbs (width 0.4m)
-	var curb_total_h: float = recess_d + curb_lip # 0.57m
+	# 4. Polished White Makrana Marble Coping Curbs (framing 11.2m pool, top at Y = 34.87m)
+	var curb_center_y: float = basin_floor_y + curb_h * 0.5
+	
 	var curb_mesh_ns: BoxMesh = BoxMesh.new()
-	curb_mesh_ns.size = Vector3(size, curb_total_h, curb_w)
+	curb_mesh_ns.size = Vector3(pool_outer_size, curb_h, curb_w)
 	
 	var curb_mesh_ew: BoxMesh = BoxMesh.new()
-	curb_mesh_ew.size = Vector3(curb_w, curb_total_h, size - curb_w * 2.0)
-	
-	var curb_center_y: float = floor_y + curb_total_h * 0.5
+	curb_mesh_ew.size = Vector3(curb_w, curb_h, pool_inner_size)
 	
 	# North Curb
 	var cn: MeshInstance3D = MeshInstance3D.new()
 	cn.name = "Curb_North"
 	cn.mesh = curb_mesh_ns
 	cn.material_override = marble_mat
-	cn.position = Vector3(center_pos.x, curb_center_y, center_pos.z - size * 0.5 + curb_w * 0.5)
+	cn.position = Vector3(center_pos.x, curb_center_y, center_pos.z - pool_inner_size * 0.5 - curb_w * 0.5)
 	hauz_node.add_child(cn)
 	
 	# South Curb
@@ -2694,7 +2874,7 @@ func _build_single_hauz(parent: Node3D, hauz_name: String, center_pos: Vector3, 
 	cs.name = "Curb_South"
 	cs.mesh = curb_mesh_ns
 	cs.material_override = marble_mat
-	cs.position = Vector3(center_pos.x, curb_center_y, center_pos.z + size * 0.5 - curb_w * 0.5)
+	cs.position = Vector3(center_pos.x, curb_center_y, center_pos.z + pool_inner_size * 0.5 + curb_w * 0.5)
 	hauz_node.add_child(cs)
 	
 	# West Curb
@@ -2702,7 +2882,7 @@ func _build_single_hauz(parent: Node3D, hauz_name: String, center_pos: Vector3, 
 	cw.name = "Curb_West"
 	cw.mesh = curb_mesh_ew
 	cw.material_override = marble_mat
-	cw.position = Vector3(center_pos.x - size * 0.5 + curb_w * 0.5, curb_center_y, center_pos.z)
+	cw.position = Vector3(center_pos.x - pool_inner_size * 0.5 - curb_w * 0.5, curb_center_y, center_pos.z)
 	hauz_node.add_child(cw)
 	
 	# East Curb
@@ -2710,40 +2890,96 @@ func _build_single_hauz(parent: Node3D, hauz_name: String, center_pos: Vector3, 
 	ce.name = "Curb_East"
 	ce.mesh = curb_mesh_ew
 	ce.material_override = marble_mat
-	ce.position = Vector3(center_pos.x + size * 0.5 - curb_w * 0.5, curb_center_y, center_pos.z)
+	ce.position = Vector3(center_pos.x + pool_inner_size * 0.5 + curb_w * 0.5, curb_center_y, center_pos.z)
 	hauz_node.add_child(ce)
 	
-	# Physical Colliders for Curbs
+	# 5. Central Carved Marble Lotus Fountain Spout Base
+	var f_base_mesh: CylinderMesh = CylinderMesh.new()
+	f_base_mesh.radial_segments = 8
+	f_base_mesh.top_radius = 0.55
+	f_base_mesh.bottom_radius = 0.65
+	f_base_mesh.height = 0.32
+	var fb_inst: MeshInstance3D = MeshInstance3D.new()
+	fb_inst.name = "FountainPedestal"
+	fb_inst.mesh = f_base_mesh
+	fb_inst.material_override = marble_mat
+	fb_inst.position = Vector3(center_pos.x, basin_floor_y + 0.16, center_pos.z)
+	hauz_node.add_child(fb_inst)
+	
+	# Brass fountain jet nozzle
+	var f_nozzle: CylinderMesh = CylinderMesh.new()
+	f_nozzle.radial_segments = 6
+	f_nozzle.top_radius = 0.04
+	f_nozzle.bottom_radius = 0.08
+	f_nozzle.height = 0.18
+	var fn_inst: MeshInstance3D = MeshInstance3D.new()
+	fn_inst.name = "FountainNozzle"
+	fn_inst.mesh = f_nozzle
+	fn_inst.material_override = finial_mat
+	fn_inst.position = Vector3(center_pos.x, basin_floor_y + 0.32 + 0.09, center_pos.z)
+	hauz_node.add_child(fn_inst)
+	
+	# 6. Decorative Carved Boundary Posts around the 14m Plinth Perimeter (matching reference render)
+	var post_h: float = 0.65
+	var post_mesh: BoxMesh = BoxMesh.new()
+	post_mesh.size = Vector3(0.24, post_h, 0.24)
+	var post_offsets: Array[Vector2] = [
+		Vector2(-6.8, -6.8), Vector2(0.0, -6.8), Vector2(6.8, -6.8),
+		Vector2(-6.8, 6.8), Vector2(0.0, 6.8), Vector2(6.8, 6.8),
+		Vector2(-6.8, -3.4), Vector2(-6.8, 3.4),
+		Vector2(6.8, -3.4), Vector2(6.8, 3.4)
+	]
+	for p_off in post_offsets:
+		var p_inst: MeshInstance3D = MeshInstance3D.new()
+		p_inst.mesh = post_mesh
+		p_inst.material_override = floor_mat
+		p_inst.position = Vector3(center_pos.x + p_off.x, plinth_top_y + post_h * 0.5, center_pos.z + p_off.y)
+		hauz_node.add_child(p_inst)
+		
+		# Small decorative pyramid capstone
+		var cap_mesh: CylinderMesh = CylinderMesh.new()
+		cap_mesh.radial_segments = 4
+		cap_mesh.bottom_radius = 0.16
+		cap_mesh.top_radius = 0.02
+		cap_mesh.height = 0.14
+		var cap_inst: MeshInstance3D = MeshInstance3D.new()
+		cap_inst.mesh = cap_mesh
+		cap_inst.material_override = marble_mat
+		cap_inst.position = Vector3(center_pos.x + p_off.x, plinth_top_y + post_h + 0.07, center_pos.z + p_off.y)
+		cap_inst.rotation.y = PI / 4.0
+		hauz_node.add_child(cap_inst)
+	
+	# 7. Physical Colliders for Hauz Structure
 	var col_body: StaticBody3D = StaticBody3D.new()
 	col_body.name = "HauzCollision"
 	
-	# Floor collider
-	var f_cs: CollisionShape3D = CollisionShape3D.new()
-	var f_box: BoxShape3D = BoxShape3D.new()
-	f_box.size = Vector3(size, 0.40, size)
-	f_cs.shape = f_box
-	f_cs.position = Vector3(center_pos.x, floor_y - 0.20, center_pos.z)
-	col_body.add_child(f_cs)
+	# Main plinth collider
+	var plinth_cs: CollisionShape3D = CollisionShape3D.new()
+	var plinth_box: BoxShape3D = BoxShape3D.new()
+	plinth_box.size = Vector3(plinth_size, plinth_h, plinth_size)
+	plinth_cs.shape = plinth_box
+	plinth_cs.position = Vector3(center_pos.x, base_y + plinth_h * 0.5, center_pos.z)
+	col_body.add_child(plinth_cs)
 	
-	# Curb colliders
+	# Marble curb colliders
 	for c_trans in [
-		Vector3(center_pos.x, curb_center_y, center_pos.z - size * 0.5 + curb_w * 0.5),
-		Vector3(center_pos.x, curb_center_y, center_pos.z + size * 0.5 - curb_w * 0.5)
+		Vector3(center_pos.x, curb_center_y, center_pos.z - pool_inner_size * 0.5 - curb_w * 0.5),
+		Vector3(center_pos.x, curb_center_y, center_pos.z + pool_inner_size * 0.5 + curb_w * 0.5)
 	]:
 		var cs_shape: CollisionShape3D = CollisionShape3D.new()
 		var box_s: BoxShape3D = BoxShape3D.new()
-		box_s.size = Vector3(size, curb_total_h, curb_w)
+		box_s.size = Vector3(pool_outer_size, curb_h, curb_w)
 		cs_shape.shape = box_s
 		cs_shape.position = c_trans
 		col_body.add_child(cs_shape)
 		
 	for c_trans in [
-		Vector3(center_pos.x - size * 0.5 + curb_w * 0.5, curb_center_y, center_pos.z),
-		Vector3(center_pos.x + size * 0.5 - curb_w * 0.5, curb_center_y, center_pos.z)
+		Vector3(center_pos.x - pool_inner_size * 0.5 - curb_w * 0.5, curb_center_y, center_pos.z),
+		Vector3(center_pos.x + pool_inner_size * 0.5 + curb_w * 0.5, curb_center_y, center_pos.z)
 	]:
 		var cs_shape: CollisionShape3D = CollisionShape3D.new()
 		var box_s: BoxShape3D = BoxShape3D.new()
-		box_s.size = Vector3(curb_w, curb_total_h, size - curb_w * 2.0)
+		box_s.size = Vector3(curb_w, curb_h, pool_inner_size)
 		cs_shape.shape = box_s
 		cs_shape.position = c_trans
 		col_body.add_child(cs_shape)
@@ -2764,19 +3000,19 @@ func _setup_twin_flanking_monuments() -> void:
 	add_child(mon_root)
 	
 	# Master PBR Materials
-	var wall_mat: StandardMaterial3D = _get_mosque_sandstone_material(Vector3(0.35, 0.35, 0.35))
+	var wall_mat: StandardMaterial3D = _get_mosque_sandstone_material(Vector3(0.25, 0.25, 0.25))
 	var dome_mat: StandardMaterial3D = _get_dome_marble_material()
 	var marble_trim: StandardMaterial3D = _get_gate_marble_material(Vector3(1.5, 1.5, 1.0))
 	var dark_mat: StandardMaterial3D = _get_dark_niche_material()
 	var finial_mat: StandardMaterial3D = _get_finial_material()
 	
-	# 1. The Mosque (West Structure): Centered at X = -122.0m, Z aligned to Taj plinth center (-131.457m), rotated Y = +90 deg (facing East toward Taj Mahal)
-	_build_flanking_monument(mon_root, "Mosque_West", Vector3(-122.0, 34.50, -131.457), PI * 0.5, wall_mat, dome_mat, marble_trim, dark_mat, finial_mat)
+	# 1. The Mosque (West Structure): Centered at X = -140.0m (outer rear turrets at X = -151.0m right at terrace boundary), rotated Y = +90 deg (facing East toward Taj Mahal)
+	_build_flanking_monument(mon_root, "Mosque_West", Vector3(-140.0, 34.50, -131.457), PI * 0.5, wall_mat, dome_mat, marble_trim, dark_mat, finial_mat)
 	
-	# 2. Mehman Khana / Jawab (East Structure): Centered at X = +122.0m, Z aligned to Taj plinth center (-131.457m), rotated Y = -90 deg (facing West toward Taj Mahal)
-	_build_flanking_monument(mon_root, "MehmanKhana_East", Vector3(122.0, 34.50, -131.457), -PI * 0.5, wall_mat, dome_mat, marble_trim, dark_mat, finial_mat)
+	# 2. Mehman Khana / Jawab (East Structure): Centered at X = +140.0m (outer rear turrets at X = +151.0m right at terrace boundary), rotated Y = -90 deg (facing West toward Taj Mahal)
+	_build_flanking_monument(mon_root, "MehmanKhana_East", Vector3(140.0, 34.50, -131.457), -PI * 0.5, wall_mat, dome_mat, marble_trim, dark_mat, finial_mat)
 	
-	print("AgraWorld: High-Detail Procedural Twin Monuments (Mosque West at X=-122m & Mehman Khana East at X=+122m) created.")
+	print("AgraWorld: High-Detail Procedural Twin Monuments (Mosque West at X=-140m & Mehman Khana East at X=+140m) created with rich Sikri sandstone & Makrana marble.")
 
 func _build_flanking_monument(parent: Node3D, mon_name: String, pos: Vector3, rot_y: float, wall_mat: Material, dome_mat: Material, marble_mat: Material, dark_mat: Material, finial_mat: Material) -> void:
 	var mon_node: Node3D = Node3D.new()
@@ -2790,88 +3026,160 @@ func _build_flanking_monument(parent: Node3D, mon_name: String, pos: Vector3, ro
 	# Local Z: depth (front facade facing +Z, rear facing -Z)
 	
 	# -------------------------------------------------------------------------
-	# 1. CSGCombiner3D for Massing & Subtracted Vaulted Iwan
+	# 1. Front Terrace Porch / Prayer Plinth (78m wide x 6.5m deep x 0.35m high)
 	# -------------------------------------------------------------------------
-	var csg: CSGCombiner3D = CSGCombiner3D.new()
-	csg.name = "CSGAssembly"
-	csg.use_collision = true
+	var porch_w: float = 78.0
+	var porch_d: float = 6.5
+	var porch_h: float = 0.35
+	var porch_mesh: BoxMesh = BoxMesh.new()
+	porch_mesh.size = Vector3(porch_w, porch_h, porch_d)
+	var porch_inst: MeshInstance3D = MeshInstance3D.new()
+	porch_inst.name = "FrontPorchPlinth"
+	porch_inst.mesh = porch_mesh
+	porch_inst.material_override = wall_mat
+	porch_inst.position = Vector3(0.0, porch_h * 0.5, 13.0 + porch_d * 0.5 - 2.0)
+	mon_node.add_child(porch_inst)
+	
+	# Shallow porch step descending to Chameli Farsh
+	var pstep_mesh: BoxMesh = BoxMesh.new()
+	pstep_mesh.size = Vector3(porch_w + 0.5, porch_h * 0.5, 0.40)
+	var pstep_inst: MeshInstance3D = MeshInstance3D.new()
+	pstep_inst.name = "FrontPorchStep"
+	pstep_inst.mesh = pstep_mesh
+	pstep_inst.material_override = wall_mat
+	pstep_inst.position = Vector3(0.0, porch_h * 0.25, 13.0 + porch_d - 2.0 + 0.20)
+	mon_node.add_child(pstep_inst)
+	
+	# Porch static collision
+	var porch_col: StaticBody3D = StaticBody3D.new()
+	porch_col.name = "PorchCollision"
+	var p_cs: CollisionShape3D = CollisionShape3D.new()
+	var p_cbox: BoxShape3D = BoxShape3D.new()
+	p_cbox.size = Vector3(porch_w, porch_h, porch_d)
+	p_cs.shape = p_cbox
+	p_cs.position = Vector3(0.0, porch_h * 0.5, 13.0 + porch_d * 0.5 - 2.0)
+	porch_col.add_child(p_cs)
+	mon_node.add_child(porch_col)
+	
+	# -------------------------------------------------------------------------
+	# 2. Modular Static Architecture for Massing & Vaulted Iwan (Zero CSG Overhead)
+	# -------------------------------------------------------------------------
+	var mass_root: Node3D = Node3D.new()
+	mass_root.name = "MassingAssembly"
+	mon_node.add_child(mass_root)
 	
 	# Central Prayer Hall Block: 44m wide, 22m deep, 18m high
-	var c_box: CSGBox3D = CSGBox3D.new()
-	c_box.name = "CentralHall"
-	c_box.size = Vector3(44.0, 18.0, 22.0)
-	c_box.position = Vector3(0.0, 9.0, 0.0)
-	c_box.material_override = wall_mat
-	csg.add_child(c_box)
+	var c_mesh: BoxMesh = BoxMesh.new()
+	c_mesh.size = Vector3(44.0, 18.0, 22.0)
+	var c_inst: MeshInstance3D = MeshInstance3D.new()
+	c_inst.name = "CentralHall"
+	c_inst.mesh = c_mesh
+	c_inst.material_override = wall_mat
+	c_inst.position = Vector3(0.0, 9.0, 0.0)
+	mass_root.add_child(c_inst)
 	
-	# Central Pishtaq Portal (projects forward by 2.0m, rises to 22.0m height)
-	# Width 18.0m, height 22.0m, depth 4.0m (from Z = 9.0 to 13.0m)
-	var p_box: CSGBox3D = CSGBox3D.new()
-	p_box.name = "PishtaqPortal"
-	p_box.size = Vector3(18.0, 22.0, 4.0)
-	p_box.position = Vector3(0.0, 11.0, 11.0)
-	p_box.material_override = wall_mat
-	csg.add_child(p_box)
+	# Central Pishtaq Portal Left Pier: 3m wide, 22m high, 4m deep
+	var p_lp_mesh: BoxMesh = BoxMesh.new()
+	p_lp_mesh.size = Vector3(3.0, 22.0, 4.0)
+	var p_lp_inst: MeshInstance3D = MeshInstance3D.new()
+	p_lp_inst.name = "PishtaqPier_L"
+	p_lp_inst.mesh = p_lp_mesh
+	p_lp_inst.material_override = wall_mat
+	p_lp_inst.position = Vector3(-7.5, 11.0, 11.0)
+	mass_root.add_child(p_lp_inst)
 	
-	# Subtractive Vaulted Central Iwan Recess (depth 2.5m, width 12m, height 16m)
-	var iwan: CSGBox3D = CSGBox3D.new()
-	iwan.name = "IwanRecess"
-	iwan.operation = CSGShape3D.OPERATION_SUBTRACTION
-	iwan.size = Vector3(12.0, 16.0, 2.6)
-	iwan.position = Vector3(0.0, 8.0, 11.7)
-	csg.add_child(iwan)
+	# Central Pishtaq Portal Right Pier: 3m wide, 22m high, 4m deep
+	var p_rp_mesh: BoxMesh = BoxMesh.new()
+	p_rp_mesh.size = Vector3(3.0, 22.0, 4.0)
+	var p_rp_inst: MeshInstance3D = MeshInstance3D.new()
+	p_rp_inst.name = "PishtaqPier_R"
+	p_rp_inst.mesh = p_rp_mesh
+	p_rp_inst.material_override = wall_mat
+	p_rp_inst.position = Vector3(7.5, 11.0, 11.0)
+	mass_root.add_child(p_rp_inst)
 	
-	# Subtractive Pointed Arch Chamfers inside Iwan apex
-	var chamfer_l: CSGBox3D = CSGBox3D.new()
-	chamfer_l.operation = CSGShape3D.OPERATION_SUBTRACTION
-	chamfer_l.size = Vector3(3.5, 3.5, 2.7)
-	chamfer_l.position = Vector3(-4.8, 14.5, 11.7)
-	chamfer_l.rotation.z = PI / 4.0
-	csg.add_child(chamfer_l)
+	# Central Pishtaq Portal Top Lintel: 12m wide, 6m high, 4m deep
+	var p_lint_mesh: BoxMesh = BoxMesh.new()
+	p_lint_mesh.size = Vector3(12.0, 6.0, 4.0)
+	var p_lint_inst: MeshInstance3D = MeshInstance3D.new()
+	p_lint_inst.name = "PishtaqLintel"
+	p_lint_inst.mesh = p_lint_mesh
+	p_lint_inst.material_override = wall_mat
+	p_lint_inst.position = Vector3(0.0, 19.0, 11.0)
+	mass_root.add_child(p_lint_inst)
 	
-	var chamfer_r: CSGBox3D = CSGBox3D.new()
-	chamfer_r.operation = CSGShape3D.OPERATION_SUBTRACTION
-	chamfer_r.size = Vector3(3.5, 3.5, 2.7)
-	chamfer_r.position = Vector3(4.8, 14.5, 11.7)
-	chamfer_r.rotation.z = -PI / 4.0
-	csg.add_child(chamfer_r)
+	# Vaulted Central Iwan Alcove Back Wall: 12m wide, 16m high, 1.4m deep (Z = 9.7)
+	var alcove_mesh: BoxMesh = BoxMesh.new()
+	alcove_mesh.size = Vector3(12.0, 16.0, 1.4)
+	var alcove_inst: MeshInstance3D = MeshInstance3D.new()
+	alcove_inst.name = "IwanAlcoveBack"
+	alcove_inst.mesh = alcove_mesh
+	alcove_inst.material_override = wall_mat
+	alcove_inst.position = Vector3(0.0, 8.0, 9.7)
+	mass_root.add_child(alcove_inst)
 	
-	# Left Side Wing: 16m wide, 18m deep, 14m high (front face at Z = 7.0m)
-	var w_left: CSGBox3D = CSGBox3D.new()
-	w_left.name = "WingLeft"
-	w_left.size = Vector3(16.0, 14.0, 18.0)
-	w_left.position = Vector3(-30.0, 7.0, -2.0)
-	w_left.material_override = wall_mat
-	csg.add_child(w_left)
+	# Left Side Wing: 16m wide, 18m deep, 14m high
+	var wl_mesh: BoxMesh = BoxMesh.new()
+	wl_mesh.size = Vector3(16.0, 14.0, 18.0)
+	var wl_inst: MeshInstance3D = MeshInstance3D.new()
+	wl_inst.name = "WingLeft"
+	wl_inst.mesh = wl_mesh
+	wl_inst.material_override = wall_mat
+	wl_inst.position = Vector3(-30.0, 7.0, -2.0)
+	mass_root.add_child(wl_inst)
 	
 	# Right Side Wing: 16m wide, 18m deep, 14m high
-	var w_right: CSGBox3D = CSGBox3D.new()
-	w_right.name = "WingRight"
-	w_right.size = Vector3(16.0, 14.0, 18.0)
-	w_right.position = Vector3(30.0, 7.0, -2.0)
-	w_right.material_override = wall_mat
-	csg.add_child(w_right)
+	var wr_mesh: BoxMesh = BoxMesh.new()
+	wr_mesh.size = Vector3(16.0, 14.0, 18.0)
+	var wr_inst: MeshInstance3D = MeshInstance3D.new()
+	wr_inst.name = "WingRight"
+	wr_inst.mesh = wr_mesh
+	wr_inst.material_override = wall_mat
+	wr_inst.position = Vector3(30.0, 7.0, -2.0)
+	mass_root.add_child(wr_inst)
 	
-	# Subtractive Cusped Pointed-Arch Niches on Side Wings (two stacked tiers, depth 0.6m)
+	# Pointed-Arch Shadowed Niches on Side Wings
 	for side_x in [-30.0, 30.0]:
-		# Lower tier niche (width 5m, height 6m, depth 0.6m)
-		var n_low: CSGBox3D = CSGBox3D.new()
-		n_low.operation = CSGShape3D.OPERATION_SUBTRACTION
-		n_low.size = Vector3(5.0, 6.0, 0.65)
-		n_low.position = Vector3(side_x, 4.0, 6.7)
-		csg.add_child(n_low)
+		var n_low_m: BoxMesh = BoxMesh.new()
+		n_low_m.size = Vector3(5.0, 6.0, 0.15)
+		var n_low_inst: MeshInstance3D = MeshInstance3D.new()
+		n_low_inst.mesh = n_low_m
+		n_low_inst.material_override = dark_mat
+		n_low_inst.position = Vector3(side_x, 4.0, 7.05)
+		mass_root.add_child(n_low_inst)
 		
-		# Upper tier niche (width 4.5m, height 4.5m, depth 0.6m)
-		var n_up: CSGBox3D = CSGBox3D.new()
-		n_up.operation = CSGShape3D.OPERATION_SUBTRACTION
-		n_up.size = Vector3(4.5, 4.5, 0.65)
-		n_up.position = Vector3(side_x, 10.5, 6.7)
-		csg.add_child(n_up)
+		var n_up_m: BoxMesh = BoxMesh.new()
+		n_up_m.size = Vector3(4.5, 4.5, 0.15)
+		var n_up_inst: MeshInstance3D = MeshInstance3D.new()
+		n_up_inst.mesh = n_up_m
+		n_up_inst.material_override = dark_mat
+		n_up_inst.position = Vector3(side_x, 10.5, 7.05)
+		mass_root.add_child(n_up_inst)
 		
-	mon_node.add_child(csg)
+	# Static physics collision for massing blocks (Zero CSG boolean calculation)
+	var mass_col: StaticBody3D = StaticBody3D.new()
+	mass_col.name = "MassingCollision"
+	
+	var col_specs: Array[Dictionary] = [
+		{"size": Vector3(44.0, 18.0, 22.0), "pos": Vector3(0.0, 9.0, 0.0)},
+		{"size": Vector3(3.0, 22.0, 4.0), "pos": Vector3(-7.5, 11.0, 11.0)},
+		{"size": Vector3(3.0, 22.0, 4.0), "pos": Vector3(7.5, 11.0, 11.0)},
+		{"size": Vector3(12.0, 6.0, 4.0), "pos": Vector3(0.0, 19.0, 11.0)},
+		{"size": Vector3(12.0, 16.0, 1.4), "pos": Vector3(0.0, 8.0, 9.7)},
+		{"size": Vector3(16.0, 14.0, 18.0), "pos": Vector3(-30.0, 7.0, -2.0)},
+		{"size": Vector3(16.0, 14.0, 18.0), "pos": Vector3(30.0, 7.0, -2.0)}
+	]
+	for spec in col_specs:
+		var cs: CollisionShape3D = CollisionShape3D.new()
+		var box: BoxShape3D = BoxShape3D.new()
+		box.size = spec["size"]
+		cs.shape = box
+		cs.position = spec["pos"]
+		mass_col.add_child(cs)
+	mass_root.add_child(mass_col)
 	
 	# -------------------------------------------------------------------------
-	# 2. Continuous 0.8m Wide White Marble Rectangular Inlay Borders (Khatt Bands)
+	# 3. Continuous White Makrana Marble Inlay Borders (Khatt Bands)
 	# -------------------------------------------------------------------------
 	var band_thick: float = 0.80
 	# Left vertical border band
@@ -2956,7 +3264,7 @@ func _build_flanking_monument(parent: Node3D, mon_name: String, pos: Vector3, ro
 		mon_node.add_child(nf_u_inst)
 		
 	# -------------------------------------------------------------------------
-	# 3. Roof Cornice: Continuous Projecting Sandstone Eaves (Chajja Overhang of 0.6m)
+	# 4. Roof Cornice: Continuous Projecting Sandstone Eaves (Chajja Overhang of 0.6m)
 	# -------------------------------------------------------------------------
 	# Wing Chajja Eaves at Y = 14.0m, projecting 0.6m forward to Z = 7.3m
 	for side_x in [-30.0, 30.0]:
@@ -2981,7 +3289,7 @@ func _build_flanking_monument(parent: Node3D, mon_name: String, pos: Vector3, ro
 		mon_node.add_child(ch_c_inst)
 		
 	# -------------------------------------------------------------------------
-	# 4. Triple Bulbous White Makrana Marble Onion Domes with Turned Brass Finials
+	# 5. Triple Bulbous White Makrana Marble Onion Domes with Turned Brass Finials
 	# -------------------------------------------------------------------------
 	var roof_y: float = 18.0
 	
@@ -3085,14 +3393,14 @@ func _build_flanking_monument(parent: Node3D, mon_name: String, pos: Vector3, ro
 		mon_node.add_child(f_fin)
 		
 	# -------------------------------------------------------------------------
-	# 5. Corner Minarets: 4-Tiered Octagonal Turrets & Chattris at All Outer Corners
+	# 6. Corner Minarets: 4-Tiered Octagonal Turrets & Chattris at All Outer Corners
 	# -------------------------------------------------------------------------
 	# 4 Turrets: 2 Front Outer Corners (Z = 7.0m) and 2 Rear Outer Corners (Z = -11.0m)
 	var turret_corners: Array[Vector2] = [
 		Vector2(-38.0, 7.0),   # Front-Left
 		Vector2(38.0, 7.0),    # Front-Right
-		Vector2(-38.0, -11.0), # Rear-Left
-		Vector2(38.0, -11.0)   # Rear-Right
+		Vector2(-38.0, -11.0), # Rear-Left (at X=-140m, this reaches X=-151m, flush at outer platform edge)
+		Vector2(38.0, -11.0)   # Rear-Right (at X=-140m, this reaches X=-151m, flush at outer platform edge)
 	]
 	
 	for tc in turret_corners:
@@ -3195,30 +3503,5 @@ func _build_flanking_monument(parent: Node3D, mon_name: String, pos: Vector3, ro
 		tur_node.add_child(t_col_body)
 		
 		mon_node.add_child(tur_node)
-		
-	# -------------------------------------------------------------------------
-	# 6. Rear Connecting Enclosure Wall (Sealing to Terrace Outer Perimeter at X = +/- 152.4m)
-	# -------------------------------------------------------------------------
-	# Extends from local Z = -11.0m back to Z = -30.4m (19.4m depth) to seal outer terrace perimeter
-	var rear_wall_mesh: BoxMesh = BoxMesh.new()
-	rear_wall_mesh.size = Vector3(76.0, 7.5, 19.4)
-	var rear_wall_inst: MeshInstance3D = MeshInstance3D.new()
-	rear_wall_inst.name = "RearEnclosureWall"
-	rear_wall_inst.mesh = rear_wall_mesh
-	rear_wall_inst.material_override = wall_mat
-	rear_wall_inst.position = Vector3(0.0, 3.75, -20.7)
-	mon_node.add_child(rear_wall_inst)
-	
-	var rw_col: StaticBody3D = StaticBody3D.new()
-	rw_col.name = "RearWallCollision"
-	var rw_shape: CollisionShape3D = CollisionShape3D.new()
-	var rw_box: BoxShape3D = BoxShape3D.new()
-	rw_box.size = Vector3(76.0, 7.5, 19.4)
-	rw_shape.shape = rw_box
-	rw_shape.position = Vector3(0.0, 3.75, -20.7)
-	rw_col.add_child(rw_shape)
-	mon_node.add_child(rw_col)
 	
 	parent.add_child(mon_node)
-
-

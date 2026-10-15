@@ -1,9 +1,9 @@
 [gd_scene load_steps=10 format=3 uid="uid://bv83qm6klo21p"]
 
-[ext_resource type="Script" uid="uid://dps5w7y62mkl0" path="res://scripts/minimap/map_manager.gd" id="1_manager"]
-[ext_resource type="Script" uid="uid://cb5n2k4n7118q" path="res://scenes/minimap/minimap_hud.gd" id="2_hud"]
-[ext_resource type="Script" uid="uid://c51qfgh650k12" path="res://scenes/minimap/full_map_view.gd" id="3_fullmap"]
-[ext_resource type="Script" uid="uid://bv74kl2n80pqx" path="res://scenes/minimap/blueprint_canvas.gd" id="4_canvas"]
+[ext_resource type="Script" uid="uid://2m5lkvqee5te" path="res://scripts/minimap/map_manager.gd" id="1_manager"]
+[ext_resource type="Script" uid="uid://7su0wj1bfkvn" path="res://scenes/minimap/minimap_hud.gd" id="2_hud"]
+[ext_resource type="Script" uid="uid://5ru2cf51funa" path="res://scenes/minimap/full_map_view.gd" id="3_fullmap"]
+[ext_resource type="Script" uid="uid://csxm7ru55k3yv" path="res://scenes/minimap/blueprint_canvas.gd" id="4_canvas"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_badge"]
 bg_color = Color(0.08, 0.1, 0.15, 0.95)

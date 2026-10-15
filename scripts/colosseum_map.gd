@@ -115,9 +115,16 @@ func _setup_educational_and_minimap_system() -> void:
 		map_mgr.set_player(player)
 		map_mgr.set_inside_state(is_inside_interior)
 
-func _process(_delta: float) -> void:
+var _proximity_timer: float = 0.0
+
+func _process(delta: float) -> void:
 	if not player or is_transitioning or is_paused:
 		return
+		
+	_proximity_timer += delta
+	if _proximity_timer < 0.2:
+		return
+	_proximity_timer = 0.0
 		
 	var player_pos = player.global_position
 	var current_radius = Vector2(player_pos.x, player_pos.z).length()
@@ -125,14 +132,17 @@ func _process(_delta: float) -> void:
 	if not is_inside_interior:
 		# When outside and anywhere near the Colosseum exterior structure:
 		if current_radius <= ENTER_PROXIMITY_RADIUS:
-			if exit_hint: exit_hint.visible = true
-			if exit_label: exit_label.text = "✦ Press [ F ] to Enter Colosseum Interior ✦"
+			if exit_hint and not exit_hint.visible:
+				exit_hint.visible = true
+				if exit_label: exit_label.text = "✦ Press [ F ] to Enter Colosseum Interior ✦"
 		else:
-			if exit_hint: exit_hint.visible = false
+			if exit_hint and exit_hint.visible:
+				exit_hint.visible = false
 	else:
 		# When inside the Colosseum interior:
-		if exit_hint: exit_hint.visible = true
-		if exit_label: exit_label.text = "✦ Press [ F ] to Exit to Rome City ✦"
+		if exit_hint and not exit_hint.visible:
+			exit_hint.visible = true
+			if exit_label: exit_label.text = "✦ Press [ F ] to Exit to Rome City ✦"
 
 func _unhandled_input(event: InputEvent) -> void:
 	if is_transitioning:
@@ -285,12 +295,9 @@ func _on_main_menu_pressed() -> void:
 		return
 	is_transitioning = true
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-	if fade_rect:
-		var tween = create_tween()
-		tween.tween_property(fade_rect, "modulate:a", 1.0, 0.35).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-		tween.tween_callback(func():
-			get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
-		)
+	var loader = get_node_or_null("/root/SceneLoader")
+	if loader:
+		loader.change_scene_to("res://scenes/main_menu.tscn", "Main Menu", "History Gamified", "Returning to Era Selection...")
 	else:
 		get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
 
@@ -330,7 +337,14 @@ func _traverse_and_add_trimesh(n: Node) -> void:
 	for child in n.get_children():
 		_traverse_and_add_trimesh(child)
 
+const ROME_COLLISION_CACHE_PATH: String = "res://data/collisions/rome_building_collision.res"
+
 func _create_building_collision_shape(mesh: Mesh) -> ConcavePolygonShape3D:
+	if ResourceLoader.exists(ROME_COLLISION_CACHE_PATH):
+		var cached = ResourceLoader.load(ROME_COLLISION_CACHE_PATH)
+		if cached is ConcavePolygonShape3D:
+			return cached
+
 	var all_faces: PackedVector3Array = mesh.get_faces()
 	if all_faces.is_empty():
 		return null
@@ -351,5 +365,8 @@ func _create_building_collision_shape(mesh: Mesh) -> ConcavePolygonShape3D:
 		return null
 	var concave_shape = ConcavePolygonShape3D.new()
 	concave_shape.set_faces(building_faces)
+	
+	# Cache to disk for instant subsequent startups
+	ResourceSaver.save(concave_shape, ROME_COLLISION_CACHE_PATH)
 	return concave_shape
 

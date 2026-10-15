@@ -109,12 +109,13 @@ func _on_victorian_card_pressed() -> void:
 	if is_transitioning:
 		return
 	is_transitioning = true
-	
-	if fade_rect:
-		var tween = create_tween()
-		tween.tween_property(fade_rect, "modulate:a", 1.0, 0.4).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-		tween.tween_callback(func():
-			get_tree().change_scene_to_file("res://scenes/church_exterior.tscn")
+	var loader = get_node_or_null("/root/SceneLoader")
+	if loader:
+		loader.change_scene_to(
+			"res://scenes/church_exterior.tscn",
+			"Natural History Museum",
+			"Victorian Era • London 1881",
+			"Alfred Waterhouse designed the museum using terracotta to withstand London's soot."
 		)
 	else:
 		get_tree().change_scene_to_file("res://scenes/church_exterior.tscn")
@@ -123,12 +124,13 @@ func _on_stonehenge_card_pressed() -> void:
 	if is_transitioning:
 		return
 	is_transitioning = true
-	
-	if fade_rect:
-		var tween = create_tween()
-		tween.tween_property(fade_rect, "modulate:a", 1.0, 0.4).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-		tween.tween_callback(func():
-			get_tree().change_scene_to_file("res://scenes/stonehenge_map.tscn")
+	var loader = get_node_or_null("/root/SceneLoader")
+	if loader:
+		loader.change_scene_to(
+			"res://scenes/stonehenge_map.tscn",
+			"Stonehenge",
+			"Neolithic Era • Salisbury Plain 2500 BCE",
+			"The sarsen stones weigh up to 25 tons and were transported over 20 miles."
 		)
 	else:
 		get_tree().change_scene_to_file("res://scenes/stonehenge_map.tscn")
@@ -137,12 +139,13 @@ func _on_colosseum_card_pressed() -> void:
 	if is_transitioning:
 		return
 	is_transitioning = true
-	
-	if fade_rect:
-		var tween = create_tween()
-		tween.tween_property(fade_rect, "modulate:a", 1.0, 0.4).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-		tween.tween_callback(func():
-			get_tree().change_scene_to_file("res://scenes/colosseum_map.tscn")
+	var loader = get_node_or_null("/root/SceneLoader")
+	if loader:
+		loader.change_scene_to(
+			"res://scenes/colosseum_map.tscn",
+			"Colosseum",
+			"Imperial Rome • 80 CE",
+			"The Flavian Amphitheatre could seat over 50,000 spectators under a giant velarium awning."
 		)
 	else:
 		get_tree().change_scene_to_file("res://scenes/colosseum_map.tscn")
@@ -151,12 +154,13 @@ func _on_agra_card_pressed() -> void:
 	if is_transitioning:
 		return
 	is_transitioning = true
-	
-	if fade_rect:
-		var tween = create_tween()
-		tween.tween_property(fade_rect, "modulate:a", 1.0, 0.4).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-		tween.tween_callback(func():
-			get_tree().change_scene_to_file("res://scenes/agra_world.tscn")
+	var loader = get_node_or_null("/root/SceneLoader")
+	if loader:
+		loader.change_scene_to(
+			"res://scenes/agra_world.tscn",
+			"Taj Mahal & Agra Complex",
+			"Mughal Era • Agra 1648 CE",
+			"The white Makrana marble plinth is framed by Charbagh gardens and the Yamuna River."
 		)
 	else:
 		get_tree().change_scene_to_file("res://scenes/agra_world.tscn")

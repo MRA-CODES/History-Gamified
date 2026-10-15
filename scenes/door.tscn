@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://b8k12p5nan3q4"]
 
-[ext_resource type="Script" uid="uid://c7x4y1r8m3k29" path="res://scripts/door.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://3i1lr8refkrj" path="res://scripts/door.gd" id="1_script"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_door_wood"]
 albedo_color = Color(0.24, 0.16, 0.11, 1)

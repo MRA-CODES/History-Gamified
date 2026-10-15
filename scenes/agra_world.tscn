@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bc6ukyt2q3yqp" path="res://scripts/agra_world.gd" id="1_script"]
 [ext_resource type="PackedScene" uid="uid://bhvov7mqrad0o" path="res://assets/environment/buildings/Map 4 - Taj Mahal_Buildings/TajMahal (lowpoly).glb" id="2_taj_model"]
-[ext_resource type="Terrain3DAssets" uid="uid://bdjkdsidxl8sk" path="res://assets/terrain/MAp 4- TAJ MAHAL_Terrain/taj_mahal_terrain_assets.tres" id="3_taj_assets"]
+[ext_resource type="Terrain3DAssets" path="res://assets/terrain/MAp 4- TAJ MAHAL_Terrain/taj_mahal_terrain_assets.tres" id="3_taj_assets"]
 [ext_resource type="PackedScene" uid="uid://c6f3k0p8m5y21" path="res://scenes/player.tscn" id="4_player"]
 
 [sub_resource type="ProceduralSkyMaterial" id="SkyMat_Agra"]
@@ -159,7 +159,7 @@ fov = 65.0
 far = 2000.0
 
 [node name="Player" parent="." unique_id=339182947 instance=ExtResource("4_player")]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -125.844, 33.25, 140)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 33.25, -48)
 
 [node name="Terrain3D" type="Terrain3D" parent="." unique_id=411636145]
 data_directory = "res://data/terrain/map4"

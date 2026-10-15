@@ -13,11 +13,15 @@ var is_inside: bool = false
 var is_transitioning: bool = false
 var can_enter: bool = false
 var can_exit: bool = false
+var is_paused: bool = false
+var interior_collisions_generated: bool = false
+var pause_menu: Control = null
 
 func _ready() -> void:
-	# 1. Automatically generate exact 1:1 Trimesh collisions for all interior meshes
-	_generate_interior_trimesh_collisions()
-	
+	# 1. Setup interior initial state (hidden until entered, avoids rendering & collision overhead)
+	if interior:
+		interior.visible = false
+		
 	# 2. Setup transition overlay & prompt
 	if transition_rect:
 		transition_rect.modulate.a = 0.0
@@ -39,6 +43,11 @@ func _ready() -> void:
 		
 	# 5. Initialize educational monument system
 	_setup_educational_system()
+	
+	# 6. Initialize pause menu
+	_setup_pause_menu()
+	
+	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 func _setup_educational_system() -> void:
 	if not has_node("MonumentPopupUI"):
@@ -71,8 +80,13 @@ func _input(event: InputEvent) -> void:
 	if is_transitioning:
 		return
 		
+	if event is InputEventKey and event.pressed and not event.is_echo() and event.keycode == KEY_ESCAPE:
+		_toggle_pause_menu()
+		get_viewport().set_input_as_handled()
+		return
+		
 	var enter_pressed = event.is_action_pressed("ui_accept") or (event is InputEventKey and event.pressed and (event.keycode == KEY_ENTER or event.keycode == KEY_KP_ENTER))
-	if enter_pressed:
+	if enter_pressed and not is_paused:
 		if can_enter and not is_inside:
 			_teleport_to_interior()
 		elif can_exit and is_inside:
@@ -120,6 +134,9 @@ func _teleport_to_interior() -> void:
 		is_inside = true
 		exterior.visible = false
 		interior.visible = true
+		if not interior_collisions_generated:
+			_generate_interior_trimesh_collisions()
+			interior_collisions_generated = true
 		if city_env:
 			city_env.visible = false
 		if player:
@@ -197,3 +214,118 @@ func _traverse_and_add_trimesh(node: Node) -> void:
 				node.add_child(static_body)
 	for child in node.get_children():
 		_traverse_and_add_trimesh(child)
+
+# -----------------------------------------------------------------------------
+# Pause Menu Setup & Navigation
+# -----------------------------------------------------------------------------
+func _setup_pause_menu() -> void:
+	var ui_canvas = CanvasLayer.new()
+	ui_canvas.name = "PauseMenuCanvas"
+	ui_canvas.layer = 110
+	add_child(ui_canvas)
+	
+	pause_menu = Control.new()
+	pause_menu.name = "PauseMenu"
+	pause_menu.set_anchors_preset(Control.PRESET_FULL_RECT)
+	pause_menu.visible = false
+	ui_canvas.add_child(pause_menu)
+	
+	var dim = ColorRect.new()
+	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
+	dim.color = Color(0, 0, 0, 0.65)
+	pause_menu.add_child(dim)
+	
+	var center = CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	pause_menu.add_child(center)
+	
+	var panel = PanelContainer.new()
+	panel.custom_minimum_size = Vector2(380, 300)
+	var p_style = StyleBoxFlat.new()
+	p_style.bg_color = Color(0.08, 0.09, 0.14, 0.96)
+	p_style.border_width_left = 2
+	p_style.border_width_top = 2
+	p_style.border_width_right = 2
+	p_style.border_width_bottom = 2
+	p_style.border_color = Color(0.85, 0.7, 0.28, 0.9)
+	p_style.corner_radius_top_left = 12
+	p_style.corner_radius_top_right = 12
+	p_style.corner_radius_bottom_right = 12
+	p_style.corner_radius_bottom_left = 12
+	panel.add_theme_stylebox_override("panel", p_style)
+	center.add_child(panel)
+	
+	var margin = MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 30)
+	margin.add_theme_constant_override("margin_top", 25)
+	margin.add_theme_constant_override("margin_right", 30)
+	margin.add_theme_constant_override("margin_bottom", 25)
+	panel.add_child(margin)
+	
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 14)
+	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	margin.add_child(vbox)
+	
+	var title = Label.new()
+	title.text = "NATURAL HISTORY MUSEUM"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 20)
+	title.add_theme_color_override("font_color", Color(1, 0.88, 0.45, 1))
+	vbox.add_child(title)
+	
+	var sub = Label.new()
+	sub.text = "London, 1881 CE • Victorian Era"
+	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	sub.add_theme_font_size_override("font_size", 13)
+	sub.add_theme_color_override("font_color", Color(0.8, 0.82, 0.88, 0.9))
+	vbox.add_child(sub)
+	
+	var btn_resume = Button.new()
+	btn_resume.text = "▶  Resume Exploration"
+	btn_resume.custom_minimum_size = Vector2(0, 38)
+	btn_resume.pressed.connect(_toggle_pause_menu)
+	vbox.add_child(btn_resume)
+	
+	var btn_restart = Button.new()
+	btn_restart.text = "↺  Restart View"
+	btn_restart.custom_minimum_size = Vector2(0, 38)
+	btn_restart.pressed.connect(func():
+		_toggle_pause_menu()
+		if player:
+			player.global_position = Vector3(0.0, 3.5, 48.0)
+			player.velocity = Vector3.ZERO
+	)
+	vbox.add_child(btn_restart)
+	
+	var btn_menu = Button.new()
+	btn_menu.text = "⟵  Return to Main Menu"
+	btn_menu.custom_minimum_size = Vector2(0, 38)
+	btn_menu.pressed.connect(_on_main_menu_pressed)
+	vbox.add_child(btn_menu)
+	
+	var btn_quit = Button.new()
+	btn_quit.text = "✕  Exit to Desktop"
+	btn_quit.custom_minimum_size = Vector2(0, 38)
+	btn_quit.pressed.connect(func(): get_tree().quit())
+	vbox.add_child(btn_quit)
+
+func _toggle_pause_menu() -> void:
+	is_paused = not is_paused
+	if pause_menu:
+		pause_menu.visible = is_paused
+	if is_paused:
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	else:
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+
+func _on_main_menu_pressed() -> void:
+	if is_transitioning:
+		return
+	is_transitioning = true
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	if has_node("/root/SceneLoader"):
+		get_node("/root/SceneLoader").change_scene_to("res://scenes/main_menu.tscn", "MAIN MENU", "History Gamified")
+	else:
+		get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
+

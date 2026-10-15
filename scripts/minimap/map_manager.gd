@@ -26,12 +26,17 @@ func _ready() -> void:
 	floors = NHMMapConfig.create_nhm_floors()
 	call_deferred("_discover_scene_elements")
 
-func _process(_delta: float) -> void:
+var _floor_check_timer: float = 0.0
+
+func _process(delta: float) -> void:
 	if not player_node:
 		_find_player()
 		
 	if player_node:
-		_update_active_floor()
+		_floor_check_timer += delta
+		if _floor_check_timer >= 0.2:
+			_floor_check_timer = 0.0
+			_update_active_floor()
 
 func set_floors(p_floors: Array) -> void:
 	floors = p_floors

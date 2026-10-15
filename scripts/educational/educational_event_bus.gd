@@ -5,9 +5,13 @@
 class_name EducationalEventBus
 extends Node
 
+@warning_ignore("unused_signal")
 signal prompt_shown(exhibit_dict: Dictionary, key_hint: String)
+@warning_ignore("unused_signal")
 signal prompt_hidden()
+@warning_ignore("unused_signal")
 signal popup_opened(exhibit_dict: Dictionary)
+@warning_ignore("unused_signal")
 signal popup_closed()
 
 # Global database of loaded exhibits

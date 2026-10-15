@@ -5,8 +5,6 @@
 class_name MonumentInteractable
 extends Area3D
 
-const EducationalEventBus = preload("res://scripts/educational/educational_event_bus.gd")
-
 signal interacted(exhibit_dict: Dictionary)
 
 @export var exhibit_id: String = "dippy_diplodocus"
@@ -34,10 +32,10 @@ func _ready() -> void:
 	if marker_visual:
 		marker_visual.visible = show_3d_marker
 	
-	print("[MonumentInteractable] Initialized for '%s' at %s" % [exhibit_id, global_position])
+	# Only run _process when player is nearby to save CPU cycles
+	set_process(false)
 
 func _process(delta: float) -> void:
-	# Subtle floating animation for marker if present
 	if marker_visual and marker_visual.visible:
 		marker_visual.rotation.y += delta * 1.5
 
@@ -62,10 +60,10 @@ func _on_body_entered(body: Node3D) -> void:
 	# Check if body is player
 	if body is CharacterBody3D or body.is_in_group("player") or "player" in body.name.to_lower():
 		player_is_nearby = true
+		set_process(true)
 		if current_exhibit_data.is_empty():
 			current_exhibit_data = EducationalEventBus.get_exhibit_data(exhibit_id)
 			
-		print("[MonumentInteractable] Player entered zone for: ", current_exhibit_data.get("title", exhibit_id))
 		EducationalEventBus.show_prompt(current_exhibit_data, key_hint)
 		
 		if auto_open_on_approach:
@@ -74,5 +72,5 @@ func _on_body_entered(body: Node3D) -> void:
 func _on_body_exited(body: Node3D) -> void:
 	if body is CharacterBody3D or body.is_in_group("player") or "player" in body.name.to_lower():
 		player_is_nearby = false
-		print("[MonumentInteractable] Player exited zone for: ", exhibit_id)
+		set_process(false)
 		EducationalEventBus.hide_prompt()

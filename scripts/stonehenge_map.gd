@@ -1,6 +1,7 @@
 extends Node3D
 
 const StonehengeRimData = preload("res://scripts/stonehenge_rim_data.gd")
+const TERRAIN_CACHE_PATH: String = "res://data/terrain/stonehenge_conforming_terrain.res"
 
 # -----------------------------------------------------------------------------
 # Node References
@@ -139,85 +140,92 @@ func _generate_conforming_terrain() -> void:
 	mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
 	plains_ring.material_override = mat
 	
-	# 2. Build Conforming Mesh from Boundary Outward
-	var st = SurfaceTool.new()
-	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	
-	var outer_r = 750.0
-	var ring_steps = 40
-	var radial_steps = 128
-	
-	for ring in range(ring_steps):
-		var t1 = float(ring) / float(ring_steps)
-		var t2 = float(ring + 1) / float(ring_steps)
+	# 2. Build or load Conforming Mesh
+	var terrain_mesh: ArrayMesh = null
+	if ResourceLoader.exists(TERRAIN_CACHE_PATH):
+		terrain_mesh = ResourceLoader.load(TERRAIN_CACHE_PATH) as ArrayMesh
 		
-		# Exponential radial distribution
-		var factor1 = pow(t1, 1.35)
-		var factor2 = pow(t2, 1.35)
+	if not terrain_mesh:
+		var st = SurfaceTool.new()
+		st.begin(Mesh.PRIMITIVE_TRIANGLES)
 		
-		for rad in range(radial_steps):
-			var a1 = (float(rad) / radial_steps) * TAU
-			var a2 = (float(rad + 1) / radial_steps) * TAU
+		var outer_r = 750.0
+		var ring_steps = 40
+		var radial_steps = 128
+		
+		for ring in range(ring_steps):
+			var t1 = float(ring) / float(ring_steps)
+			var t2 = float(ring + 1) / float(ring_steps)
 			
-			# Sample exact GLB boundary at angles a1 and a2
-			var bound1 = StonehengeRimData.get_boundary_at_angle(a1)
-			var bound2 = StonehengeRimData.get_boundary_at_angle(a2)
+			# Exponential radial distribution
+			var factor1 = pow(t1, 1.35)
+			var factor2 = pow(t2, 1.35)
 			
-			# Ring 0 starts with a tight 30cm underlap directly at the GLB perimeter
-			var r_start1 = bound1.x - 0.3
-			var r_start2 = bound2.x - 0.3
-			
-			var r1_1 = lerp(r_start1, outer_r, factor1)
-			var r1_2 = lerp(r_start2, outer_r, factor1)
-			
-			var r2_1 = lerp(r_start1, outer_r, factor2)
-			var r2_2 = lerp(r_start2, outer_r, factor2)
-			
-			var x1_1 = cos(a1) * r1_1
-			var z1_1 = sin(a1) * r1_1
-			var y1_1 = _get_conforming_height(r1_1, a1)
-			
-			var x1_2 = cos(a2) * r1_2
-			var z1_2 = sin(a2) * r1_2
-			var y1_2 = _get_conforming_height(r1_2, a2)
-			
-			var x2_1 = cos(a1) * r2_1
-			var z2_1 = sin(a1) * r2_1
-			var y2_1 = _get_conforming_height(r2_1, a1)
-			
-			var x2_2 = cos(a2) * r2_2
-			var z2_2 = sin(a2) * r2_2
-			var y2_2 = _get_conforming_height(r2_2, a2)
-			
-			var p1 = Vector3(x1_1, y1_1, z1_1)
-			var p2 = Vector3(x1_2, y1_2, z1_2)
-			var p3 = Vector3(x2_1, y2_1, z2_1)
-			var p4 = Vector3(x2_2, y2_2, z2_2)
-			
-			var uv1 = Vector2(x1_1, z1_1) / 10.0
-			var uv2 = Vector2(x1_2, z1_2) / 10.0
-			var uv3 = Vector2(x2_1, z2_1) / 10.0
-			var uv4 = Vector2(x2_2, z2_2) / 10.0
-			
-			# Quad Triangle 1
-			st.set_uv(uv1)
-			st.add_vertex(p1)
-			st.set_uv(uv3)
-			st.add_vertex(p3)
-			st.set_uv(uv4)
-			st.add_vertex(p4)
-			
-			# Quad Triangle 2
-			st.set_uv(uv1)
-			st.add_vertex(p1)
-			st.set_uv(uv4)
-			st.add_vertex(p4)
-			st.set_uv(uv2)
-			st.add_vertex(p2)
-			
-	st.generate_normals()
-	st.generate_tangents()
-	var terrain_mesh = st.commit()
+			for rad in range(radial_steps):
+				var a1 = (float(rad) / radial_steps) * TAU
+				var a2 = (float(rad + 1) / radial_steps) * TAU
+				
+				# Sample exact GLB boundary at angles a1 and a2
+				var bound1 = StonehengeRimData.get_boundary_at_angle(a1)
+				var bound2 = StonehengeRimData.get_boundary_at_angle(a2)
+				
+				# Ring 0 starts with a tight 30cm underlap directly at the GLB perimeter
+				var r_start1 = bound1.x - 0.3
+				var r_start2 = bound2.x - 0.3
+				
+				var r1_1 = lerp(r_start1, outer_r, factor1)
+				var r1_2 = lerp(r_start2, outer_r, factor1)
+				
+				var r2_1 = lerp(r_start1, outer_r, factor2)
+				var r2_2 = lerp(r_start2, outer_r, factor2)
+				
+				var x1_1 = cos(a1) * r1_1
+				var z1_1 = sin(a1) * r1_1
+				var y1_1 = _get_conforming_height(r1_1, a1)
+				
+				var x1_2 = cos(a2) * r1_2
+				var z1_2 = sin(a2) * r1_2
+				var y1_2 = _get_conforming_height(r1_2, a2)
+				
+				var x2_1 = cos(a1) * r2_1
+				var z2_1 = sin(a1) * r2_1
+				var y2_1 = _get_conforming_height(r2_1, a1)
+				
+				var x2_2 = cos(a2) * r2_2
+				var z2_2 = sin(a2) * r2_2
+				var y2_2 = _get_conforming_height(r2_2, a2)
+				
+				var p1 = Vector3(x1_1, y1_1, z1_1)
+				var p2 = Vector3(x1_2, y1_2, z1_2)
+				var p3 = Vector3(x2_1, y2_1, z2_1)
+				var p4 = Vector3(x2_2, y2_2, z2_2)
+				
+				var uv1 = Vector2(x1_1, z1_1) / 10.0
+				var uv2 = Vector2(x1_2, z1_2) / 10.0
+				var uv3 = Vector2(x2_1, z2_1) / 10.0
+				var uv4 = Vector2(x2_2, z2_2) / 10.0
+				
+				# Quad Triangle 1
+				st.set_uv(uv1)
+				st.add_vertex(p1)
+				st.set_uv(uv3)
+				st.add_vertex(p3)
+				st.set_uv(uv4)
+				st.add_vertex(p4)
+				
+				# Quad Triangle 2
+				st.set_uv(uv1)
+				st.add_vertex(p1)
+				st.set_uv(uv4)
+				st.add_vertex(p4)
+				st.set_uv(uv2)
+				st.add_vertex(p2)
+				
+		st.generate_normals()
+		st.generate_tangents()
+		terrain_mesh = st.commit()
+		ResourceSaver.save(terrain_mesh, TERRAIN_CACHE_PATH)
+		
 	plains_ring.mesh = terrain_mesh
 	
 	# Solid collision matching conforming terrain
@@ -346,12 +354,9 @@ func _on_main_menu_pressed() -> void:
 		return
 	is_transitioning = true
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-	if fade_rect:
-		var tween = create_tween()
-		tween.tween_property(fade_rect, "modulate:a", 1.0, 0.35).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-		tween.tween_callback(func():
-			get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
-		)
+	var loader = get_node_or_null("/root/SceneLoader")
+	if loader:
+		loader.change_scene_to("res://scenes/main_menu.tscn", "Main Menu", "History Gamified", "Returning to Era Selection...")
 	else:
 		get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
 

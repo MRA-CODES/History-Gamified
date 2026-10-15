@@ -1,9 +1,9 @@
 [gd_scene format=3 uid="uid://bv6j4k8l1m2n3"]
 
-[ext_resource type="Script" uid="uid://c5m6n7p8q9r1" path="res://scripts/mobile/mobile_controls.gd" id="1_controller"]
-[ext_resource type="Script" uid="uid://d6m7n8p9q1r2" path="res://scripts/mobile/virtual_joystick.gd" id="2_joystick"]
-[ext_resource type="Script" uid="uid://e7m8n9p1q2r3" path="res://scripts/mobile/touch_camera_zone.gd" id="3_camerazone"]
-[ext_resource type="Script" uid="uid://f8m9n1p2q3r4" path="res://scripts/mobile/touch_button.gd" id="4_button"]
+[ext_resource type="Script" uid="uid://r6ggqsb1fgpl" path="res://scripts/mobile/mobile_controls.gd" id="1_controller"]
+[ext_resource type="Script" uid="uid://q67jg4t7g3dr" path="res://scripts/mobile/virtual_joystick.gd" id="2_joystick"]
+[ext_resource type="Script" uid="uid://dnt7l4qgk0jq8" path="res://scripts/mobile/touch_camera_zone.gd" id="3_camerazone"]
+[ext_resource type="Script" uid="uid://d20n4opl612ub" path="res://scripts/mobile/touch_button.gd" id="4_button"]
 
 [node name="MobileControls" type="CanvasLayer"]
 layer = 40
